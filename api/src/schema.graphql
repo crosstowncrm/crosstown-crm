@@ -1,0 +1,209 @@
+type User {
+  id: ID!
+  name: String
+  last_name: String
+  email: String
+  phone_number: String
+  email_signature: String
+  address:  Address @relation(name: "HAS_ADDRESS", direction: "OUT")
+  follows: [User] @relation(name: "FOLLOWS", direction: "BOTH")
+  teams:  [Team] @relation(name: "IS_MEMBER_OF", direction: "OUT")
+  contacts:  [Contact] @relation(name: "OWNS_PROSPECT", direction: "OUT")
+  companies:  [Business] @relation(name: "OWNS_PROSPECT", direction: "OUT")
+#  listings:  [Listing] @relation(name: "IS PRIMARY AGENT FOR", direction: "OUT")
+}
+
+type Contact {
+  id: ID!
+  first_name: String
+  last_name: String
+  suffix: String
+  birthday: String
+  company_name: String
+  job_title: String
+  contact_emails: [String]
+  phone_numbers: [String]
+  linkedin_url: String
+  facebook_url: String
+  instagram_url: String
+  twitter_url: String
+  lead_status: String
+  lead_type: String
+  address:  Address @relation(name: "HAS ADDRESS", direction: "OUT")
+  companies:  [Company] @relation(name: "IS ASSOCIATED WITH", direction: "OUT")
+  properties:  [Property] @relation(name: "HAS INTEREST IN", direction: "OUT")
+  listings:  [Listing] @relation(name: "LISTS", direction: "OUT")
+#  deals:  [Deal] @relation(name: "IS ASSOCIATED WITH", direction: "IN")
+  teams: [Team] @relation(name: "BELONGS TO", direction: "OUT")
+}
+
+type Company {
+  id: ID!
+  name: String
+  address:  Address @relation(name: "HAS ADDRESS", direction: "OUT")
+  phone_numbers: [String]
+  contacts:  [Contact] @relation(name: "IS ASSOCIATED WITH", direction: "IN")
+  properties:  [Property] @relation(name: "HAS INTEREST IN", direction: "OUT")
+#  deals:  [Deal] @relation(name: "IS ASSOCIATED WITH", direction: "OUT")
+  listings:  [Listing] @relation(name: "LISTS", direction: "OUT")
+}
+
+type Property {
+  id: ID!
+  name: String
+  property_type: String
+  secondary_type: String
+  additional_types: [String]
+  address:  Address @relation(name: "HAS ADDRESS", direction: "OUT")
+#  parcels:  [Parcel] @relation(name: "INCLUDES PARCELS", direction: "OUT")
+#  structures: [Structure] @relation(name: "INCLUDES STRUCTURES", direction: "OUT")
+#  spaces:  [Space] @relation(name: "IS UNIT OF", direction: "IN")
+  contact:  Contact @relation(name: "HAS INTEREST IN", direction: "IN")
+  company:  Company @relation(name: "HAS INTEREST IN", direction: "IN")
+  listing:  Listing @relation(name: "IS LISTING OF", direction: "IN")
+}
+
+type Listing {
+  id: ID!
+  name: String
+  lease_or_sale: String
+  commission: String
+  listing_expiration: String
+  price: Int
+  priceTerms: String
+  noi: Int
+  cap_rate: Float
+  sale_conditions: [String]
+  leaseTerm: String
+  leaseType: String
+  sfAvailMin: Int
+  sfAvailMax: Int
+  use: [String]
+  availableOn: String
+  availableWithin: String
+  tenantName: String
+  existingBuildout: String
+  condition: String
+  layout: String
+  privateOffices: Int
+  workStations: Int
+  conferenceRooms: Int
+  numPeopleMin: Int
+  numPeopleMax: Int
+  amenities: [String]
+  spaceNotes: String
+  spaceHighlights: [String]
+  description: String
+  images: [String]
+  documents: [String]
+  properties:  [Property] @relation(name: "IS LISTING OF", direction: "OUT")
+#  space:  [Space] @relation(name: "IS LISTING OF", direction: "OUT")
+  user:  User @relation(name: "IS_PRIMARY_AGENT_FOR", direction: "IN")
+}
+#!
+type Household {
+  id: ID!
+  contacts:  [Contact] @relation(name: "IS MEMBER OF", direction: "IN")
+  address:  Address @relation(name: "HAS ADDRESS", direction: "OUT")
+}
+
+type Address {
+  id: ID!
+  street_number: String
+  street_pre_direction: String
+  street_name: String
+  street_suffix: String
+  street_post_direction: String
+  unit_type: String
+  unit_number: String
+  formatted_street_address: String
+  city: String
+  state: String
+  zip_code: String
+  zip_plus_four_code: String
+  latitude: Float
+  longitude: Float
+  census_tract: String
+  lat: Int
+  lng: Int
+  house: Int
+}
+
+type Team {
+  id: ID!
+  name: String
+  slogan: String
+  established: Date
+}
+
+type Business {
+  id: ID!
+  name: String
+  address: String
+  city: String
+  state: String
+#  avgStars: Float @cypher(statement: "MATCH (this)<-[:REVIEWS]-(r:Review) RETURN coalesce(avg(r.stars),0.0)")
+#  reviews: [Review] @relation(name: "REVIEWS", direction: "IN")
+#  categories: [Category] @relation(name: "IN_CATEGORY", direction: "OUT")
+}
+
+type Review {
+  id: ID!
+  stars: Int
+  text: String
+  date: Date
+#  business: Business @relation(name: "REVIEWS", direction: "OUT")
+#  user: User @relation(name: "WROTE", direction: "IN")
+}
+
+type Category {
+  name: ID!
+#  businesses: [Business] @relation(name: "IN_CATEGORY", direction: "IN")
+}
+
+type Query {
+  usersBySubstring(substring: String): [User]
+    @cypher(
+      statement: "MATCH (u:User) WHERE u.name CONTAINS $substring RETURN u"
+    )
+  contacts(substring: String): [Contact]
+  @cypher(
+    statement: "MATCH (c:Contact) RETURN c"
+    )
+  contact(id: Int): Contact
+  @cypher(
+    statement: "MATCH (c:Contact) WHERE c.id = $id RETURN c"
+    )
+  companies(substring: String): [Company]
+  @cypher(
+    statement: "MATCH (c:Company) RETURN c"
+    )
+  company(id: Int): Company
+  @cypher(
+    statement: "MATCH (c:Company) WHERE c.id = $id RETURN c"
+    )
+  properties(substring: String): [Property]
+  @cypher(
+    statement: "MATCH (c:Property) RETURN c"
+    )
+  property(id: Int): Property
+  @cypher(
+    statement: "MATCH (c:Property) WHERE c.id = $id RETURN c"
+    )
+  listings(substring: String): [Listing]
+  @cypher(
+    statement: "MATCH (c:Listing) RETURN c"
+    )
+  listing(id: Int): Listing
+  @cypher(
+    statement: "MATCH (c:Listing) WHERE c.id = $id RETURN c"
+    )
+  users(substring: String): [User]
+  @cypher(
+    statement: "MATCH (c:User) RETURN c"
+    )
+  user(id: Int): User
+  @cypher(
+    statement: "MATCH (c:User) WHERE c.id = $id RETURN c"
+    )
+}

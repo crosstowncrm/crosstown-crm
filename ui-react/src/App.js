@@ -12,6 +12,7 @@ import {
   AppBar,
   Toolbar,
   Typography,
+  Button,
   IconButton,
   CssBaseline,
   Drawer,
@@ -30,6 +31,8 @@ import {
   People as PeopleIcon
 } from "@material-ui/icons";
 
+import Login from "./components/Login";
+import Error from "./components/Error";
 import UserList from "./components/UserList";
 import UserData from "./components/edit-user.component";
 import ContactList from "./components/ContactList";
@@ -42,6 +45,7 @@ import ListingList from "./components/ListingList";
 import ListingData from "./components/edit-listing.component";
 
 import classNames from "classnames";
+import gql from "graphql-tag";
 
 const drawerWidth = 240;
 
@@ -114,6 +118,26 @@ const styles = theme => ({
   }
 });
 
+const LOGIN = gql`
+    mutation login($name: String!, $pswd: String!) {
+        login(email: $name, password: $pswd) {
+            id
+        }
+    }
+`;
+
+function login(){
+    console.log('login');
+}
+
+function isAuthenticated() {
+    // Check whether the current time is past the
+    // access token's expiry time
+    let userId = localStorage.getItem('userId');
+    console.log('userId', userId);
+    return userId !== null;
+}
+
 class App extends Component {
   constructor(props) {
     super(props);
@@ -126,6 +150,7 @@ class App extends Component {
   render() {
     const { classes } = this.props;
 
+    const id = localStorage.getItem("uid")
     return (
       <Router>
         <React.Fragment>
@@ -160,8 +185,35 @@ class App extends Component {
                   noWrap
                   className={classes.title}
                 >
-                  Welcome To GRANDstack
+                  Welcome
                 </Typography>
+                  {!isAuthenticated() ? (
+                      <div>
+
+                          <Button>
+                              <Link className="edit-link" to={"/login"}>
+                                  <ListItemText primary="Login" />
+                              </Link>
+                          </Button>
+
+                      </div>
+
+                  ): (
+                      <div>
+
+                          <Button
+                              className={'logout-action'}
+                              onClick={()=>{
+                                localStorage.clear();
+                                window.location.href = 'login'
+                              }}
+                          >
+                              Logout
+                          </Button>
+                      </div>
+                  )}
+
+
               </Toolbar>
             </AppBar>
             <Drawer
@@ -232,20 +284,29 @@ class App extends Component {
             <main className={classes.content}>
               <div className={classes.appBarSpacer} />
 
-              <Switch>
-                {/*<Route exact path="/" render={() => <Redirect to="/new/1" />} />*/}
-                {/*<Route exact path="/create" component={CreateLink} />*/}
-                <Route exact path="/users" component={UserList} />
-                <Route exact path="/users/:uid" component={UserData} />
-                <Route exact path="/contacts" component={ContactList} />
-                <Route exact path="/contacts/:uid" component={ContactData} />
-                <Route exact path="/companies" component={CompanyList} />
-                <Route exact path="/companies/:uid" component={CompanyData} />
-                <Route exact path="/properties" component={PropertyList} />
-                <Route exact path="/properties/:uid" component={PropertyData} />
-                <Route exact path="/listings" component={ListingList} />
-                <Route exact path="/listings/:uid" component={ListingData} />
-              </Switch>
+
+                  {!isAuthenticated() ? (
+                      <Switch>
+                          <Route exact path="/login" component={Login} />
+                          <Route exact path="/error" component={Error} />
+                      </Switch>
+
+                  ): (
+                      <Switch>
+                          <Route exact path="/login" component={Login} />
+                          <Route exact path="/users" component={UserList} />
+                          <Route exact path="/users/:uid" component={UserData} />
+                          <Route exact path="/contacts" component={ContactList} />
+                          <Route exact path="/contacts/:uid" component={ContactData} />
+                          <Route exact path="/companies" component={CompanyList} />
+                          <Route exact path="/companies/:uid" component={CompanyData} />
+                          <Route exact path="/properties" component={PropertyList} />
+                          <Route exact path="/properties/:uid" component={PropertyData} />
+                          <Route exact path="/listings" component={ListingList} />
+                          <Route exact path="/listings/:uid" component={ListingData} />
+                      </Switch>
+                  )}
+
             </main>
           </div>
         </React.Fragment>

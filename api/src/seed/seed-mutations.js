@@ -1,20 +1,24 @@
 export default /* GraphQL */ `
   mutation {
-    u1: CreateUser(id: "u1", name: "Will") {
+    u1: CreateUser(id: "u1", name: "Will", pswd: "123") {
       id
       name
+      pswd
     }
-    u2: CreateUser(id: "u2", name: "Bob") {
+    u2: CreateUser(id: "u2", name: "Bob", pswd: "password") {
       id
       name
+      pswd
     }
-    u3: CreateUser(id: "u3", name: "Jenny") {
+    u3: CreateUser(id: "u3", name: "Jenny", pswd: "password") {
       id
       name
+      pswd
     }
-    u4: CreateUser(id: "u4", name: "Angie") {
+    u4: CreateUser(id: "u4", name: "Angie", pswd: "password") {
       id
       name
+      pswd
     }
     
     a1: CreateAddress(

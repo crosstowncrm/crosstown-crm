@@ -5,6 +5,7 @@ type User {
   email: String
   phone_number: String
   email_signature: String
+  pswd: String
   address:  Address @relation(name: "HAS_ADDRESS", direction: "OUT")
   follows: [User] @relation(name: "FOLLOWS", direction: "BOTH")
   teams:  [Team] @relation(name: "IS_MEMBER_OF", direction: "OUT")
@@ -206,4 +207,19 @@ type Query {
   @cypher(
     statement: "MATCH (c:User) WHERE c.id = $id RETURN c"
     )
+  loginUser(name: String, pswd: String): [User]
+  @cypher(
+    statement: "MATCH (user:User {name: $name, pswd: $pswd}) RETURN user LIMIT 1"
+  )
+
 }
+
+#type Mutation {
+#  loginUser(name: String, pswd: String, id: String ): String @cypher(statement: "CREATE (newUser:User {id: $id, name: $name, pswd: $pswd}) RETURN newUser.id as id")
+#}
+
+#type LoginInput{
+#    name: String
+#    pswd: String
+#    id: String
+#}

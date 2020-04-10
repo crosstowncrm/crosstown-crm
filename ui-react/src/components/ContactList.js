@@ -14,7 +14,6 @@ import {
   Paper,
   TableSortLabel,
   Typography,
-  TextField
 } from "@material-ui/core";
 
 const styles = theme => ({

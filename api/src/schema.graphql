@@ -11,6 +11,7 @@ type User {
   teams:  [Team] @relation(name: "IS_MEMBER_OF", direction: "OUT")
   contacts:  [Contact] @relation(name: "OWNS_PROSPECT", direction: "OUT")
   companies:  [Business] @relation(name: "OWNS_PROSPECT", direction: "OUT")
+  created_date: Int
 #  listings:  [Listing] @relation(name: "IS PRIMARY AGENT FOR", direction: "OUT")
 }
 
@@ -30,6 +31,7 @@ type Contact {
   twitter_url: String
   lead_status: String
   lead_type: String
+  created_date: Int
   address:  Address @relation(name: "HAS ADDRESS", direction: "OUT")
   companies:  [Company] @relation(name: "IS ASSOCIATED WITH", direction: "OUT")
   properties:  [Property] @relation(name: "HAS INTEREST IN", direction: "OUT")
@@ -41,6 +43,7 @@ type Contact {
 type Company {
   id: ID!
   name: String
+  created_date: Int
   address:  Address @relation(name: "HAS ADDRESS", direction: "OUT")
   phone_numbers: [String]
   contacts:  [Contact] @relation(name: "IS ASSOCIATED WITH", direction: "IN")

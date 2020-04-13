@@ -109,7 +109,6 @@ export default /* GraphQL */ `
     ){
       id
       name
-      slogan
     }team2: CreateTeam(
       id: "team2"
       name: "ChicagoBulls"
@@ -117,24 +116,97 @@ export default /* GraphQL */ `
     ){
       id
       name
-      slogan
     }c1:CreateContact(
       id: "c1"
-      first_name: "John Walker"
+      first_name: "Charles"
+      last_name: "Small"
+      contact_emails: ["csmall@ddincorp.com"]
+      job_title: "President and CEO"
+      phone_numbers: ["803-256-5299"]
     ){
       id
       first_name
      }
      c2:CreateContact(
       id: "c2"
-      first_name: "John Gotty"
+      first_name: "Dave"
+      last_name: "Brock"
+      contact_emails: ["dbrock@ddincorp.com"]
     ){
       id
       first_name
      }
      c3:CreateContact(
       id: "c3"
-      first_name: "Jack Sparrow"
+      first_name: "Bowen"
+      last_name: "Horger"
+      contact_emails: ["bhorger@ddincorp.com"]
+    ){
+      id
+      first_name
+     }c4:CreateContact(
+      id: "c4"
+      first_name: "Will"
+      last_name: "Batson"
+      contact_emails: ["wbatson@ddincorp.com"]
+      job_title: "Chief development Officer"
+      phone_numbers: ["803-309-7334"]
+    ){
+      id
+      first_name
+     }c5:CreateContact(
+      id: "c5"
+      first_name: "Andrew"
+      last_name: "Dominik"
+      contact_emails: ["marketing1@qualityguestpost.co.uk"]
+        ){
+      id
+      first_name
+     }c6:CreateContact(
+      id: "c6"
+      first_name: "Patrick"
+      last_name: "Reily"
+      phone_numbers: ["206-234-5919"]
+    ){
+      id
+      first_name
+     }c7:CreateContact(
+      id: "c7"
+      first_name: "Eric"
+      last_name: "Jones"
+      phone_numbers: ["425-746-1000"]
+    ){
+      id
+      first_name
+     }c8:CreateContact(
+      id: "c8"
+      first_name: "Lanzce"
+      last_name: "Douglass"
+      phone_numbers: ["509-483-6532"]
+    ){
+      id
+      first_name
+     }c9:CreateContact(
+      id: "c9"
+      first_name: "John"
+      last_name: "McShane"
+      contact_emails: ["johnmcshanecoinc@qwestoffice.net"]
+    ){
+      id
+      first_name
+     }c10:CreateContact(
+      id: "c10"
+      first_name: "WWJF"
+      contact_emails: ["wwjf.storagexxtra.com"]
+      created_date: 1582128457
+    ){
+      id
+      first_name
+     }c11:CreateContact(
+      id: "c11"
+      first_name: "Martin L."
+      last_name: "Flanagan"
+      created_date: 1582128457
     ){
       id
       first_name
@@ -253,7 +325,9 @@ export default /* GraphQL */ `
     
     cmp1: CreateCompany(
       id: "cmp1"
-      name: "Nintendo"
+      name: "Invesco Ltd."
+      created_date: 1582128457
+      phone_numbers: ["00 1 713-626-1919"]
     ) {
       id
       name
@@ -261,7 +335,9 @@ export default /* GraphQL */ `
     
     cmp2: CreateCompany(
       id: "cmp2"
-      name: "Sega"
+      name: "Discount Self Storage"
+      created_date: 1582128457
+      phone_numbers: ["(575) 323-0160"]
     ) {
       id
       name
@@ -269,7 +345,9 @@ export default /* GraphQL */ `
     
     cmp3: CreateCompany(
       id: "cmp3"
-      name: "Dendy"
+      name: "Optiline Enterprises"
+      created_date: 1582128457
+      phone_numbers: ["(603) 402-1446"]
     ) {
       id
       name
@@ -277,7 +355,9 @@ export default /* GraphQL */ `
     
     cmp4: CreateCompany(
       id: "cmp4"
-      name: "Youtube"
+      name: "R. H. Burpee Companies"
+      created_date: 1582128457
+      phone_numbers: ["508-747-6900"]
     ) {
       id
       name
@@ -285,12 +365,69 @@ export default /* GraphQL */ `
     
     cmp5: CreateCompany(
       id: "cmp5"
-      name: "Upwork"
+      name: "O\'Brien Commercial Properties, Inc."
+      created_date: 1582128457
+      phone_numbers: ["+1 978-369-5500"]
     ) {
       id
       name
     }
     
+    cmp6: CreateCompany(
+      id: "cmp6"
+      name: "B. Rutter LLC"
+      created_date: 1582128457
+      phone_numbers: ["+1 561-243-2888"]
+    ) {
+      id
+      name
+    }
+    
+    cmp7: CreateCompany(
+      id: "cmp7"
+      name: "Andover Self Storage"
+      created_date: 1582128457
+      phone_numbers: ["978-470-4747"]
+    ) {
+      id
+      name
+    }
+    cmp8: CreateCompany(
+      id: "cmp8"
+      name: "Foushee"
+      created_date: 1582128457
+      phone_numbers: ["(425) 746-1000"]
+    ) {
+      id
+      name
+    }
+    cmp9: CreateCompany(
+      id: "cmp9"
+      name: "Secure-It Self Storage"
+      created_date: 1582128457
+      phone_numbers: ["+1 518-241-5717"]
+    ) {
+      id
+      name
+    }
+    cmp10: CreateCompany(
+      id: "cmp10"
+      name: "Secure-It Self Storage"
+      created_date: 1582128457
+      phone_numbers: ["+1 509-926-3900"]
+    ) {
+      id
+      name
+    }
+    cmp11: CreateCompany(
+      id: "cmp11"
+      name: "STORE MORE Self Storage"
+      created_date: 1582128457
+      phone_numbers: ["(602) 598-5597"]
+    ) {
+      id
+      name
+    }
     aua1: AddUserAddress(from: {id: "u1"}, to: {id: "a1"}){
       from {
         id

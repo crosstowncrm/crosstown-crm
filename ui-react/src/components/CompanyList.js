@@ -133,9 +133,12 @@ function CompanyList(props) {
             {data.Company.map(n => {
               return (
                 <TableRow key={n.id}>
-                  <Link className="edit-link" to={"/companies/" + n.id}>
-                    {n.name}
-                  </Link>
+                    <TableCell>
+                      <Link className="edit-link" to={"/companies/" + n.id}>
+                      {n.name}
+                      </Link>
+                    </TableCell>
+
                 </TableRow>
               );
             })}

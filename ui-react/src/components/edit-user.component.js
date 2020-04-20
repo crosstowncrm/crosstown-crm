@@ -35,7 +35,11 @@ const GET_USER = gql`
   query userQuery($id: ID) {
     User(id: $id) {
       id
-      name
+      first_name
+      last_name
+      email
+      phone_number
+      email_signature
       #      avgStars
       #      numReviews
     }
@@ -65,14 +69,22 @@ function UserEdit(props) {
         <Table className={classes.table}>
           <TableHead>
             <TableRow>
-              <TableCell key="name">Name</TableCell>
+              <TableCell key="first_name">first name</TableCell>
+              <TableCell key="last_name">last name</TableCell>
+              <TableCell key="email">email</TableCell>
+              <TableCell key="phone_number">phone number</TableCell>
+              <TableCell key="email_signature">email signature</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {data.User.map(n => {
               return (
                 <TableRow key={n.id}>
-                  <TableCell>{n.name}</TableCell>
+                  <TableCell>{n.first_name}</TableCell>
+                  <TableCell>{n.last_name}</TableCell>
+                  <TableCell>{n.email}</TableCell>
+                  <TableCell>{n.phone_number}</TableCell>
+                  <TableCell>{n.email_signature}</TableCell>
                 </TableRow>
               );
             })}

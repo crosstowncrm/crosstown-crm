@@ -1,6 +1,6 @@
 type User {
   id: ID!
-  name: String
+  first_name: String
   last_name: String
   email: String
   phone_number: String
@@ -12,7 +12,7 @@ type User {
   contacts:  [Contact] @relation(name: "OWNS_PROSPECT", direction: "OUT")
   companies:  [Business] @relation(name: "OWNS_PROSPECT", direction: "OUT")
   created_date: Int
-#  listings:  [Listing] @relation(name: "IS PRIMARY AGENT FOR", direction: "OUT")
+  listings:  [Listing] @relation(name: "IS PRIMARY AGENT FOR", direction: "OUT")
 }
 
 type Contact {
@@ -43,9 +43,14 @@ type Contact {
 type Company {
   id: ID!
   name: String
-  created_date: Int
+  created_date: String
+  last_modified: String
   address:  Address @relation(name: "HAS ADDRESS", direction: "OUT")
   phone_numbers: [String]
+  domain_name: String
+  owner_assigned_date: String
+  parent_company: String
+  website_url: String
   contacts:  [Contact] @relation(name: "IS ASSOCIATED WITH", direction: "IN")
   properties:  [Property] @relation(name: "HAS INTEREST IN", direction: "OUT")
 #  deals:  [Deal] @relation(name: "IS ASSOCIATED WITH", direction: "OUT")
@@ -62,9 +67,9 @@ type Property {
 #  parcels:  [Parcel] @relation(name: "INCLUDES PARCELS", direction: "OUT")
 #  structures: [Structure] @relation(name: "INCLUDES STRUCTURES", direction: "OUT")
 #  spaces:  [Space] @relation(name: "IS UNIT OF", direction: "IN")
-  contact:  Contact @relation(name: "HAS INTEREST IN", direction: "IN")
-  company:  Company @relation(name: "HAS INTEREST IN", direction: "IN")
-  listing:  Listing @relation(name: "IS LISTING OF", direction: "IN")
+  contact:  Contact @relation(name: "HAS_INTEREST_IN", direction: "IN")
+  company:  Company @relation(name: "HAS_INTEREST_IN", direction: "IN")
+  listing:  Listing @relation(name: "IS_LISTING_OF", direction: "IN")
 }
 
 type Listing {
@@ -100,6 +105,8 @@ type Listing {
   description: String
   images: [String]
   documents: [String]
+  added: Date
+  last_updated: Date
   properties:  [Property] @relation(name: "IS LISTING OF", direction: "OUT")
 #  space:  [Space] @relation(name: "IS LISTING OF", direction: "OUT")
   user:  User @relation(name: "IS_PRIMARY_AGENT_FOR", direction: "IN")
@@ -184,7 +191,7 @@ type Query {
     )
   company(id: Int): Company
   @cypher(
-    statement: "MATCH (c:Company) WHERE c.id = $id RETURN c"
+    statement: "MATCH (c:Company) WHERE c.id = $id RETURN c LIMIT 1"
     )
   properties(substring: String): [Property]
   @cypher(
@@ -212,7 +219,7 @@ type Query {
     )
   loginUser(name: String, pswd: String): [User]
   @cypher(
-    statement: "MATCH (user:User {name: $name, pswd: $pswd}) RETURN user LIMIT 1"
+    statement: "MATCH (user:User {last_name: $name, pswd: $pswd}) RETURN user LIMIT 1"
   )
 
 }

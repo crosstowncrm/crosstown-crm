@@ -43,7 +43,8 @@ const GET_USER = gql`
   ) {
     User(first: $first, offset: $offset, orderBy: $orderBy) {
       id
-      name
+      first_name
+      last_name
       #      avgStars
       #      numReviews
     }
@@ -53,7 +54,7 @@ const GET_USER = gql`
 function UserList(props) {
   const { classes } = props;
   const [order, setOrder] = React.useState("asc");
-  const [orderBy, setOrderBy] = React.useState("name");
+  const [orderBy, setOrderBy] = React.useState("first_name");
 
   const { loading, data, error } = useQuery(GET_USER, {
     variables: {
@@ -86,16 +87,16 @@ function UserList(props) {
           <TableHead>
             <TableRow>
               <TableCell
-                key="name"
-                sortDirection={orderBy === "name" ? order : false}
+                key="first_name"
+                sortDirection={orderBy === "first_name" ? order : false}
               >
                 <Tooltip title="Sort" placement="bottom-start" enterDelay={300}>
                   <TableSortLabel
-                    active={orderBy === "name"}
+                    active={orderBy === "first_name"}
                     direction={order}
-                    onClick={() => handleSortRequest("name")}
+                    onClick={() => handleSortRequest("first_name")}
                   >
-                    Name
+                      first name
                   </TableSortLabel>
                 </Tooltip>
               </TableCell>
@@ -107,7 +108,7 @@ function UserList(props) {
                 <TableRow key={n.id}>
                   <TableCell>
                     <Link className="edit-link" to={"/users/" + n.id}>
-                      {n.name}
+                      {n.first_name}
                     </Link>
                   </TableCell>
                 </TableRow>

@@ -31,11 +31,12 @@ const styles = theme => ({
   }
 });
 
-const GET_USER = gql`
+const GET_PROPERTY = gql`
   query propertyQuery($id: ID) {
     Property(id: $id) {
       id
       name
+      property_type
     }
   }
 `;
@@ -44,7 +45,7 @@ function PropertyEdit(props) {
   const { classes } = props;
   const params = props.match.params;
 
-  const { loading, data, error } = useQuery(GET_USER, {
+  const { loading, data, error } = useQuery(GET_PROPERTY, {
     variables: {
       id: params["uid"]
     }
@@ -71,6 +72,7 @@ function PropertyEdit(props) {
               return (
                 <TableRow key={n.id}>
                   <TableCell>{n.name}</TableCell>
+                  <TableCell>{n.property_type}</TableCell>
                 </TableRow>
               );
             })}

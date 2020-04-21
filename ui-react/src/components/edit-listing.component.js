@@ -58,7 +58,7 @@ function ListingEdit(props) {
   return (
     <Paper className={classes.root}>
       <Typography variant="h2" gutterBottom>
-        User Edit
+        Listing Edit
       </Typography>
 
       {loading && !error && <p>Loading...</p>}

@@ -36,6 +36,12 @@ const GET_USER = gql`
     Contact(id: $id) {
       id
       first_name
+      last_name
+      email
+      lead_status
+      lifecycle_stage
+      created_at
+      phone
     }
   }
 `;
@@ -62,7 +68,13 @@ function ContactEdit(props) {
         <Table className={classes.table}>
           <TableHead>
             <TableRow>
-              <TableCell key="name">Name</TableCell>
+              <TableCell key="first_name">first name</TableCell>
+              <TableCell key="last_name">last name</TableCell>
+              <TableCell key="email">email</TableCell>
+              <TableCell key="phone">phone</TableCell>
+              <TableCell key="lead_status">lead status</TableCell>
+              <TableCell key="lifecycle_stage">lifecycle stage</TableCell>
+              <TableCell key="created_at">created at</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -70,6 +82,12 @@ function ContactEdit(props) {
               return (
                 <TableRow key={n.id}>
                   <TableCell>{n.first_name}</TableCell>
+                  <TableCell>{n.last_name}</TableCell>
+                  <TableCell>{n.email}</TableCell>
+                  <TableCell>{n.phone}</TableCell>
+                  <TableCell>{n.lead_status}</TableCell>
+                  <TableCell>{n.lifecycle_stage}</TableCell>
+                  <TableCell>{n.created_at}</TableCell>
                 </TableRow>
               );
             })}

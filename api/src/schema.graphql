@@ -31,13 +31,16 @@ type Contact {
   twitter_url: String
   lead_status: String
   lead_type: String
-  created_date: Int
   address:  Address @relation(name: "HAS ADDRESS", direction: "OUT")
   companies:  [Company] @relation(name: "IS ASSOCIATED WITH", direction: "OUT")
   properties:  [Property] @relation(name: "HAS INTEREST IN", direction: "OUT")
   listings:  [Listing] @relation(name: "LISTS", direction: "OUT")
 #  deals:  [Deal] @relation(name: "IS ASSOCIATED WITH", direction: "IN")
   teams: [Team] @relation(name: "BELONGS TO", direction: "OUT")
+  email: String
+  lifecycle_stage: String
+  created_at: String
+  phone: String
 }
 
 type Company {

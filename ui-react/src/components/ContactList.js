@@ -42,6 +42,14 @@ const GET_CONTACT = gql`
     Contact(first: $first, offset: $offset, orderBy: $orderBy) {
       id
       first_name
+      last_name
+      email
+#      lead_status
+#      lifecycle_stage
+#      created_at
+
+#      phone
+
       #      avgStars
       #      numReviews
     }
@@ -104,9 +112,11 @@ function ContactList(props) {
             {data.Contact.map(n => {
               return (
                 <TableRow key={n.id}>
-                  <Link className="edit-link" to={"/contacts/" + n.id}>
-                    {n.first_name}
-                  </Link>
+                    <TableCell>
+                      <Link className="edit-link" to={"/contacts/" + n.id}>
+                        {n.first_name} {n.last_name} {n.email}
+                      </Link>
+                    </TableCell>
                 </TableRow>
               );
             })}

@@ -123,7 +123,7 @@ function CompanyList(props) {
                     direction={order}
                     onClick={() => handleSortRequest("name")}
                   >
-                    First Name
+                    Company Name
                   </TableSortLabel>
                 </Tooltip>
               </TableCell>

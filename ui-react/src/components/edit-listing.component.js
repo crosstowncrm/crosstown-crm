@@ -31,11 +31,16 @@ const styles = theme => ({
   }
 });
 
-const GET_USER = gql`
+const GET_LISTING = gql`
   query userQuery($id: ID) {
     Listing(id: $id) {
       id
       name
+      square_footage
+      added
+      units
+      parking_spaces
+      pro_forma_noi
     }
   }
 `;
@@ -44,7 +49,7 @@ function ListingEdit(props) {
   const { classes } = props;
   const params = props.match.params;
 
-  const { loading, data, error } = useQuery(GET_USER, {
+  const { loading, data, error } = useQuery(GET_LISTING, {
     variables: {
       id: params["uid"]
     }
@@ -64,6 +69,11 @@ function ListingEdit(props) {
           <TableHead>
             <TableRow>
               <TableCell key="name">Name</TableCell>
+              <TableCell key="square_footage">square footage</TableCell>
+              <TableCell key="added">added</TableCell>
+              <TableCell key="units">units</TableCell>
+              <TableCell key="parking_spaces">parking spaces</TableCell>
+              <TableCell key="pro_forma_noi">pro forma noi</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -71,6 +81,11 @@ function ListingEdit(props) {
               return (
                 <TableRow key={n.id}>
                   <TableCell>{n.name}</TableCell>
+                    <TableCell>{n.square_footage}</TableCell>
+                    <TableCell>{n.added}</TableCell>
+                    <TableCell>{n.units}</TableCell>
+                    <TableCell>{n.parking_spaces}</TableCell>
+                    <TableCell>{n.pro_forma_noi}</TableCell>
                 </TableRow>
               );
             })}

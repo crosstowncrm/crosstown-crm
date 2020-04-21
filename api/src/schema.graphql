@@ -108,8 +108,12 @@ type Listing {
   description: String
   images: [String]
   documents: [String]
-  added: Date
   last_updated: Date
+  square_footage: String
+  added: String
+  units: String
+  parking_spaces: String
+  pro_forma_noi: String
   properties:  [Property] @relation(name: "IS LISTING OF", direction: "OUT")
 #  space:  [Space] @relation(name: "IS LISTING OF", direction: "OUT")
   user:  User @relation(name: "IS_PRIMARY_AGENT_FOR", direction: "IN")

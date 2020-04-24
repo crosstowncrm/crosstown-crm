@@ -3,6 +3,7 @@ import { useQuery } from "@apollo/react-hooks";
 import gql from "graphql-tag";
 import "../UserList.css";
 import { withStyles } from "@material-ui/core/styles";
+import { Link } from "react-router-dom";
 
 import {
   Table,
@@ -31,7 +32,7 @@ const styles = theme => ({
   }
 });
 
-const GET_USER = gql`
+const GET_CONTACT = gql`
   query userQuery($id: ID) {
     Contact(id: $id) {
       id
@@ -42,6 +43,14 @@ const GET_USER = gql`
       lifecycle_stage
       created_at
       phone
+      companies{
+          id
+          name
+      }
+      owner{
+          id
+          first_name
+      }
     }
   }
 `;
@@ -49,7 +58,7 @@ const GET_USER = gql`
 function ContactEdit(props) {
   const { classes } = props;
   const params = props.match.params;
-  const { loading, data, error } = useQuery(GET_USER, {
+  const { loading, data, error } = useQuery(GET_CONTACT, {
     variables: {
       id: params["uid"]
     }
@@ -75,6 +84,8 @@ function ContactEdit(props) {
               <TableCell key="lead_status">lead status</TableCell>
               <TableCell key="lifecycle_stage">lifecycle stage</TableCell>
               <TableCell key="created_at">created at</TableCell>
+              <TableCell key="companies">companies</TableCell>
+              <TableCell key="owner.first_name">owner name</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -88,6 +99,18 @@ function ContactEdit(props) {
                   <TableCell>{n.lead_status}</TableCell>
                   <TableCell>{n.lifecycle_stage}</TableCell>
                   <TableCell>{n.created_at}</TableCell>
+                  <TableCell>
+                      {n.companies.map(company => (
+                          <Link className="edit-link" to={"/companies/" + company.id}>
+                              {company.name}
+                          </Link>
+                      ))}
+                  </TableCell>
+                  <TableCell>
+                    <Link className="edit-link" to={"/users/" + n.owner.id}>
+                        {n.owner.first_name}
+                    </Link>
+                  </TableCell>
                 </TableRow>
               );
             })}

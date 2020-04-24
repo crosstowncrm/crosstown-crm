@@ -31,8 +31,9 @@ type Contact {
   twitter_url: String
   lead_status: String
   lead_type: String
-  address:  Address @relation(name: "HAS ADDRESS", direction: "OUT")
-  companies:  [Company] @relation(name: "IS ASSOCIATED WITH", direction: "OUT")
+  owner:  User @relation(name: "OWNS_PROSPECT", direction: "IN")
+  address:  Address @relation(name: "HAS_ADDRESS", direction: "OUT")
+  companies:  [Company] @relation(name: "ASSOCIATED_WITH", direction: "OUT")
   properties:  [Property] @relation(name: "HAS INTEREST IN", direction: "OUT")
   listings:  [Listing] @relation(name: "LISTS", direction: "OUT")
 #  deals:  [Deal] @relation(name: "IS ASSOCIATED WITH", direction: "IN")
@@ -41,6 +42,8 @@ type Contact {
   lifecycle_stage: String
   created_at: String
   phone: String
+#  owner: User @cypher(statement: "MATCH (this)<-[:OWNS_PROSPECT]-(user:User) RETURN user")
+
 }
 
 type Company {
@@ -54,7 +57,7 @@ type Company {
   owner_assigned_date: String
   parent_company: String
   website_url: String
-  contacts:  [Contact] @relation(name: "IS ASSOCIATED WITH", direction: "IN")
+  contacts:  [Contact] @relation(name: "ASSOCIATED_WITH", direction: "IN")
   properties:  [Property] @relation(name: "HAS INTEREST IN", direction: "OUT")
 #  deals:  [Deal] @relation(name: "IS ASSOCIATED WITH", direction: "OUT")
   listings:  [Listing] @relation(name: "LISTS", direction: "OUT")

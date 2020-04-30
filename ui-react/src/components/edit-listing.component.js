@@ -3,6 +3,7 @@ import { useQuery } from "@apollo/react-hooks";
 import gql from "graphql-tag";
 import "../UserList.css";
 import { withStyles } from "@material-ui/core/styles";
+import { Link } from "react-router-dom";
 
 import {
   Table,
@@ -41,6 +42,14 @@ const GET_LISTING = gql`
       units
       parking_spaces
       pro_forma_noi
+      properties{
+        id
+        name
+      }
+      user{
+        id
+        last_name
+      }
     }
   }
 `;
@@ -68,12 +77,14 @@ function ListingEdit(props) {
         <Table className={classes.table}>
           <TableHead>
             <TableRow>
-              <TableCell key="name">Name</TableCell>
+              <TableCell key="name">name</TableCell>
               <TableCell key="square_footage">square footage</TableCell>
               <TableCell key="added">added</TableCell>
               <TableCell key="units">units</TableCell>
               <TableCell key="parking_spaces">parking spaces</TableCell>
               <TableCell key="pro_forma_noi">pro forma noi</TableCell>
+              <TableCell key="properties">properties</TableCell>
+              <TableCell key="user">user</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -86,6 +97,20 @@ function ListingEdit(props) {
                     <TableCell>{n.units}</TableCell>
                     <TableCell>{n.parking_spaces}</TableCell>
                     <TableCell>{n.pro_forma_noi}</TableCell>
+                    <TableCell>
+                        {n.properties.map(property => (
+                            <p key={property.id}>
+                                <Link className="edit-link" to={"/properties/" + property.id}>
+                                    {property.name}
+                                </Link>
+                            </p>
+                        ))}
+                    </TableCell>
+                    <TableCell>
+                        <Link className="edit-link" to={"/users/" + n.user.id}>
+                            {n.user.last_name}
+                        </Link>
+                    </TableCell>
                 </TableRow>
               );
             })}

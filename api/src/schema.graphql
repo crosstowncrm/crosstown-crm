@@ -56,20 +56,50 @@ type Contact {
 type Company {
   id: ID!
   name: String
-  created_date: String
-  last_modified: String
-  address:  Address @relation(name: "HAS ADDRESS", direction: "OUT")
+  created_at: String
+  address:  Address @relation(name: "HAS_ADDRESS", direction: "OUT")
   phone_numbers: [String]
   domain_name: String
   owner_assigned_date: String
-  parent_company: String
+  parent: String
   website_url: String
   contacts:  [Contact] @relation(name: "ASSOCIATED_WITH", direction: "IN")
-  properties:  [Property] @relation(name: "HAS INTEREST IN", direction: "OUT")
+  properties:  [Property] @relation(name: "HAS_INTEREST_IN", direction: "OUT")
 #  deals:  [Deal] @relation(name: "IS ASSOCIATED WITH", direction: "OUT")
   listings:  [Listing] @relation(name: "LISTS", direction: "OUT")
   #  reviews: [Review] @relation(name: "REVIEWS", direction: "IN")
   #  categories: [Category] @relation(name: "IN_CATEGORY", direction: "OUT")
+  fb_fans: [Contact] @relation(name: "FB_FANS", direction: "IN")
+  team: [Team] @relation(name: "IS_MEMBER_OF", direction: "OUT")
+  fb_page: String
+  child_companies_num: String
+  li_page: String
+  lifecycle_stage: String
+  twitter_bio: String
+  web_technologies: [String]
+  first_contact_create_date: String
+  last_seen: String
+  first_seen: String
+  year_founded: String
+  annual_revenue: String
+  industry: String
+  is_public: String
+  contacted_times: String
+  description: String
+  employees_num: String
+  first_contact_created_at: String
+  hubspot_team: String
+  last_activity: String
+  last_contacted: String
+  last_modified: String
+  li_bio: String
+  owner: String
+  owner_assigned_at: String
+  pageviews_num: String
+  phone: String
+  sessions_num: String
+  time_zone: String
+  url: String
 }
 
 type Property {
@@ -78,13 +108,13 @@ type Property {
   property_type: String
   secondary_type: String
   additional_types: [String]
-  address:  Address @relation(name: "HAS ADDRESS", direction: "OUT")
+  address:  Address @relation(name: "HAS_ADDRESS", direction: "OUT")
 #  parcels:  [Parcel] @relation(name: "INCLUDES PARCELS", direction: "OUT")
 #  structures: [Structure] @relation(name: "INCLUDES STRUCTURES", direction: "OUT")
 #  spaces:  [Space] @relation(name: "IS UNIT OF", direction: "IN")
-  contact:  Contact @relation(name: "HAS_INTEREST_IN", direction: "IN")
-  company:  Company @relation(name: "HAS_INTEREST_IN", direction: "IN")
-  listing:  Listing @relation(name: "IS_LISTING_OF", direction: "IN")
+  contacts:  [Contact] @relation(name: "HAS_INTEREST_IN", direction: "IN")
+  companies:  [Company] @relation(name: "HAS_INTEREST_IN", direction: "IN")
+  listings:  [Listing] @relation(name: "IS_LISTING_OF", direction: "OUT")
 }
 
 type Listing {
@@ -126,7 +156,7 @@ type Listing {
   units: String
   parking_spaces: String
   pro_forma_noi: String
-  properties:  [Property] @relation(name: "IS LISTING OF", direction: "OUT")
+  properties:  [Property] @relation(name: "IS_LISTING_OF", direction: "IN")
 #  space:  [Space] @relation(name: "IS LISTING OF", direction: "OUT")
   user:  User @relation(name: "IS_PRIMARY_AGENT_FOR", direction: "IN")
 }

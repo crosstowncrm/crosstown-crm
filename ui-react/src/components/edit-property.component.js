@@ -3,6 +3,7 @@ import { useQuery } from "@apollo/react-hooks";
 import gql from "graphql-tag";
 import "../UserList.css";
 import { withStyles } from "@material-ui/core/styles";
+import { Link } from "react-router-dom";
 
 import {
   Table,
@@ -37,6 +38,24 @@ const GET_PROPERTY = gql`
       id
       name
       property_type
+      secondary_type
+      additional_types
+      address{
+        id
+        street_address1
+      }
+      contacts{
+        id
+        first_name
+      }
+      companies{
+        id
+        name
+      }
+      listings{
+        id
+        name
+      }
     }
   }
 `;
@@ -64,7 +83,14 @@ function PropertyEdit(props) {
         <Table className={classes.table}>
           <TableHead>
             <TableRow>
-              <TableCell key="name">Name</TableCell>
+              <TableCell key="name">name</TableCell>
+              <TableCell key="property_type">property type</TableCell>
+              <TableCell key="secondary_type">secondary type</TableCell>
+              <TableCell key="additional_types">additional types</TableCell>
+              <TableCell key="address">address</TableCell>
+              <TableCell key="contacts">contacts</TableCell>
+              <TableCell key="companies">companies</TableCell>
+              <TableCell key="listings">listings</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -73,6 +99,42 @@ function PropertyEdit(props) {
                 <TableRow key={n.id}>
                   <TableCell>{n.name}</TableCell>
                   <TableCell>{n.property_type}</TableCell>
+                  <TableCell>{n.secondary_type}</TableCell>
+                  <TableCell>{n.additional_types}</TableCell>
+                  <TableCell>{n.address ? n.address.street_address1: "no data"}</TableCell>
+                  <TableCell>
+                      <ul>
+                          {n.contacts.map(contact => (
+                              <p key={contact.id}>
+                                  <Link className="edit-link" to={"/contacts/" + contact.id}>
+                                      {contact.first_name}
+                                  </Link>
+                              </p>
+                          ))}
+                      </ul>
+                  </TableCell>
+                  <TableCell>
+                      <ul>
+                          {n.companies.map(company => (
+                              <p key={company.id}>
+                                  <Link className="edit-link" to={"/companies/" + company.id}>
+                                      {company.name}
+                                  </Link>
+                              </p>
+                          ))}
+                      </ul>
+                  </TableCell>
+                  <TableCell>
+                      <ul>
+                          {n.listings.map(listing => (
+                              <p key={listing.id}>
+                                  <Link className="edit-link" to={"/listings/" + listing.id}>
+                                      {listing.name}
+                                  </Link>
+                              </p>
+                          ))}
+                      </ul>
+                  </TableCell>
                 </TableRow>
               );
             })}

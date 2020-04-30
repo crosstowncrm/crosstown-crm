@@ -3,6 +3,7 @@ import { useQuery } from "@apollo/react-hooks";
 import gql from "graphql-tag";
 import "../UserList.css";
 import { withStyles } from "@material-ui/core/styles";
+import { Link } from "react-router-dom";
 
 import {
   Table,
@@ -40,8 +41,27 @@ const GET_USER = gql`
       email
       phone_number
       email_signature
-      #      avgStars
-      #      numReviews
+      created_date
+      address{
+        id
+        street_address1
+      }
+      follows{
+        id
+        first_name
+      }
+      teams{
+        id
+        name
+      }
+      contacts{
+        id
+        first_name
+      }
+      listings{
+        id
+        name
+      }
     }
   }
 `;
@@ -74,6 +94,12 @@ function UserEdit(props) {
               <TableCell key="email">email</TableCell>
               <TableCell key="phone_number">phone number</TableCell>
               <TableCell key="email_signature">email signature</TableCell>
+              <TableCell key="created_date">created date</TableCell>
+              <TableCell key="address">address</TableCell>
+              <TableCell key="email_signature">follows</TableCell>
+              <TableCell key="email_signature">teams</TableCell>
+              <TableCell key="email_signature">contacts</TableCell>
+              <TableCell key="email_signature">listings</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -85,6 +111,45 @@ function UserEdit(props) {
                   <TableCell>{n.email}</TableCell>
                   <TableCell>{n.phone_number}</TableCell>
                   <TableCell>{n.email_signature}</TableCell>
+                  <TableCell>{n.created_date}</TableCell>
+                  <TableCell>{n.address? n.address.street_address1: "no data"}</TableCell>
+                  <TableCell>
+                    {n.follows.map(user => (
+                        <p key={user.id}>
+                          <Link className="edit-link" to={"/users/" + user.id}>
+                              {user.first_name}
+                          </Link>
+                        </p>
+                    ))}
+                  </TableCell>
+                  <TableCell>
+                      {n.teams.map(team => (
+                        <p key={team.id}>
+                          <Link className="edit-link" to={"/teams/" + team.id}>
+                              {team.name}
+                          </Link>
+                        </p>
+                      ))}
+                  </TableCell>
+                  <TableCell>
+                      {n.contacts.map(contact => (
+                          <p key={contact.id}>
+                            <Link className="edit-link" to={"/contacts/" + contact.id}>
+                                {contact.first_name}
+                            </Link>
+                          </p>
+                      ))}
+                  </TableCell>
+                  <TableCell>
+
+                      {n.listings.map(listing => (
+                          <p key={listing.id}>
+                            <Link className="edit-link" to={"/listings/" + listing.id}>
+                                {listing.name}
+                            </Link>
+                          </p>
+                      ))}
+                  </TableCell>
                 </TableRow>
               );
             })}

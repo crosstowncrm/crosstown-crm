@@ -6,12 +6,12 @@ type User {
   phone_number: String
   email_signature: String
   pswd: String
+  created_date: String
   address:  Address @relation(name: "HAS_ADDRESS", direction: "OUT")
   follows: [User] @relation(name: "FOLLOWS", direction: "BOTH")
   teams:  [Team] @relation(name: "IS_MEMBER_OF", direction: "OUT")
   contacts:  [Contact] @relation(name: "OWNS_PROSPECT", direction: "OUT")
-  created_date: Int
-  listings:  [Listing] @relation(name: "IS PRIMARY AGENT FOR", direction: "OUT")
+  listings:  [Listing] @relation(name: "IS_PRIMARY_AGENT_FOR", direction: "OUT")
 }
 
 type Contact {

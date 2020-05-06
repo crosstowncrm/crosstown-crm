@@ -141,7 +141,6 @@ function UserEdit(props) {
                       ))}
                   </TableCell>
                   <TableCell>
-
                       {n.listings.map(listing => (
                           <p key={listing.id}>
                             <Link className="edit-link" to={"/listings/" + listing.id}>

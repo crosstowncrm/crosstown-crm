@@ -33,39 +33,33 @@ const styles = theme => ({
   }
 });
 
-const GET_CONTACT = gql`
-  query contactsPaginateQuery(
+const GET_ARTICLE = gql`
+  query articlesPaginateQuery(
     $first: Int
     $offset: Int
-    $orderBy: [_ContactOrdering]
+    $orderBy: [_ArticleOrdering]
   ) {
-    Contact(first: $first, offset: $offset, orderBy: $orderBy) {
+    Article(first: $first, offset: $offset, orderBy: $orderBy) {
       id
-      first_name
-      last_name
-      email
+      title
+      event{
+          year
+      }
+      excerpt
       recommendations{
           id
-          title
+          first_name
       }
-#      lead_status
-#      lifecycle_stage
-#      created_at
-
-#      phone
-
-      #      avgStars
-      #      numReviews
     }
   }
 `;
 
-function ContactList(props) {
+function ArticleList(props) {
   const { classes } = props;
   const [order, setOrder] = React.useState("asc");
-  const [orderBy, setOrderBy] = React.useState("first_name");
+  const [orderBy, setOrderBy] = React.useState("event");
 
-  const { loading, data, error } = useQuery(GET_CONTACT, {
+  const { loading, data, error } = useQuery(GET_ARTICLE, {
     variables: {
       orderBy: orderBy + "_" + order
     }
@@ -86,7 +80,7 @@ function ContactList(props) {
   return (
     <Paper className={classes.root}>
       <Typography variant="h2" gutterBottom>
-        Contact List
+        Article List
       </Typography>
 
       {loading && !error && <p>Loading...</p>}
@@ -97,39 +91,40 @@ function ContactList(props) {
           <TableHead>
             <TableRow>
               <TableCell
-                key="first_name"
-                sortDirection={orderBy === "first_name" ? order : false}
+                key="event"
+                sortDirection={orderBy === "event" ? order : false}
               >
                 <Tooltip title="Sort" placement="bottom-start" enterDelay={300}>
                   <TableSortLabel
-                    active={orderBy === "first_name"}
+                    active={orderBy === "event"}
                     direction={order}
-                    onClick={() => handleSortRequest("first_name")}
+                    onClick={() => handleSortRequest("event")}
                   >
-                    First Name
+                    Article data
                   </TableSortLabel>
                 </Tooltip>
               </TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {data.Contact.map(contact => {
+            {data.Article.map(article => {
               return (
-                <TableRow key={contact.id}>
+                <TableRow key={article.id}>
                     <TableCell>
-                      <Link className="edit-link" to={"/contacts/" + contact.id}>
-                        {contact.first_name} {contact.last_name} {contact.email}
+                      <Link className="edit-link" to={"/articles/" + article.id}>
+                        {article.excerpt}
                       </Link>
-                      <p>
-                      Recommended articles:
-                      </p>
-                        {contact.recommendations.map(article => (
+                        <p>
+                            Recommended to contacts:
+                        </p>
+                        {article.recommendations.map(contact => (
                             <p>
-                                <Link className="edit-link" to={"/articles/" + article.id}>
-                                    {article.title}
+                                <Link className="edit-link" to={"/contacts/" + contact.id}>
+                                        {contact.first_name}
                                 </Link>
                             </p>
                         ))}
+                        {/*{article.event.year}*/}
                     </TableCell>
                 </TableRow>
               );
@@ -141,4 +136,4 @@ function ContactList(props) {
   );
 }
 
-export default withStyles(styles)(ContactList);
+export default withStyles(styles)(ArticleList);

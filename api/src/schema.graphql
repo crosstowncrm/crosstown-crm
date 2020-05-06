@@ -34,13 +34,11 @@ type Contact {
   lead_type: String
   lead_date: String
   lifecycle_stage: String
-
   created_at: String
   last_modified: String
   last_activity: String
   last_seen: String
   first_seen: String
-
   email_domain: String
   marital_status: String
 
@@ -49,6 +47,7 @@ type Contact {
   companies:  [Company] @relation(name: "ASSOCIATED_WITH", direction: "OUT")
   properties:  [Property] @relation(name: "HAS_INTEREST_IN", direction: "OUT")
   listings:  [Listing] @relation(name: "LISTS", direction: "OUT")
+  recommendations(first: Int = 300): [Article] @cypher(statement: "MATCH (article:Article), (address:Address)<-[*]-(this) WHERE distance(article.location, Point({latitude:toFloat(address.lat), longitude:toFloat(address.lng)})) < 1000000 RETURN DISTINCT article")
 #  teams: [Team] @relation(name: "BELONGS TO", direction: "OUT")
 #  deals:  [Deal] @relation(name: "IS ASSOCIATED WITH", direction: "IN")
 }
@@ -101,6 +100,112 @@ type Company {
   time_zone: String
   url: String
 }
+
+
+#1
+type Article {
+    id: ID!
+    title: String
+    excerpt: String
+    content: String
+    source: String
+    link: String
+    event: DateTime
+    location: Point
+    categories: [Category] @relation(name: "IN_CATEGORY", direction: "OUT")
+    viewed: [Viewed]
+    shared: [Shared]
+    opened_source: [OpenedSource]
+    recommendations(first: Int = 300): [Contact] @cypher(statement: "MATCH (address:Address)<-[*]-(contact:Contact) WHERE distance(this.location, Point({latitude:toFloat(address.lat), longitude:toFloat(address.lng)})) < 1000000 RETURN DISTINCT contact")
+}
+
+type Business {
+    id: ID!
+    name: String
+    address: String
+    city: String
+    state: String
+    avgStars: Float @cypher(statement: "MATCH (this)<-[:REVIEWS]-(r:Review) RETURN coalesce(avg(r.stars),0.0)")
+    reviews: [Review] @relation(name: "REVIEWS", direction: "IN")
+    categories: [Category] @relation(name: "IN_CATEGORY", direction: "OUT")
+}
+
+type Review {
+    id: ID!
+    stars: Int
+    text: String
+    date: Date
+    business: Business @relation(name: "REVIEWS", direction: "OUT")
+    user: User @relation(name: "WROTE", direction: "IN")
+}
+
+type Category {
+    name: ID!
+    businesses: [Business] @relation(name: "IN_CATEGORY", direction: "IN")
+}
+
+type Query {
+    usersBySubstring(substring: String): [User]
+    @cypher(
+        statement: "MATCH (u:User) WHERE u.name CONTAINS $substring RETURN u"
+    )
+}
+
+#2
+type Viewed @relation(name: "VIEWED") {
+    from: Contact
+    to: Article
+    timestamp: DateTime
+}
+#3
+type OpenedSource @relation(name: "OPENED_SOURCE") {
+    from: Contact
+    to: Article
+    timestamp: DateTime
+}
+#4
+type Shared @relation(name: "SHARED") {
+    from: Contact
+    to: Article
+    timestamp: DateTime
+    outlet: String
+}
+#5
+type Category {
+    name: ID!
+    articles: [Article] @relation(name: "IN_CATEGORY", direction: "IN")
+    posts: [Post] @relation(name: "IN_CATEGORY", direction: "IN")
+}
+#6
+type Post {
+    id: ID!
+    title: String
+    meta: String
+    keywords: [String]
+    images: [String]
+    content: String
+    link: String
+    event: DateTime
+    viewed_post: [ViewedPost]
+    shared_post: [SharedPost]
+    categories: [Category] @relation(name: "IN_CATEGORY", direction: "OUT")
+}
+#7
+type ViewedPost @relation(name: "VIEWED_POST") {
+    from: Contact
+    to: Post
+    timestamp: DateTime
+}
+#8
+type SharedPost @relation(name: "SHARED_POST") {
+    from: Contact
+    to: Post
+    timestamp: DateTime
+    outlet: String
+}
+
+
+
 
 type Property {
   id: ID!
@@ -253,6 +358,14 @@ type Query {
   @cypher(
       statement: "MATCH (c:User) RETURN c"
     )
+  articles(substring: String): [Article]
+  @cypher(
+      statement: "MATCH (articles:Article) RETURN articles"
+  )
+  posts(substring: String): [Post]
+  @cypher(
+      statement: "MATCH (posts:Post) RETURN posts"
+  )
   user(id: Int): User
   @cypher(
       statement: "MATCH (c:User) WHERE c.id = $id RETURN c"

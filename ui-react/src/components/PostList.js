@@ -44,10 +44,6 @@ const GET_CONTACT = gql`
       first_name
       last_name
       email
-      recommendations{
-          id
-          title
-      }
 #      lead_status
 #      lifecycle_stage
 #      created_at
@@ -113,23 +109,13 @@ function ContactList(props) {
             </TableRow>
           </TableHead>
           <TableBody>
-            {data.Contact.map(contact => {
+            {data.Contact.map(n => {
               return (
-                <TableRow key={contact.id}>
+                <TableRow key={n.id}>
                     <TableCell>
-                      <Link className="edit-link" to={"/contacts/" + contact.id}>
-                        {contact.first_name} {contact.last_name} {contact.email}
+                      <Link className="edit-link" to={"/contacts/" + n.id}>
+                        {n.first_name} {n.last_name} {n.email}
                       </Link>
-                      <p>
-                      Recommended articles:
-                      </p>
-                        {contact.recommendations.map(article => (
-                            <p>
-                                <Link className="edit-link" to={"/articles/" + article.id}>
-                                    {article.title}
-                                </Link>
-                            </p>
-                        ))}
                     </TableCell>
                 </TableRow>
               );

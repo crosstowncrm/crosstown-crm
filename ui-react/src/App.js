@@ -43,6 +43,8 @@ import PropertyList from "./components/PropertyList";
 import PropertyData from "./components/edit-property.component";
 import ListingList from "./components/ListingList";
 import ListingData from "./components/edit-listing.component";
+import ArticleList from "./components/ArticleList";
+import PostList from "./components/PostList";
 
 import classNames from "classnames";
 import gql from "graphql-tag";
@@ -278,6 +280,25 @@ class App extends Component {
                       <ListItemText primary="Listings" />
                     </Link>
                   </ListItem>
+
+                  <ListItem button>
+                     <ListItemIcon>
+                       <PeopleIcon />
+                     </ListItemIcon>
+                     <Link className="edit-link" to={"/articles"}>
+                       <ListItemText primary="Articles" />
+                     </Link>
+                  </ListItem>
+
+                  <ListItem button>
+                      <ListItemIcon>
+                          <PeopleIcon />
+                      </ListItemIcon>
+                      <Link className="edit-link" to={"/posts"}>
+                          <ListItemText primary="Posts" />
+                      </Link>
+                  </ListItem>
+
                 </div>
               </List>
             </Drawer>
@@ -304,6 +325,8 @@ class App extends Component {
                           <Route exact path="/properties/:uid" component={PropertyData} />
                           <Route exact path="/listings" component={ListingList} />
                           <Route exact path="/listings/:uid" component={ListingData} />
+                          <Route exact path="/articles" component={ArticleList} />
+                          <Route exact path="/posts" component={PostList} />
                       </Switch>
                   )}
 

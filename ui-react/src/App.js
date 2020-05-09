@@ -45,6 +45,8 @@ import ListingList from "./components/ListingList";
 import ListingData from "./components/edit-listing.component";
 import ArticleList from "./components/ArticleList";
 import PostList from "./components/PostList";
+import ArticleData from "./components/edit-article.component";
+import PostData from "./components/edit-post.component";
 
 import classNames from "classnames";
 import gql from "graphql-tag";
@@ -305,7 +307,6 @@ class App extends Component {
             <main className={classes.content}>
               <div className={classes.appBarSpacer} />
 
-
                   {!isAuthenticated() ? (
                       <Switch>
                           <Route exact path="/login" component={Login} />
@@ -326,7 +327,9 @@ class App extends Component {
                           <Route exact path="/listings" component={ListingList} />
                           <Route exact path="/listings/:uid" component={ListingData} />
                           <Route exact path="/articles" component={ArticleList} />
+                          <Route exact path="/articles/:uid" component={ArticleData} />
                           <Route exact path="/posts" component={PostList} />
+                          <Route exact path="/posts/:uid" component={PostData} />
                       </Switch>
                   )}
 

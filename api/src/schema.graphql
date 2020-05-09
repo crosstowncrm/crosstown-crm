@@ -110,7 +110,6 @@ type Article {
     content: String
     source: String
     link: String
-    event: DateTime
     location: Point
     categories: [Category] @relation(name: "IN_CATEGORY", direction: "OUT")
     viewed: [Viewed]
@@ -185,7 +184,6 @@ type Post {
     images: [String]
     content: String
     link: String
-    event: DateTime
     viewed_post: [ViewedPost]
     shared_post: [SharedPost]
     categories: [Category] @relation(name: "IN_CATEGORY", direction: "OUT")
@@ -203,9 +201,6 @@ type SharedPost @relation(name: "SHARED_POST") {
     timestamp: DateTime
     outlet: String
 }
-
-
-
 
 type Property {
   id: ID!
@@ -313,7 +308,8 @@ type Review {
 }
 
 type Category {
-  name: ID!
+  id: ID!
+  name: String
 #  businesses: [Business] @relation(name: "IN_CATEGORY", direction: "IN")
 }
 
@@ -365,6 +361,10 @@ type Query {
   posts(substring: String): [Post]
   @cypher(
       statement: "MATCH (posts:Post) RETURN posts"
+  )
+  post(id: Int): Post
+  @cypher(
+      statement: "MATCH (post:Post) WHERE post.id = $id RETURN post"
   )
   user(id: Int): User
   @cypher(

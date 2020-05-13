@@ -41,6 +41,9 @@ const GET_POST = gql`
       keywords
       content
       link
+      event_time{
+          formatted
+      }
       viewed_post {
           timestamp {
               formatted
@@ -93,6 +96,7 @@ function PostEdit(props) {
               <TableCell key="meta">meta</TableCell>
               <TableCell key="keywords">keywords</TableCell>
               <TableCell key="content">content</TableCell>
+              <TableCell key="event_time">event time</TableCell>
               {/*<TableCell key="images">images</TableCell>*/}
               <TableCell key="link">link</TableCell>
               <TableCell key="viewed_post">viewed post</TableCell>
@@ -108,6 +112,7 @@ function PostEdit(props) {
                   <TableCell>{post.meta}</TableCell>
                   <TableCell>{post.keywords}</TableCell>
                   <TableCell>{post.content}</TableCell>
+                  <TableCell>{post.event_time.formatted}</TableCell>
                   {/*<TableCell>*/}
                   {/*{post.images.map(image => (*/}
                       {/*{image}*/}
@@ -129,11 +134,11 @@ function PostEdit(props) {
                     ))}
                   </TableCell>
                   <TableCell>
-                        {post.categories.map(category => (
-                            <Link key={category.id} className="edit-link" to={"/categories/" + category.id}>
-                                {category.name}
-                            </Link>
-                        ))}
+                    {post.categories.map(category => (
+                        <Link key={category.id} className="edit-link" to={"/categories/" + category.id}>
+                            {category.name}
+                        </Link>
+                    ))}
                     </TableCell>
 
                 </TableRow>

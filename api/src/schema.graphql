@@ -184,6 +184,7 @@ type Post {
     images: [String]
     content: String
     link: String
+    event_time: DateTime
     viewed_post: [ViewedPost]
     shared_post: [SharedPost]
     categories: [Category] @relation(name: "IN_CATEGORY", direction: "OUT")

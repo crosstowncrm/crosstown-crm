@@ -33,35 +33,28 @@ const styles = theme => ({
   }
 });
 
-const GET_CONTACT = gql`
-  query contactsPaginateQuery(
+const GET_POST = gql`
+  query postssPaginateQuery(
     $first: Int
     $offset: Int
-    $orderBy: [_ContactOrdering]
+    $orderBy: [_PostOrdering]
   ) {
-    Contact(first: $first, offset: $offset, orderBy: $orderBy) {
+    Post(first: $first, offset: $offset, orderBy: $orderBy) {
       id
-      first_name
-      last_name
-      email
-#      lead_status
-#      lifecycle_stage
-#      created_at
-
-#      phone
-
-      #      avgStars
-      #      numReviews
+      title
+      event_time{
+          formatted
+      }
     }
   }
 `;
 
-function ContactList(props) {
+function PostList(props) {
   const { classes } = props;
   const [order, setOrder] = React.useState("asc");
-  const [orderBy, setOrderBy] = React.useState("first_name");
+  const [orderBy, setOrderBy] = React.useState("event_time");
 
-  const { loading, data, error } = useQuery(GET_CONTACT, {
+  const { loading, data, error } = useQuery(GET_POST, {
     variables: {
       orderBy: orderBy + "_" + order
     }
@@ -82,7 +75,7 @@ function ContactList(props) {
   return (
     <Paper className={classes.root}>
       <Typography variant="h2" gutterBottom>
-        Contact List
+        Post List
       </Typography>
 
       {loading && !error && <p>Loading...</p>}
@@ -93,28 +86,28 @@ function ContactList(props) {
           <TableHead>
             <TableRow>
               <TableCell
-                key="first_name"
-                sortDirection={orderBy === "first_name" ? order : false}
+                key="title"
+                sortDirection={orderBy === "title" ? order : false}
               >
                 <Tooltip title="Sort" placement="bottom-start" enterDelay={300}>
                   <TableSortLabel
-                    active={orderBy === "first_name"}
+                    active={orderBy === "title"}
                     direction={order}
-                    onClick={() => handleSortRequest("first_name")}
+                    onClick={() => handleSortRequest("title")}
                   >
-                    First Name
+                    Title
                   </TableSortLabel>
                 </Tooltip>
               </TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {data.Contact.map(n => {
+            {data.Post.map(post => {
               return (
-                <TableRow key={n.id}>
+                <TableRow key={post.id}>
                     <TableCell>
-                      <Link className="edit-link" to={"/contacts/" + n.id}>
-                        {n.first_name} {n.last_name} {n.email}
+                      <Link className="edit-link" to={"/posts/" + post.id}>
+                        {post.title}
                       </Link>
                     </TableCell>
                 </TableRow>
@@ -127,4 +120,4 @@ function ContactList(props) {
   );
 }
 
-export default withStyles(styles)(ContactList);
+export default withStyles(styles)(PostList);

@@ -4,7 +4,6 @@ import gql from "graphql-tag";
 import "../UserList.css";
 import { withStyles } from "@material-ui/core/styles";
 import { Link } from "react-router-dom";
-
 import {
     Table,
     TableBody,
@@ -15,6 +14,7 @@ import {
     Paper,
     TableSortLabel,
     Typography,
+    TextField
 } from "@material-ui/core";
 
 const styles = theme => ({
@@ -34,17 +34,16 @@ const styles = theme => ({
     }
 });
 
-const GET_LISTING = gql`
-    query usersPaginateQuery(
+const GET_LISTINGS = gql`
+    query listingsPaginateQuery(
     $first: Int
     $offset: Int
     $orderBy: [_ListingOrdering]
+    $filter: _ListingFilter
     ) {
-        Listing(first: $first, offset: $offset, orderBy: $orderBy) {
+        Listing(first: $first, offset: $offset, orderBy: $orderBy, filter: $filter) {
             id
             name
-            #      avgStars
-            #      numReviews
         }
     }
 `;
@@ -53,10 +52,22 @@ function ListingList(props) {
     const { classes } = props;
     const [order, setOrder] = React.useState("asc");
     const [orderBy, setOrderBy] = React.useState("name");
+    const [page, setPage] = React.useState(0);
+    const [rowsPerPage, setRowsPerPage] = React.useState(10);
+    const [filterState, setFilterState] = React.useState({ listingFilter: "" });
 
-    const { loading, data, error } = useQuery(GET_LISTING, {
+    const getFilter = () => {
+        return filterState.listingFilter.length > 0
+            ? { name_contains: filterState.listingFilter }
+            : {};
+    };
+
+    const { loading, data, error } = useQuery(GET_LISTINGS, {
         variables: {
-            orderBy: orderBy + "_" + order
+            first: rowsPerPage,
+            offset: rowsPerPage * page,
+            orderBy: orderBy + "_" + order,
+            filter: getFilter()
         }
     });
 
@@ -72,11 +83,32 @@ function ListingList(props) {
         setOrderBy(newOrderBy);
     };
 
+    const handleFilterChange = filterName => event => {
+        const val = event.target.value;
+        setFilterState(oldFilterState => ({
+            ...oldFilterState,
+            [filterName]: val
+        }));
+    };
+
     return (
         <Paper className={classes.root}>
             <Typography variant="h2" gutterBottom>
                 Listing List
             </Typography>
+            <TextField
+                id="search"
+                label="Listing's Name Contains"
+                className={classes.textField}
+                value={filterState.listingFilter}
+                onChange={handleFilterChange("listingFilter")}
+                margin="normal"
+                variant="outlined"
+                type="text"
+                InputProps={{
+                    className: classes.input
+                }}
+            />
             {loading && !error && <p>Loading...</p>}
             {error && !loading && <p>Error</p>}
 

@@ -140,62 +140,68 @@ function ContactEdit(props) {
             </TableRow>
           </TableHead>
           <TableBody>
-            {data.Contact.map(n => {
+            {data.Contact.map(contact => {
               return (
-                <TableRow key={n.id}>
-                  <TableCell>{n.first_name}</TableCell>
-                  <TableCell>{n.last_name}</TableCell>
-                  <TableCell>{n.suffix ? n.suffix: "no data"}</TableCell>
-                  <TableCell>{n.birthday ? n.birthday: "no data"}</TableCell>
-                  <TableCell>{n.contact_emails ? n.contact_emails: "no data"}</TableCell>
-                  <TableCell>{n.email ? n.email: "no data"}</TableCell>
-                  <TableCell>{n.phone ? n.phone: "no data"}</TableCell>
-                  <TableCell>{n.mobile ? n.mobile: "no data"}</TableCell>
-                  <TableCell>{n.phone_numbers ? n.phone_numbers: "no data"}</TableCell>
-                  <TableCell>{n.linkedin_url ? n.linkedin_url: "no data"}</TableCell>
-                  <TableCell>{n.facebook_url ? n.facebook_url: "no data"}</TableCell>
-                  <TableCell>{n.instagram_url ? n.instagram_url: "no data"}</TableCell>
-                  <TableCell>{n.twitter_url ? n.twitter_url: "no data"}</TableCell>
-                  <TableCell>{n.lead_status? n.lead_status: "no data"}</TableCell>
-                  <TableCell>{n.lead_type? n.lead_type: "no data"}</TableCell>
-                  <TableCell>{n.lead_date? n.lead_date: "no data"}</TableCell>
-                  <TableCell>{n.lifecycle_stage? n.lifecycle_stage: "no data"}</TableCell>
-                  <TableCell>{n.created_at? n.created_at: "no data"}</TableCell>
-                  <TableCell>{n.last_modified? n.last_modified: "no data"}</TableCell>
-                  <TableCell>{n.last_activity? n.last_activity: "no data"}</TableCell>
-                  <TableCell>{n.last_seen? n.last_seen: "no data"}</TableCell>
-                  <TableCell>{n.first_seen? n.first_seen: "no data"}</TableCell>
-                  <TableCell>{n.email_domain? n.email_domain: "no data"}</TableCell>
-                  <TableCell>{n.marital_status? n.marital_status: "no data"}</TableCell>
+                <TableRow key={contact.id}>
+                  <TableCell>{contact.first_name}</TableCell>
+                  <TableCell>{contact.last_name}</TableCell>
+                  <TableCell>{contact.suffix ? contact.suffix: "no data"}</TableCell>
+                  <TableCell>{contact.birthday ? contact.birthday: "no data"}</TableCell>
+                  <TableCell>{contact.contact_emails ? contact.contact_emails: "no data"}</TableCell>
+                  <TableCell>{contact.email ? contact.email: "no data"}</TableCell>
+                  <TableCell>{contact.phone ? contact.phone: "no data"}</TableCell>
+                  <TableCell>{contact.mobile ? contact.mobile: "no data"}</TableCell>
+                  <TableCell>{contact.phone_numbers ? contact.phone_numbers: "no data"}</TableCell>
+                  <TableCell>{contact.linkedin_url ? contact.linkedin_url: "no data"}</TableCell>
+                  <TableCell>{contact.facebook_url ? contact.facebook_url: "no data"}</TableCell>
+                  <TableCell>{contact.instagram_url ? contact.instagram_url: "no data"}</TableCell>
+                  <TableCell>{contact.twitter_url ? contact.twitter_url: "no data"}</TableCell>
+                  <TableCell>{contact.lead_status ? contact.lead_status: "no data"}</TableCell>
+                  <TableCell>{contact.lead_type ? contact.lead_type: "no data"}</TableCell>
+                  <TableCell>{contact.lead_date ? contact.lead_date: "no data"}</TableCell>
+                  <TableCell>{contact.lifecycle_stage ? contact.lifecycle_stage: "no data"}</TableCell>
+                  <TableCell>{contact.created_at ? contact.created_at: "no data"}</TableCell>
+                  <TableCell>{contact.last_modified ? contact.last_modified: "no data"}</TableCell>
+                  <TableCell>{contact.last_activity ? contact.last_activity: "no data"}</TableCell>
+                  <TableCell>{contact.last_seen ? contact.last_seen: "no data"}</TableCell>
+                  <TableCell>{contact.first_seen ? contact.first_seen: "no data"}</TableCell>
+                  <TableCell>{contact.email_domain ? contact.email_domain: "no data"}</TableCell>
+                  <TableCell>{contact.marital_status ? contact.marital_status: "no data"}</TableCell>
                   <TableCell>
-                      {n.companies.map(company => (
-                          <Link className="edit-link" to={"/companies/" + company.id}>
-                              {company.name}
-                          </Link>
+                      {contact.companies.map(company => (
+                          <p>
+                              <Link className="edit-link" to={"/companies/" + company.id}>
+                                  {company.name}
+                              </Link>
+                          </p>
                       ))}
                   </TableCell>
                   <TableCell>
-                    <Link className="edit-link" to={"/users/" + n.owner.id}>
-                        {n.owner.first_name}
+                    <Link className="edit-link" to={"/users/" + contact.owner.id}>
+                        {contact.owner.first_name}
                     </Link>
                   </TableCell>
                   <TableCell>
-                      {/*<Link className="edit-link" to={"/address/" + n.address.id}>*/}
-                          {n.address? n.address.street_address1: "no data"}
+                      {/*<Link className="edit-link" to={"/address/" + contact.address.id}>*/}
+                          {contact.address? contact.address.street_address1: "no data"}
                       {/*</Link>*/}
                   </TableCell>
                   <TableCell>
-                      {n.properties.map(property => (
-                          <Link className="edit-link" to={"/properties/" + property.id}>
-                              {property.name}
-                          </Link>
+                      {contact.properties.map(property => (
+                          <p>
+                              <Link className="edit-link" to={"/properties/" + property.id}>
+                                  {property.name}
+                              </Link>
+                          </p>
                       ))}
                   </TableCell>
                   <TableCell>
-                      {n.listings.map(listing => (
-                          <Link className="edit-link" to={"/listings/" + listing.id}>
-                              {listing.name}
-                          </Link>
+                      {contact.listings.map(listing => (
+                          <p>
+                              <Link className="edit-link" to={"/listings/" + listing.id}>
+                                  {listing.name}
+                              </Link>
+                          </p>
                       ))}
                   </TableCell>
                     {/*teams*/}

@@ -4,7 +4,6 @@ import gql from "graphql-tag";
 import "../UserList.css";
 import { withStyles } from "@material-ui/core/styles";
 import { Link } from "react-router-dom";
-
 import {
   Table,
   TableBody,
@@ -35,8 +34,8 @@ const styles = theme => ({
   }
 });
 
-const GET_CONTACT = gql`
-  query contactsPaginateQuery(
+const GET_COMPANIES = gql`
+  query companiesPaginateQuery(
     $first: Int
     $offset: Int
     $orderBy: [_CompanyOrdering]
@@ -50,8 +49,6 @@ const GET_CONTACT = gql`
     ) {
       id
       name
-      #      avgStars
-      #      numReviews
     }
   }
 `;
@@ -62,15 +59,15 @@ function CompanyList(props) {
   const [orderBy, setOrderBy] = React.useState("name");
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
-  const [filterState, setFilterState] = React.useState({ usernameFilter: "" });
+  const [filterState, setFilterState] = React.useState({ companyFilter: "" });
 
   const getFilter = () => {
-    return filterState.usernameFilter.length > 0
-      ? { name_contains: filterState.usernameFilter }
+    return filterState.companyFilter.length > 0
+      ? { name_contains: filterState.companyFilter }
       : {};
   };
 
-  const { loading, data, error } = useQuery(GET_CONTACT, {
+  const { loading, data, error } = useQuery(GET_COMPANIES, {
     variables: {
       first: rowsPerPage,
       offset: rowsPerPage * page,
@@ -105,7 +102,19 @@ function CompanyList(props) {
       <Typography variant="h2" gutterBottom>
         Company List
       </Typography>
-
+      <TextField
+          id="search"
+          label="Сompany Name Contains"
+          className={classes.textField}
+          value={filterState.companyFilter}
+          onChange={handleFilterChange("companyFilter")}
+          margin="normal"
+          variant="outlined"
+          type="text"
+          InputProps={{
+              className: classes.input
+          }}
+      />
       {loading && !error && <p>Loading...</p>}
       {error && !loading && <p>Error</p>}
 
@@ -133,12 +142,11 @@ function CompanyList(props) {
             {data.Company.map(n => {
               return (
                 <TableRow key={n.id}>
-                    <TableCell>
-                      <Link className="edit-link" to={"/companies/" + n.id}>
+                  <TableCell>
+                    <Link className="edit-link" to={"/companies/" + n.id}>
                       {n.name}
-                      </Link>
-                    </TableCell>
-
+                    </Link>
+                  </TableCell>
                 </TableRow>
               );
             })}

@@ -33,7 +33,7 @@ const styles = theme => ({
   }
 });
 
-const GET_CONTACT = gql`
+const GET_CONTACTS = gql`
   query contactsPaginateQuery(
     $first: Int
     $offset: Int
@@ -48,14 +48,6 @@ const GET_CONTACT = gql`
           id
           title
       }
-#      lead_status
-#      lifecycle_stage
-#      created_at
-
-#      phone
-
-      #      avgStars
-      #      numReviews
     }
   }
 `;
@@ -65,7 +57,7 @@ function ContactList(props) {
   const [order, setOrder] = React.useState("asc");
   const [orderBy, setOrderBy] = React.useState("first_name");
 
-  const { loading, data, error } = useQuery(GET_CONTACT, {
+  const { loading, data, error } = useQuery(GET_CONTACTS, {
     variables: {
       orderBy: orderBy + "_" + order
     }
@@ -117,9 +109,9 @@ function ContactList(props) {
               return (
                 <TableRow key={contact.id}>
                     <TableCell>
-                      <Link className="edit-link" to={"/contacts/" + contact.id}>
-                        {contact.first_name} {contact.last_name} {contact.email}
-                      </Link>
+                        <Link className="edit-link" to={"/contacts/" + contact.id}>
+                          {contact.first_name} {contact.last_name} {contact.email}
+                        </Link>
                       <p>
                       Recommended articles:
                       </p>

@@ -59,11 +59,11 @@ function PropertyList(props) {
   const [orderBy, setOrderBy] = React.useState("name");
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
-  const [filterState, setFilterState] = React.useState({ usernameFilter: "" });
+  const [filterState, setFilterState] = React.useState({ propertyFilter: "" });
 
   const getFilter = () => {
-    return filterState.usernameFilter.length > 0
-      ? { name_contains: filterState.usernameFilter }
+    return filterState.propertyFilter.length > 0
+      ? { name_contains: filterState.propertyFilter }
       : {};
   };
 
@@ -106,8 +106,8 @@ function PropertyList(props) {
         id="search"
         label="Property Name Contains"
         className={classes.textField}
-        value={filterState.usernameFilter}
-        onChange={handleFilterChange("usernameFilter")}
+        value={filterState.propertyFilter}
+        onChange={handleFilterChange("propertyFilter")}
         margin="normal"
         variant="outlined"
         type="text"

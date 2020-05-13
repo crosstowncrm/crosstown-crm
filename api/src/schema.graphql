@@ -101,6 +101,14 @@ type Company {
   url: String
 }
 
+type Review {
+    id: ID!
+    stars: Int
+    text: String
+    date: Date
+    company: Company @relation(name: "REVIEWS", direction: "OUT")
+    user: User @relation(name: "WROTE", direction: "IN")
+}
 
 #1
 type Article {
@@ -111,43 +119,12 @@ type Article {
     source: String
     link: String
     location: Point
+    event_time: DateTime
     categories: [Category] @relation(name: "IN_CATEGORY", direction: "OUT")
     viewed: [Viewed]
     shared: [Shared]
     opened_source: [OpenedSource]
     recommendations(first: Int = 300): [Contact] @cypher(statement: "MATCH (address:Address)<-[*]-(contact:Contact) WHERE distance(this.location, Point({latitude:toFloat(address.lat), longitude:toFloat(address.lng)})) < 1000000 RETURN DISTINCT contact")
-}
-
-type Business {
-    id: ID!
-    name: String
-    address: String
-    city: String
-    state: String
-    avgStars: Float @cypher(statement: "MATCH (this)<-[:REVIEWS]-(r:Review) RETURN coalesce(avg(r.stars),0.0)")
-    reviews: [Review] @relation(name: "REVIEWS", direction: "IN")
-    categories: [Category] @relation(name: "IN_CATEGORY", direction: "OUT")
-}
-
-type Review {
-    id: ID!
-    stars: Int
-    text: String
-    date: Date
-    business: Business @relation(name: "REVIEWS", direction: "OUT")
-    user: User @relation(name: "WROTE", direction: "IN")
-}
-
-type Category {
-    name: ID!
-    businesses: [Business] @relation(name: "IN_CATEGORY", direction: "IN")
-}
-
-type Query {
-    usersBySubstring(substring: String): [User]
-    @cypher(
-        statement: "MATCH (u:User) WHERE u.name CONTAINS $substring RETURN u"
-    )
 }
 
 #2
@@ -171,9 +148,11 @@ type Shared @relation(name: "SHARED") {
 }
 #5
 type Category {
-    name: ID!
+    id: ID!
+    name: String
     articles: [Article] @relation(name: "IN_CATEGORY", direction: "IN")
     posts: [Post] @relation(name: "IN_CATEGORY", direction: "IN")
+    companies: [Company] @relation(name: "IN_CATEGORY", direction: "IN")
 }
 #6
 type Post {
@@ -308,12 +287,6 @@ type Review {
 #  user: User @relation(name: "WROTE", direction: "IN")
 }
 
-type Category {
-  id: ID!
-  name: String
-#  businesses: [Business] @relation(name: "IN_CATEGORY", direction: "IN")
-}
-
 type Query {
   usersBySubstring(substring: String): [User]
     @cypher(
@@ -354,10 +327,14 @@ type Query {
   users(substring: String): [User]
   @cypher(
       statement: "MATCH (c:User) RETURN c"
-    )
+  )
   articles(substring: String): [Article]
   @cypher(
       statement: "MATCH (articles:Article) RETURN articles"
+  )
+  article(id: Int): Article
+  @cypher(
+      statement: "MATCH (article:Article) WHERE article.id = $id RETURN article"
   )
   posts(substring: String): [Post]
   @cypher(

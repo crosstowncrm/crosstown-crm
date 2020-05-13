@@ -42,10 +42,9 @@ const GET_ARTICLE = gql`
     Article(first: $first, offset: $offset, orderBy: $orderBy) {
       id
       title
-      event{
-          year
+      event_time{
+          formatted
       }
-      excerpt
       recommendations{
           id
           first_name
@@ -57,7 +56,7 @@ const GET_ARTICLE = gql`
 function ArticleList(props) {
   const { classes } = props;
   const [order, setOrder] = React.useState("asc");
-  const [orderBy, setOrderBy] = React.useState("event");
+  const [orderBy, setOrderBy] = React.useState("event_time");
 
   const { loading, data, error } = useQuery(GET_ARTICLE, {
     variables: {
@@ -91,19 +90,22 @@ function ArticleList(props) {
           <TableHead>
             <TableRow>
               <TableCell
-                key="event"
-                sortDirection={orderBy === "event" ? order : false}
+                key="event_time"
+                sortDirection={orderBy === "event_time" ? order : false}
               >
                 <Tooltip title="Sort" placement="bottom-start" enterDelay={300}>
                   <TableSortLabel
-                    active={orderBy === "event"}
+                    active={orderBy === "event_time"}
                     direction={order}
-                    onClick={() => handleSortRequest("event")}
+                    onClick={() => handleSortRequest("event_time")}
                   >
-                    Article data
+                    Article Date
                   </TableSortLabel>
                 </Tooltip>
               </TableCell>
+                <TableCell>
+                    Article
+                </TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -111,8 +113,11 @@ function ArticleList(props) {
               return (
                 <TableRow key={article.id}>
                     <TableCell>
+                        {article.event_time.formatted}
+                    </TableCell>
+                    <TableCell>
                       <Link className="edit-link" to={"/articles/" + article.id}>
-                        {article.excerpt}
+                        {article.title}
                       </Link>
                         <p>
                             Recommended to contacts:
@@ -124,8 +129,9 @@ function ArticleList(props) {
                                 </Link>
                             </p>
                         ))}
-                        {/*{article.event.year}*/}
+
                     </TableCell>
+
                 </TableRow>
               );
             })}

@@ -130,15 +130,10 @@ const LOGIN = gql`
     }
 `;
 
-function login(){
-    console.log('login');
-}
-
 function isAuthenticated() {
     // Check whether the current time is past the
     // access token's expiry time
     let userId = localStorage.getItem('userId');
-    console.log('userId', userId);
     return userId !== null;
 }
 
@@ -147,14 +142,15 @@ class App extends Component {
     super(props);
     this.state = {
       selectedView: "Home",
-      open: true
+      open: true,
+      isAuth: false
     };
   }
 
+
+
   render() {
     const { classes } = this.props;
-
-    const id = localStorage.getItem("uid")
     return (
       <Router>
         <React.Fragment>
@@ -191,7 +187,7 @@ class App extends Component {
                 >
                   Welcome
                 </Typography>
-                  {!isAuthenticated() ? (
+                  {!parseInt(localStorage.getItem("userId"))>0 ? (
                       <div>
 
                           <Button>
@@ -307,12 +303,11 @@ class App extends Component {
             <main className={classes.content}>
               <div className={classes.appBarSpacer} />
 
-                  {!isAuthenticated() ? (
+                  {!parseInt(localStorage.getItem("userId"))>0 ? (
                       <Switch>
                           <Route exact path="/login" component={Login} />
                           <Route exact path="/error" component={Error} />
                       </Switch>
-
                   ): (
                       <Switch>
                           <Route exact path="/login" component={Login} />

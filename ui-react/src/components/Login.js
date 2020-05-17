@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useState, useEffect} from "react";
 import { useLazyQuery } from "@apollo/react-hooks";
 import {
     Redirect
@@ -38,28 +38,40 @@ const styles = theme => ({
   }
 });
 
-function Login (props) {
-  console.log(props);
-  const [loginUser, { loading, data }] = useLazyQuery(LOGIN);
-  if (loading) {
-    return "Loading...";
-  }
-  if (data) {
-      console.log('est data');
-    if( (data.loginUser.length > 0)){
-        console.log('est login');
-        localStorage.setItem('userId', data.loginUser[0].id);
-        const path = '/users/' + data.loginUser[0].id;
-        window.location.href = path
-        // return (<Redirect to={path} />)
+const Login = () => {
+  const [isAuth, setAuth] = useState(false);
+  const [loginUser, { called, loading, data, error }] = useLazyQuery(LOGIN);
+  const [login, setLogin] = useState('');
+  const [password, setPassword] = useState('');
+  let empty = null;
+    useEffect(() => {
+        if (data) {
+            if( (data.loginUser.length > 0)){
+                localStorage.setItem('userId', data.loginUser[0].id);//uid
+                setAuth(true);
+
+            }
+            if( (data.loginUser.length === 0)){
+                //redirect to login
+                empty = true;
+            }
+        }
+    });
+
+    if (isAuth) {
+          const path = '/users/' + localStorage.getItem('userId');
+          return (<Redirect to={path} />)
     }
-      if( (data.loginUser.length === 0)){
-          console.log('redirect to login');
-          return (<Redirect to='/error' />)
-      }
 
-  }
+    if(empty){
+        //redirect to error
+        return (<Redirect to='/error' />)
+    }
 
+  // Wait for lazy query
+  if (called && loading) return "Loading... ";
+  // Show error message if lazy query fails
+  if (error) return <p>{error.message}</p>;
 
   async function handleSubmit(e) {
       e.preventDefault();
@@ -74,27 +86,31 @@ function Login (props) {
         <div className="Navigation-search">
             <form onSubmit={handleSubmit}>
               Login
-                <Input
-                    type="text"
-                    name = "login"
-                    id = "login"
-                    placeholder="Your Login"
-                />{' '}
-                <br/>
+                <span>
+                    <Input
+                        type="text"
+                        name = "login"
+                        id = "login"
+                        placeholder="Your Login"
+                        value = {login}
+                        onChange={({ target }) => setLogin(target.value)}
+                     />{' '}
+                </span>
               Password
-                <Input
-                    type="text"
-                    name = "pswd"
-                    id = "pswd"
-                    placeholder="Your Password"
-                />{' '}
-                <br/>
-
+                <span>
+                    <Input
+                        type="text"
+                        name = "pswd"
+                        id = "pswd"
+                        placeholder="Your Password"
+                        value = {password}
+                        onChange={({ target }) => setPassword(target.value)}
+                    />{' '}
+                </span>
                 <div className="flex mt3">
-
-                <Button type="submit">
-                    Login
-                </Button>
+                    <Button type="submit">
+                        Login
+                    </Button>
                 </div>
             </form>
         </div>

@@ -32,7 +32,6 @@
       "dest": "/ui-react/index.html"
     }
   ],
-  //TODO: get enough permissions to add @neo4j_uri, @neo4j_user, @neo4j_password
   "build": {
     "env": {
       "REACT_APP_GRAPHQL_URI": "/graphql",

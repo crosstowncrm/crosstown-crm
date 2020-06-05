@@ -32,17 +32,18 @@
       "dest": "/ui-react/index.html"
     }
   ],
+  //TODO: get enough permissions to add @neo4j_uri, @neo4j_user, @neo4j_password
   "build": {
     "env": {
       "REACT_APP_GRAPHQL_URI": "/graphql",
-      "NEO4J_URI": "@neo4j_uri",
-      "NEO4J_USER": "@neo4j_user",
-      "NEO4J_PASSWORD": "@neo4j_password"
+      "NEO4J_URI": "bolt+routing://117e8122.databases.neo4j.io:7687",
+      "NEO4J_USER": "derevyanko",
+      "NEO4J_PASSWORD": "h0h%G1!K!Rpm"
     }
   },
   "env": {
-    "NEO4J_URI": "@neo4j_uri",
-    "NEO4J_USER": "@neo4j_user",
-    "NEO4J_PASSWORD": "@neo4j_password"
+    "NEO4J_URI": "bolt+routing://117e8122.databases.neo4j.io:7687",
+    "NEO4J_USER": "derevyanko",
+    "NEO4J_PASSWORD": "h0h%G1!K!Rpm"
   }
 }

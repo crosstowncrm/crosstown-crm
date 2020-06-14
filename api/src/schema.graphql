@@ -22,7 +22,6 @@ type Contact implements Client{
 
   id: ID!
   first_name: String
-  waitTime: Int! @neo4j_ignore
   last_name: String
   suffix: String
   birthday: String
@@ -296,14 +295,14 @@ type Review {
 }
 
 type Query {
-  fullTextSearch(searchString: String!): [Client!]!
+  fullTextSearch(filter: String!): [Client!]!
     @cypher(
-        statement: "CALL db.index.fulltext.queryNodes('searchClient', $searchString) YIELD node RETURN node"
+        statement: "CALL db.index.fulltext.queryNodes('searchClient', $filter) YIELD node RETURN node"
     )
 
-  client: [Client]
+  client(filter: String): [Client]
     @cypher(
-        statement: "CALL db.index.fulltext.queryNodes('searchClient', '*') YIELD node RETURN node"
+        statement: "CALL db.index.fulltext.queryNodes('searchClient', $filter) YIELD node RETURN node"
     )
 
   usersBySubstring(substring: String): [Client]

@@ -54,8 +54,18 @@ const styles = theme => ({
 // `;
 
 const GET_COMPANIES = gql`
-    query companiesPaginateQuery{
-        client{
+    query companiesPaginateQuery(
+    $first: Int
+    $offset: Int
+    $orderBy: [_ClientOrdering]
+    $filter: String
+    ){
+        client(
+            first: $first
+            offset: $offset
+            orderBy: $orderBy
+            filter: $filter
+        ) {
             id
             name
         }
@@ -69,21 +79,20 @@ function CompanyList(props) {
   const [orderBy, setOrderBy] = React.useState("name");
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
-  const [filterState, setFilterState] = React.useState({ companyFilter: "" });
+  const [filterState, setFilterState] = React.useState({ clientFilter: "" });
 
   const getFilter = () => {
-    return filterState.companyFilter.length > 0
-      ? { name_contains: filterState.companyFilter }
-      : {};
+    return filterState.clientFilter.length > 0
+      ? "*"+filterState.clientFilter+"*" : "*"
   };
 
   const { loading, data, error } = useQuery(GET_COMPANIES, {
-    // variables: {
-    //   first: rowsPerPage,
-    //   offset: rowsPerPage * page,
-    //   orderBy: orderBy + "_" + order,
-    //   filter: getFilter()
-    // }
+      variables: {
+          first: rowsPerPage,
+          offset: rowsPerPage * page,
+          orderBy: orderBy + "_" + order,
+          filter: getFilter()
+      }
   });
 
   const handleSortRequest = property => {
@@ -117,7 +126,7 @@ function CompanyList(props) {
           label="Client Name Contains"
           className={classes.textField}
           value={filterState.companyFilter}
-          onChange={handleFilterChange("companyFilter")}
+          onChange={handleFilterChange("clientFilter")}
           margin="normal"
           variant="outlined"
           type="text"

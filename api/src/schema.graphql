@@ -13,11 +13,16 @@ type User {
   contacts:  [Contact] @relation(name: "OWNS_PROSPECT", direction: "OUT")
   listings:  [Listing] @relation(name: "IS_PRIMARY_AGENT_FOR", direction: "OUT")
 }
+interface Client {
+    id: ID!
+    name: String
+}
 
-type Contact {
+type Contact implements Client{
 
   id: ID!
   first_name: String
+  waitTime: Int! @neo4j_ignore
   last_name: String
   suffix: String
   birthday: String
@@ -41,7 +46,7 @@ type Contact {
   first_seen: String
   email_domain: String
   marital_status: String
-
+  name: String
   owner:  User @relation(name: "OWNS_PROSPECT", direction: "IN")
   address:  Address @relation(name: "HAS_ADDRESS", direction: "OUT")
   companies:  [Company] @relation(name: "ASSOCIATED_WITH", direction: "OUT")
@@ -52,7 +57,7 @@ type Contact {
 #  deals:  [Deal] @relation(name: "IS ASSOCIATED WITH", direction: "IN")
 }
 
-type Company {
+type Company implements Client{
   id: ID!
   name: String
   created_at: String
@@ -271,6 +276,9 @@ type Address {
 #  house: Int
 }
 
+union SearchResult = Contact | Company
+
+
 type Team {
   id: ID!
   name: String
@@ -288,7 +296,17 @@ type Review {
 }
 
 type Query {
-  usersBySubstring(substring: String): [User]
+  fullTextSearch(searchString: String!): [Client!]!
+    @cypher(
+        statement: "CALL db.index.fulltext.queryNodes('searchClient', $searchString) YIELD node RETURN node"
+    )
+
+  client: [Client]
+    @cypher(
+        statement: "CALL db.index.fulltext.queryNodes('searchClient', '*') YIELD node RETURN node"
+    )
+
+  usersBySubstring(substring: String): [Client]
     @cypher(
       statement: "MATCH (u:User) WHERE u.name CONTAINS $substring RETURN u"
     )
@@ -352,12 +370,16 @@ type Query {
   @cypher(
       statement: "MATCH (user:User {last_name: $name, pswd: $pswd}) RETURN user LIMIT 1"
   )
+  loginContact(name: String, pswd: String): [Contact]
+  @cypher(
+      statement: "MATCH (contact:Contact {last_name: $name, pswd: $pswd}) RETURN contact LIMIT 1"
+  )
 
 }
 
-#type Mutation {
-#  loginUser(name: String, pswd: String, id: String ): String @cypher(statement: "CREATE (newUser:User {id: $id, name: $name, pswd: $pswd}) RETURN newUser.id as id")
-#}
+type Mutation {
+  readArticle(reader_id: String, article_id: String ): String @cypher(statement: "MATCH (contact:Contact {id: $reader_id }) MATCH (article:Article{id:$article_id}) MERGE (contact)-[read:VIEWED]->(article) RETURN id(read) as rel_id")
+}
 
 #type LoginInput{
 #    name: String

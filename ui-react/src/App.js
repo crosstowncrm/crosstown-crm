@@ -263,18 +263,13 @@ export default function App() {
                 </IconButton>
                 <p>Close</p>
             </MenuItem>
-            <Link to={"/contacts"}>
-                <MenuItem primary={"Contacts"}>
 
-                        <ListItemIcon>
-                        <AccountCircle />
-                        </ListItemIcon>
-                        <p>Contacts</p>
-
-                </MenuItem>
-            </Link>
             <Link to={"/companies"}>
                 <MenuItem primary={"Companies"}>
+                    <ListItemIcon>
+                        <AccountCircle />
+                    </ListItemIcon>
+                    <p>Contacts</p>
 
                     <ListItemIcon>
                         <BusinessIcon />
@@ -388,11 +383,11 @@ export default function App() {
                       >
                           <MenuIcon />
                       </IconButton>
-                      {/*<img*/}
-                      {/*className={classes.appBarImage}*/}
-                      {/*src="img/grandstack.png"*/}
-                      {/*alt="GRANDstack logo"*/}
-                      {/*/>*/}
+                          {/*<img*/}
+                          {/*className={classes.appBarImage}*/}
+                          {/*src="img/grandstack.png"*/}
+                          {/*alt="GRANDstack logo"*/}
+                          {/*/>*/}
                       <Typography className={classes.title} variant="h6" noWrap
                       >crosstown-crm
                       </Typography>
@@ -484,7 +479,6 @@ export default function App() {
                   <Route exact path="/login" component={Login} />
                   <Route exact path="/users" component={UserList} />
                   <Route exact path="/users/:uid" component={UserData} />
-                  <Route exact path="/contacts" component={ContactList} />
                   <Route exact path="/contacts/:uid" component={ContactData} />
                   <Route exact path="/companies" component={CompanyList} />
                   <Route exact path="/companies/:uid" component={CompanyData} />

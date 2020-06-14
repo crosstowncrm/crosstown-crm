@@ -34,23 +34,33 @@ const styles = theme => ({
   }
 });
 
+// const GET_COMPANIES = gql`
+//   query companiesPaginateQuery(
+//     $first: Int
+//     $offset: Int
+//     $orderBy: [_CompanyOrdering]
+//     $filter: _CompanyFilter
+//   ) {
+//     Company(
+//       first: $first
+//       offset: $offset
+//       orderBy: $orderBy
+//       filter: $filter
+//     ) {
+//       id
+//       name
+//     }
+//   }
+// `;
+
 const GET_COMPANIES = gql`
-  query companiesPaginateQuery(
-    $first: Int
-    $offset: Int
-    $orderBy: [_CompanyOrdering]
-    $filter: _CompanyFilter
-  ) {
-    Company(
-      first: $first
-      offset: $offset
-      orderBy: $orderBy
-      filter: $filter
-    ) {
-      id
-      name
+    query companiesPaginateQuery{
+        client{
+            id
+            name
+        }
     }
-  }
+    
 `;
 
 function CompanyList(props) {
@@ -68,12 +78,12 @@ function CompanyList(props) {
   };
 
   const { loading, data, error } = useQuery(GET_COMPANIES, {
-    variables: {
-      first: rowsPerPage,
-      offset: rowsPerPage * page,
-      orderBy: orderBy + "_" + order,
-      filter: getFilter()
-    }
+    // variables: {
+    //   first: rowsPerPage,
+    //   offset: rowsPerPage * page,
+    //   orderBy: orderBy + "_" + order,
+    //   filter: getFilter()
+    // }
   });
 
   const handleSortRequest = property => {
@@ -100,11 +110,11 @@ function CompanyList(props) {
   return (
     <Paper className={classes.root}>
       <Typography variant="h2" gutterBottom>
-        Company List
+        Client List
       </Typography>
       <TextField
           id="search"
-          label="Сompany Name Contains"
+          label="Client Name Contains"
           className={classes.textField}
           value={filterState.companyFilter}
           onChange={handleFilterChange("companyFilter")}
@@ -139,13 +149,18 @@ function CompanyList(props) {
             </TableRow>
           </TableHead>
           <TableBody>
-            {data.Company.map(n => {
+            {data.client.map(n => {
               return (
-                <TableRow key={n.id}>
+                <TableRow key={n.__typename + "-" + n.id}>
                   <TableCell>
-                    <Link className="edit-link" to={"/companies/" + n.id}>
-                      {n.name}
-                    </Link>
+                      {n.__typename.toString()==="Contact" ?
+                          <Link className="edit-link" to={"/contacts/"+n.id}>
+                              {n.name}-{n.__typename.toString()}
+                          </Link>
+                          :
+                          <Link className="edit-link" to={"/companies/"+n.id}>
+                              {n.name}-{n.__typename.toString()}
+                          </Link>}
                   </TableCell>
                 </TableRow>
               );

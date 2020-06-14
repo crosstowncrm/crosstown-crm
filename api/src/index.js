@@ -23,7 +23,9 @@ const app = express();
 
 const schema = makeAugmentedSchema({
   typeDefs,
-  resolvers
+  resolvers,
+    printErrors: true, // optional
+    allowUndefinedInResolve: true
 });
 
 /*

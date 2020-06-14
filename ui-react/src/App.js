@@ -172,6 +172,9 @@ export default function App() {
     const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
     const [mobilePropertyEl, setMobilePropertyEl] = React.useState(null);
     const [mobileProfileEl, setMobileProfileEl] = React.useState(null);
+    const [mobileSalesEl, setMobileSalesEl] = React.useState(null);
+    const [mobileMarketingEl, setMobileMarketingEl] = React.useState(null);
+    const [mobileSupportEl, setMobileSupportEl] = React.useState(null);
     const [mobileOpen, setMobileOpen] = React.useState(false);
 
     const handleDrawerToggle = () => {
@@ -187,6 +190,24 @@ export default function App() {
 
     const handleProfileMenuOpen = (event) => {
         setMobileProfileEl(event.currentTarget);
+    };
+
+    const isMobileSalesOpen = Boolean(mobileSalesEl);
+
+    const handleSalesMenuOpen = (event) => {
+        setMobileSalesEl(event.currentTarget);
+    };
+
+    const isMobileMarketingOpen = Boolean(mobileMarketingEl);
+
+    const handleMarketingMenuOpen = (event) => {
+        setMobileMarketingEl(event.currentTarget);
+    };
+
+    const isMobileSupportOpen = Boolean(mobileSupportEl);
+
+    const handleSupportMenuOpen = (event) => {
+        setMobileSupportEl(event.currentTarget);
     };
 
     const handlePropertyMenuOpen = (event) => {
@@ -205,6 +226,15 @@ export default function App() {
         setMobileProfileEl(null);
     };
 
+    const handleMobileSalesMenuClose = () => {
+        setMobileSalesEl(null);
+    };
+    const handleMobileMarketingMenuClose = () => {
+        setMobileMarketingEl(null);
+    };
+    const handleMobileSupportMenuClose = () => {
+        setMobileSupportEl(null);
+    };
 
     const handleMobileMenuOpen = (event) => {
         setMobileMoreAnchorEl(event.currentTarget);
@@ -343,7 +373,7 @@ export default function App() {
 
 
             <Link to={"/users/1"}>
-                <MenuItem primary={"Properties"}>
+                <MenuItem primary={"Profile"}>
 
                     <ListItemIcon>
                         <AccountCircle />
@@ -354,7 +384,7 @@ export default function App() {
             </Link>
 
             <Link to={"/login"}>
-                <MenuItem primary={"Listings"}>
+                <MenuItem primary={"Login"}>
 
                     <ListItemIcon>
                             <ListAltIcon />
@@ -364,6 +394,142 @@ export default function App() {
                 </MenuItem>
             </Link>
 
+        </Menu>
+    );
+    const mobileSalesMenuId = 'primary-search-account-sales-menu-mobile';
+    const renderMobileSalesMenu = (
+        <Menu
+            anchorEl={mobileSalesEl}
+            anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+            id={mobileSalesMenuId}
+            keepMounted
+            transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+            open={isMobileSalesOpen}
+            onClose={handleMobileSalesMenuClose}
+        >
+            <Link to={"/"}>
+                <MenuItem primary={"Deals"}>
+
+                    <ListItemIcon>
+                        <AccountCircle />
+                    </ListItemIcon>
+                    <p>Deals</p>
+
+                </MenuItem>
+            </Link>
+
+            <Link to={"/"}>
+                <MenuItem primary={"Tasks"}>
+
+                    <ListItemIcon>
+                        <ListAltIcon />
+                    </ListItemIcon>
+                    <p>Tasks</p>
+
+                </MenuItem>
+            </Link>
+
+            <Link to={"/"}>
+                <MenuItem primary={"Documents"}>
+
+                    <ListItemIcon>
+                        <ListAltIcon />
+                    </ListItemIcon>
+                    <p>Documents</p>
+
+                </MenuItem>
+            </Link>
+
+            <Link to={"/"}>
+                <MenuItem primary={"Workflows"}>
+
+                    <ListItemIcon>
+                        <ListAltIcon />
+                    </ListItemIcon>
+                    <p>Workflows (TBD)</p>
+
+                </MenuItem>
+            </Link>
+        </Menu>
+    );
+    const mobileMarketingMenuId = 'primary-search-account-marketing-menu-mobile';
+    const renderMobileMarketingMenu = (
+        <Menu
+            anchorEl={mobileMarketingEl}
+            anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+            id={mobileMarketingMenuId}
+            keepMounted
+            transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+            open={isMobileMarketingOpen}
+            onClose={handleMobileMarketingMenuClose}
+        >
+            <Link to={"/"}>
+                <MenuItem primary={"Email"}>
+
+                    <ListItemIcon>
+                        <AccountCircle />
+                    </ListItemIcon>
+                    <p>Email</p>
+
+                </MenuItem>
+            </Link>
+
+            <Link to={"/"}>
+                <MenuItem primary={"Social"}>
+
+                    <ListItemIcon>
+                        <ListAltIcon />
+                    </ListItemIcon>
+                    <p>Social (TBD)</p>
+
+                </MenuItem>
+            </Link>
+
+            <Link to={"/"}>
+                <MenuItem primary={"Content"}>
+
+                    <ListItemIcon>
+                        <ListAltIcon />
+                    </ListItemIcon>
+                    <p>Content</p>
+
+                </MenuItem>
+            </Link>
+
+            <Link to={"/"}>
+                <MenuItem primary={"Ads"}>
+
+                    <ListItemIcon>
+                        <ListAltIcon />
+                    </ListItemIcon>
+                    <p>Ads (TBD)</p>
+
+                </MenuItem>
+            </Link>
+        </Menu>
+    );
+
+    const mobileSupportMenuId = 'primary-search-account-support-menu-mobile';
+    const renderMobileSupportMenu = (
+        <Menu
+            anchorEl={mobileSupportEl}
+            anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+            id={mobileSupportMenuId}
+            keepMounted
+            transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+            open={isMobileSupportOpen}
+            onClose={handleMobileSupportMenuClose}
+        >
+            <Link to={"/"}>
+                <MenuItem primary={"Tickets"}>
+
+                    <ListItemIcon>
+                        <AccountCircle />
+                    </ListItemIcon>
+                    <p>Tickets</p>
+
+                </MenuItem>
+            </Link>
         </Menu>
     );
 
@@ -418,7 +584,7 @@ export default function App() {
                               aria-label="account of current user"
                               aria-controls={menuId}
                               aria-haspopup="true"
-                              onClick={handleProfileMenuOpen}
+                              onClick={handleSalesMenuOpen}
                               color="inherit"
                           >
                               <AccessibilityNewIcon />Sales
@@ -428,7 +594,7 @@ export default function App() {
                               aria-label="account of current user"
                               aria-controls={menuId}
                               aria-haspopup="true"
-                              onClick={handleProfileMenuOpen}
+                              onClick={handleMarketingMenuOpen}
                               color="inherit"
                           >
                               <CameraRollIcon />Marketing
@@ -438,7 +604,7 @@ export default function App() {
                               aria-label="account of current user"
                               aria-controls={menuId}
                               aria-haspopup="true"
-                              onClick={handleProfileMenuOpen}
+                              onClick={handleSupportMenuOpen}
                               color="inherit"
                           >
                               <RowingIcon />Support
@@ -474,6 +640,9 @@ export default function App() {
             {renderMenu}
             {renderMobilePropertyMenu}
               {renderMobileProfileMenu}
+              {renderMobileSalesMenu}
+              {renderMobileMarketingMenu}
+              {renderMobileSupportMenu}
           <main className={classes.content} >
               <Switch>
                   <Route exact path="/login" component={Login} />

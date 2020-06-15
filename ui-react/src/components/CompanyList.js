@@ -4,6 +4,7 @@ import gql from "graphql-tag";
 import "../UserList.css";
 import { withStyles } from "@material-ui/core/styles";
 import { Link } from "react-router-dom";
+
 import {
   Table,
   TableBody,
@@ -34,27 +35,9 @@ const styles = theme => ({
   }
 });
 
-// const GET_COMPANIES = gql`
-//   query companiesPaginateQuery(
-//     $first: Int
-//     $offset: Int
-//     $orderBy: [_CompanyOrdering]
-//     $filter: _CompanyFilter
-//   ) {
-//     Company(
-//       first: $first
-//       offset: $offset
-//       orderBy: $orderBy
-//       filter: $filter
-//     ) {
-//       id
-//       name
-//     }
-//   }
-// `;
 
-const GET_COMPANIES = gql`
-    query companiesPaginateQuery(
+const GET_CLIENTS = gql`
+    query clientsPaginateQuery(
     $first: Int
     $offset: Int
     $orderBy: [_ClientOrdering]
@@ -86,7 +69,7 @@ function CompanyList(props) {
       ? "*"+filterState.clientFilter+"*" : "*"
   };
 
-  const { loading, data, error } = useQuery(GET_COMPANIES, {
+  const { loading, data, error } = useQuery(GET_CLIENTS, {
       variables: {
           first: rowsPerPage,
           offset: rowsPerPage * page,

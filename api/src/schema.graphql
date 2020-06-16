@@ -46,6 +46,7 @@ type Contact implements Client{
   email_domain: String
   marital_status: String
   name: String
+  viewed: [Viewed]
   owner:  User @relation(name: "OWNS_PROSPECT", direction: "IN")
   address:  Address @relation(name: "HAS_ADDRESS", direction: "OUT")
   companies:  [Company] @relation(name: "ASSOCIATED_WITH", direction: "OUT")
@@ -245,12 +246,6 @@ type Listing {
   user:  User @relation(name: "IS_PRIMARY_AGENT_FOR", direction: "IN")
 }
 
-type Household {
-  id: ID!
-  contacts:  [Contact] @relation(name: "IS MEMBER OF", direction: "IN")
-  address:  Address @relation(name: "HAS ADDRESS", direction: "OUT")
-}
-
 type Address {
   id: ID!
   postal_code:String
@@ -285,14 +280,6 @@ type Team {
   established: Date
 }
 
-type Review {
-  id: ID!
-  stars: Int
-  text: String
-  date: Date
-#  business: Business @relation(name: "REVIEWS", direction: "OUT")
-#  user: User @relation(name: "WROTE", direction: "IN")
-}
 
 type Query {
   fullTextSearch(filter: String!): [Client!]!
@@ -300,7 +287,7 @@ type Query {
         statement: "CALL db.index.fulltext.queryNodes('searchClient', $filter) YIELD node RETURN node"
     )
 
-  client(filter: String): [Client]
+  client(filter: String="*"): [Client]
     @cypher(
         statement: "CALL db.index.fulltext.queryNodes('searchClient', $filter) YIELD node RETURN node"
     )

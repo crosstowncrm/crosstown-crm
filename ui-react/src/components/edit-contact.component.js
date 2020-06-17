@@ -9,11 +9,9 @@ import Card from '@material-ui/core/Card';
 import CardActionArea from '@material-ui/core/CardActionArea';
 import CardActions from '@material-ui/core/CardActions';
 import CardContent from '@material-ui/core/CardContent';
-import CardMedia from '@material-ui/core/CardMedia';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 import Avatar from '@material-ui/core/Avatar';
-// import MoreButton from "../moreButton/moreButton.component";
 import ArrowForwardIcon from "@material-ui/icons/ArrowForward";
 
 import {
@@ -103,6 +101,7 @@ const GET_CONTACT = gql`
 function ContactEdit(props) {
   const { classes } = props;
   const params = props.match.params;
+  const [showContent, setShowContent] = React.useState(false);
   const { loading, data, error } = useQuery(GET_CONTACT, {
     variables: {
       id: params["uid"]
@@ -147,20 +146,29 @@ function ContactEdit(props) {
                       }}
                   >
 
-                      {data.Contact.map(({first_name, last_name, description, email, viewed}) => (
-                          <Card className={classes.root} key={"card" + viewed.id + "123"}>
-                          <CardActionArea>
-                          <CardMedia
-                          className={classes.media}
-                          image="/static/images/cards/contemplative-reptile.jpg"
-                          title="Contemplative Reptile"
-                          />
+                      {data.Contact.map(({
+                                             first_name,
+                                             last_name,
+                                             description,
+                                             email, viewed,
+                                             phone, mobile,
+                                             birthday,
+                                             lead_status,
+                                             lead_type,
+                                             lead_date,
+                                             last_activity,
+                                             last_seen,
+                                             first_seen
+                                         }) => (
+                          <Card  key={"card" + viewed.id + "123"}>
+
                           <CardContent>
                               <Avatar>***</Avatar>
                               <Typography gutterBottom variant="h5" component="h2">
                                   {first_name ? first_name : "no data"} {last_name ? last_name : "no data"}
                               </Typography>
                           </CardContent>
+                              <CardActionArea>
                           <CardActions>
                           <Link to="/" size="small" color="primary">
                           Note
@@ -181,31 +189,66 @@ function ContactEdit(props) {
                           Meet
                           </Link>
                           </CardActions>
+                              </CardActionArea>
                               <Divider />
-                          <CardContent>
+
+                              <Typography onClick={() => setShowContent(!showContent)} variant="body2" color="textSecondary" component="p">
+                                  About this Contact
+                              </Typography>
+
+                              {showContent && <CardContent>
 
                               <Typography variant="body2" color="textSecondary" component="p">
-                              About this Contact
-                              </Typography>
+                                  <span>Name:</span>
+                                  <span>{first_name}</span>
+                                  </Typography>
+                                  <Typography variant="body2" color="textSecondary" component="p">
+                                  <span>Last name:</span>
+                                  <span>{last_name}</span>
+                                  </Typography>
+                                  <Typography variant="body2" color="textSecondary" component="p">
+                                  <span>email:</span>
+                                  <span>{email}</span>
+                                  </Typography>
+                                  <Typography variant="body2" color="textSecondary" component="p">
+                                  <span>phone:</span>
+                                  <span>{phone}</span>
+                                  <Typography variant="body2" color="textSecondary" component="p">
+                                      <span>mobile:</span>
+                                      <span>{mobile}</span>
+                                  </Typography>
+                                  <Typography variant="body2" color="textSecondary" component="p">
+                                      <span>birthday:</span>
+                                      <span>{birthday}</span>
+                                  </Typography>
+                                  <Typography variant="body2" color="textSecondary" component="p">
+                                      <span>lead_status:</span>
+                                      <span>{lead_status}</span>
+                                  </Typography>
+                                  <Typography variant="body2" color="textSecondary" component="p">
+                                      <span>lead_type:</span>
+                                      <span>{lead_type}</span>
+                                  </Typography>
+                                  <Typography variant="body2" color="textSecondary" component="p">
+                                      <span>lead_date:</span>
+                                      <span>{lead_date}</span>
+                                  </Typography>
+                                      <Typography variant="body2" color="textSecondary" component="p">
+                                          <span>last_activity:</span>
+                                          <span>{last_activity}</span>
+                                      </Typography>
+                                      <Typography variant="body2" color="textSecondary" component="p">
+                                          <span>last_seen:</span>
+                                          <span>{last_seen}</span>
+                                      </Typography>
+                                      <Typography variant="body2" color="textSecondary" component="p">
+                                          <span>first_seen:</span>
+                                          <span>{first_seen}</span>
+                                      </Typography>
 
-                              <Typography variant="body2" color="textSecondary" component="p">
-                              <span>Name:</span>
-                              <span>{first_name}</span>
                               </Typography>
-                              <Typography variant="body2" color="textSecondary" component="p">
-                              <span>Last name:</span>
-                              <span>{last_name}</span>
-                              </Typography>
-                              <Typography variant="body2" color="textSecondary" component="p">
-                              <span>email:</span>
-                              <span>{email}</span>
-                              </Typography>
-                              <Typography variant="body2" color="textSecondary" component="p">
-                              <span>contacted times:</span>
-                              <span>{data.Contact[0].contacted_times}</span>
-                              </Typography>
-                          </CardContent>
-                          </CardActionArea>
+                          </CardContent>}
+
 
                           </Card>
                       ))}
@@ -237,6 +280,7 @@ function ContactEdit(props) {
                   viewed.map((article) => (
                   <Card key={"card"+article.Article.id}>
                       <CardHeader title="Article read" />
+                      {article.timestamp.formatted}
                       <Divider />
                       <CardContent key={"cd" + article.Article.id}>
 
@@ -254,7 +298,7 @@ function ContactEdit(props) {
                           </Button>
                       </CardActions>
                   </Card>
-                              )))
+                  )))
               )}
           </Grid>
 

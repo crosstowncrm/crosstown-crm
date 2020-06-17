@@ -12,6 +12,13 @@ import CardContent from '@material-ui/core/CardContent';
 import CardMedia from '@material-ui/core/CardMedia';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
+// import MoreButton from "../moreButton/moreButton.component";
+import ArrowForwardIcon from "@material-ui/icons/ArrowForward";
+
+import {
+    CardHeader,
+    Divider,
+} from "@material-ui/core";
 
 const styles = theme => ({
   root: {
@@ -119,137 +126,177 @@ function ContactEdit(props) {
           margin: "12px"
       }}
           >
-          <Grid item md={8}>
+              <Grid item md={3}>
+                  <Grid
+                      item
+                      md={10}
+                      style={{
+                          border: "2px solid red",
+                          margin: "2px"
+                      }}
+                  >
+                      About
+                  </Grid>
+                  <Grid
+                      item
+                      md={10}
+                      style={{
+                          border: "2px solid red",
+                          margin: "2px"
+                      }}
+                  >
+
+                      {data.Contact.map(({first_name, last_name, description, email, viewed}) => (
+                          <Card className={classes.root} key={"card" + viewed.id + "123"}>
+                          <CardActionArea>
+                          <CardMedia
+                          className={classes.media}
+                          image="/static/images/cards/contemplative-reptile.jpg"
+                          title="Contemplative Reptile"
+                          />
+                          <CardContent>
+                              <Typography gutterBottom variant="h5" component="h2">
+                                  {first_name ? first_name : "no data"}
+                              </Typography>
+                          </CardContent>
+                          <CardActions>
+                          <Link to="/" size="small" color="primary">
+                          Note
+                          </Link>
+                          <Link to="/" size="small" color="primary">
+                          Email
+                          </Link>
+                          <Link to="/" size="small" color="primary">
+                          Call
+                          </Link>
+                          <Link to="/" size="small" color="primary">
+                          Log
+                          </Link>
+                          <Link to="/" size="small" color="primary">
+                          Task
+                          </Link>
+                          <Link to="/" size="small" color="primary">
+                          Meet
+                          </Link>
+                          </CardActions>
+
+                          <CardContent>
+
+                          <Typography variant="body2" color="textSecondary" component="p">
+                          About this Contact
+                          </Typography>
+                          <Typography variant="body2" color="textSecondary" component="p">
+                          <span>Name:</span>
+                          <span>{first_name}</span>
+                          </Typography>
+                          <Typography variant="body2" color="textSecondary" component="p">
+                          <span>Last name:</span>
+                          <span>{last_name}</span>
+                          </Typography>
+                          <Typography variant="body2" color="textSecondary" component="p">
+                          <span>email:</span>
+                          <span>{email}</span>
+                          </Typography>
+                          <Typography variant="body2" color="textSecondary" component="p">
+                          <span>contacted times:</span>
+                          <span>{data.Contact[0].contacted_times}</span>
+                          </Typography>
+                          </CardContent>
+                          </CardActionArea>
+
+                          </Card>
+                      ))}
+
+
+                  </Grid>
+
+              </Grid>
+          <Grid item md={6}>
+          <Grid
+              item
+              md={10}
+              style={{
+                  border: "2px solid red",
+                  margin: "2px"
+              }}
+          >
+              Activity
+          </Grid>
           <Grid
           item
-          md={12}
+          md={10}
           style={{
           border: "2px solid red",
           margin: "2px"
       }}
           >
-              {data.Contact[0].viewed.map(viewed => (
-                  <Link key={viewed.Article.id} className="edit-link" to={"/articles/" + viewed.Article.id}>
-                      {viewed.Article.title} {viewed.timestamp.formatted}
-                  </Link>
-              ))}
+              {data.Contact.map(({viewed}) => (
+                  viewed.map((article) => (
+                  <Card key={"card"+article.Article.id}>
+                      <CardHeader title="Article read" />
+                      <Divider />
+                      <CardContent key={"cd" + article.Article.id}>
+
+                          <Typography key={"tp" + article.Article.id}>
+                              <Link key={"link" + article.Article.id} className="edit-link" to={"/articles/" + article.Article.id}>
+                                   {article.Article.title}
+                              </Link>
+                          </Typography>
+
+                      </CardContent>
+                      <CardActions className={classes.actions}>
+                          <Button size="small" color="primary" variant="text">
+                              Session Details
+                              <ArrowForwardIcon className={classes.arrowForwardIcon} />
+                          </Button>
+                      </CardActions>
+                  </Card>
+                              )))
+              )}
           </Grid>
-          <Grid
-          item
-          md={12}
-          style={{
-          border: "2px solid red",
-          margin: "2px"
-      }}
-          >
-          Activity
-          </Grid>
-          </Grid>
-          <Grid item md={4}>
-          <Grid
-          item
-          md={12}
-          style={{
-          border: "2px solid red",
-          margin: "2px"
-      }}
-          ><Card className={classes.root}>
-          <CardActionArea>
-          <CardMedia
-          className={classes.media}
-          image="/static/images/cards/contemplative-reptile.jpg"
-          title="Contemplative Reptile"
-          />
-          <CardContent>
-          <Typography gutterBottom variant="h5" component="h2">
-          {data.Contact[0].first_name ? data.Contact[0].first_name: "no data"}
-          </Typography>
-          <Typography variant="body2" color="textSecondary" component="p">
-          {data.Contact[0].description}
-          </Typography>
-          <Typography variant="body2" color="textSecondary" component="p">
-          About this Contact
-          </Typography>
-          <Typography variant="body2" color="textSecondary" component="p">
-              <p>Name:</p>
-              <p>{data.Contact[0].first_name}</p>
-          </Typography>
-          <Typography variant="body2" color="textSecondary" component="p">
-              <p>Last name:</p>
-              <p>{data.Contact[0].last_name}</p>
-          </Typography>
-          <Typography variant="body2" color="textSecondary" component="p">
-              <p>email:</p>
-              <p>{data.Contact[0].email}</p>
-          </Typography>
-          <Typography variant="body2" color="textSecondary" component="p">
-              <p>contacted times:</p>
-              <p>{data.Contact[0].contacted_times}</p>
-          </Typography>
-          </CardContent>
-          </CardActionArea>
-          <CardActions>
-          <Button size="small" color="primary">
-          Note
-          </Button>
-          <Button size="small" color="primary">
-          Email
-          </Button>
-          <Button size="small" color="primary">
-          Call
-          </Button>
-          <Button size="small" color="primary">
-          Log
-          </Button>
-          <Button size="small" color="primary">
-          Task
-          </Button>
-          <Button size="small" color="primary">
-          Meet
-          </Button>
-          </CardActions>
-          </Card>
 
           </Grid>
+
+          <Grid item md={3}>
+              <Grid
+                  item
+                  md={10}
+                  style={{
+                      border: "2px solid red",
+                      margin: "2px"
+                  }}
+              >
+                  Associations
+              </Grid>
           <Grid
           item
-          md={12}
+          md={10}
           style={{
           border: "2px solid red",
           margin: "2px"
       }}
           >
-              About
-          </Grid>
-          </Grid>
-          <Grid item md={4}>
-          <Grid
-          item
-          md={12}
-          style={{
-          border: "2px solid red",
-          margin: "2px"
-      }}
-          ><ul>
-              {data.Contact[0].companies.map(company => {
-                  return(
-                      <li>{company.name}</li>
-                  )
+              {data.Contact.map(({companies}) => (
+                  companies.map((company) => (
+                      <Card key={"card"+company.id}>
+                          <CardHeader title="Company" />
+                          <Divider />
+                          <CardContent key={"cd" + company.id}>
 
-              })}
-          </ul>
+                              <Typography key={"tp" + company.id}>
+                                  <Link key={"link" + company.id} className="edit-link" to={"/companies/" + company.id}>
+                                      {company.name}
+                                  </Link>
+                              </Typography>
+
+                          </CardContent>
+                      </Card>
+                  )))
+              )}
+
 
           </Grid>
-          <Grid
-          item
-          md={12}
-          style={{
-          border: "2px solid red",
-          margin: "2px"
-      }}
-          >
-              Associations
-          </Grid>
+
           </Grid>
           </Grid>
 

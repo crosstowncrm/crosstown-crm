@@ -1,5 +1,5 @@
 import React from "react";
-import { useQuery } from "@apollo/react-hooks";
+import { useQuery, useMutation } from "@apollo/react-hooks";
 import gql from "graphql-tag";
 import "../UserList.css";
 import { withStyles } from "@material-ui/core/styles";
@@ -79,6 +79,9 @@ const GET_ARTICLE = gql`
   }
 `;
 
+
+
+
 function ArticleEdit(props) {
   const { classes } = props;
   const params = props.match.params;
@@ -88,12 +91,12 @@ function ArticleEdit(props) {
     }
   });
 
+
   return (
     <Paper className={classes.root}>
       <Typography variant="h2" gutterBottom>
         Article Edit
       </Typography>
-
       {loading && !error && <p>Loading...</p>}
       {error && !loading && <p>Error</p>}
 
@@ -157,6 +160,7 @@ function ArticleEdit(props) {
         </Table>
       )}
     </Paper>
+
   );
 }
 

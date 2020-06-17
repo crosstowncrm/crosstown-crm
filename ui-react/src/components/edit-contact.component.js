@@ -12,6 +12,7 @@ import CardContent from '@material-ui/core/CardContent';
 import CardMedia from '@material-ui/core/CardMedia';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
+import Avatar from '@material-ui/core/Avatar';
 // import MoreButton from "../moreButton/moreButton.component";
 import ArrowForwardIcon from "@material-ui/icons/ArrowForward";
 
@@ -131,7 +132,7 @@ function ContactEdit(props) {
                       item
                       md={10}
                       style={{
-                          border: "2px solid red",
+                          border: "2px solid blue",
                           margin: "2px"
                       }}
                   >
@@ -141,7 +142,7 @@ function ContactEdit(props) {
                       item
                       md={10}
                       style={{
-                          border: "2px solid red",
+                          border: "2px solid blue",
                           margin: "2px"
                       }}
                   >
@@ -155,8 +156,9 @@ function ContactEdit(props) {
                           title="Contemplative Reptile"
                           />
                           <CardContent>
+                              <Avatar>***</Avatar>
                               <Typography gutterBottom variant="h5" component="h2">
-                                  {first_name ? first_name : "no data"}
+                                  {first_name ? first_name : "no data"} {last_name ? last_name : "no data"}
                               </Typography>
                           </CardContent>
                           <CardActions>
@@ -179,28 +181,29 @@ function ContactEdit(props) {
                           Meet
                           </Link>
                           </CardActions>
-
+                              <Divider />
                           <CardContent>
 
-                          <Typography variant="body2" color="textSecondary" component="p">
-                          About this Contact
-                          </Typography>
-                          <Typography variant="body2" color="textSecondary" component="p">
-                          <span>Name:</span>
-                          <span>{first_name}</span>
-                          </Typography>
-                          <Typography variant="body2" color="textSecondary" component="p">
-                          <span>Last name:</span>
-                          <span>{last_name}</span>
-                          </Typography>
-                          <Typography variant="body2" color="textSecondary" component="p">
-                          <span>email:</span>
-                          <span>{email}</span>
-                          </Typography>
-                          <Typography variant="body2" color="textSecondary" component="p">
-                          <span>contacted times:</span>
-                          <span>{data.Contact[0].contacted_times}</span>
-                          </Typography>
+                              <Typography variant="body2" color="textSecondary" component="p">
+                              About this Contact
+                              </Typography>
+
+                              <Typography variant="body2" color="textSecondary" component="p">
+                              <span>Name:</span>
+                              <span>{first_name}</span>
+                              </Typography>
+                              <Typography variant="body2" color="textSecondary" component="p">
+                              <span>Last name:</span>
+                              <span>{last_name}</span>
+                              </Typography>
+                              <Typography variant="body2" color="textSecondary" component="p">
+                              <span>email:</span>
+                              <span>{email}</span>
+                              </Typography>
+                              <Typography variant="body2" color="textSecondary" component="p">
+                              <span>contacted times:</span>
+                              <span>{data.Contact[0].contacted_times}</span>
+                              </Typography>
                           </CardContent>
                           </CardActionArea>
 
@@ -216,7 +219,7 @@ function ContactEdit(props) {
               item
               md={10}
               style={{
-                  border: "2px solid red",
+                  border: "2px solid blue",
                   margin: "2px"
               }}
           >
@@ -226,7 +229,7 @@ function ContactEdit(props) {
           item
           md={10}
           style={{
-          border: "2px solid red",
+          border: "2px solid blue",
           margin: "2px"
       }}
           >
@@ -262,7 +265,7 @@ function ContactEdit(props) {
                   item
                   md={10}
                   style={{
-                      border: "2px solid red",
+                      border: "2px solid blue",
                       margin: "2px"
                   }}
               >
@@ -272,7 +275,7 @@ function ContactEdit(props) {
           item
           md={10}
           style={{
-          border: "2px solid red",
+          border: "2px solid blue",
           margin: "2px"
       }}
           >

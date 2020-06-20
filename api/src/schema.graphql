@@ -104,15 +104,20 @@ type Company implements Client{
   sessions_num: String
   time_zone: String
   url: String
+  mailed: [Mailed]
 }
 
-type Review {
+type Mail{
     id: ID!
-    stars: Int
-    text: String
-    date: Date
-    company: Company @relation(name: "REVIEWS", direction: "OUT")
-    user: User @relation(name: "WROTE", direction: "IN")
+    msgs: String
+    timestamp: DateTime
+}
+
+type Mailed @relation(name: "MAILS") {
+    from: Company
+    to: Mail
+    timestamp: DateTime
+    action: Boolean
 }
 
 #1
@@ -137,6 +142,7 @@ type Viewed @relation(name: "VIEWED") {
     from: Contact
     to: Article
     timestamp: DateTime
+    action: Boolean
 }
 #3
 type OpenedSource @relation(name: "OPENED_SOURCE") {

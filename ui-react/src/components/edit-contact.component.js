@@ -13,6 +13,8 @@ import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 import Avatar from '@material-ui/core/Avatar';
 import ArrowForwardIcon from "@material-ui/icons/ArrowForward";
+import Switch from '@material-ui/core/Switch';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
 
 import {
     CardHeader,
@@ -85,15 +87,15 @@ const GET_CONTACT = gql`
           id
           first_name
       }
-        viewed {
-            timestamp {
-                formatted
-            }
-            Article {
-                id
-                title
-            }
-        }
+      viewed(filter: {action: true}){
+          timestamp {
+              formatted
+          }
+          Article {
+              id
+              title
+          }
+      }
     }
   }
 `;
@@ -116,15 +118,13 @@ function ContactEdit(props) {
 
       {data && !loading && !error && (
 
-
-
           <Grid
           container
           spacing={3}
           style={{
-          border: "3px solid blue",
-          margin: "12px"
-      }}
+            border: "3px solid blue",
+            margin: "12px"
+          }}
           >
               <Grid item md={3}>
                   <Grid
@@ -147,20 +147,21 @@ function ContactEdit(props) {
                   >
 
                       {data.Contact.map(({
-                                             first_name,
-                                             last_name,
-                                             description,
-                                             email, viewed,
-                                             phone, mobile,
-                                             birthday,
-                                             lead_status,
-                                             lead_type,
-                                             lead_date,
-                                             last_activity,
-                                             last_seen,
-                                             first_seen
-                                         }) => (
-                          <Card  key={"card" + viewed.id + "123"}>
+                             first_name,
+                             id,
+                             last_name,
+                             description,
+                             email, viewed,
+                             phone, mobile,
+                             birthday,
+                             lead_status,
+                             lead_type,
+                             lead_date,
+                             last_activity,
+                             last_seen,
+                             first_seen
+                         }) => (
+                          <Card  key="{card-$id}">
 
                           <CardContent>
                               <Avatar>***</Avatar>
@@ -192,9 +193,15 @@ function ContactEdit(props) {
                               </CardActionArea>
                               <Divider />
 
-                              <Typography onClick={() => setShowContent(!showContent)} variant="body2" color="textSecondary" component="p">
-                                  About this Contact
-                              </Typography>
+                              <FormControlLabel
+                                  control={
+                                      <Switch
+                                          onClick={() => setShowContent(!showContent)}
+                                          color="primary"
+                                      />
+                                  }
+                                  label="About this Contact"
+                              />
 
                               {showContent && <CardContent>
 
@@ -278,10 +285,11 @@ function ContactEdit(props) {
           >
               {data.Contact.map(({viewed}) => (
                   viewed.map((article) => (
-                  <Card key={"card"+article.Article.id}>
-                      <CardHeader title="Article read" />
-                      {article.timestamp.formatted}
+                  <Card key={"card" + article.Article.id}>
+                      <CardHeader title={"Article read "}  subheader={article.timestamp.formatted}/>
+
                       <Divider />
+
                       <CardContent key={"cd" + article.Article.id}>
 
                           <Typography key={"tp" + article.Article.id}>

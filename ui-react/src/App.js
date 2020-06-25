@@ -1,9 +1,9 @@
 import React from "react";
-import { fade, makeStyles } from '@material-ui/core/styles';
-import InputBase from '@material-ui/core/InputBase';
+import {  makeStyles } from '@material-ui/core/styles';
 import Badge from '@material-ui/core/Badge';
 import MenuItem from '@material-ui/core/MenuItem';
 import Menu from '@material-ui/core/Menu';
+
 
 import {
   BrowserRouter as Router,
@@ -17,33 +17,22 @@ import {
   AppBar,
   Toolbar,
   Typography,
-  Button,
   IconButton,
   CssBaseline,
-  Drawer,
-  List,
-  Divider,
-  ListItem,
-  ListItemIcon,
-  ListItemText
+  ListItemIcon
 } from "@material-ui/core";
 
 import {
-  ChevronLeft as ChevronLeftIcon,
   People as PeopleIcon,
   Business as BusinessIcon,
   Rowing as RowingIcon,
   EmojiTransportation as EmojiTransportationIcon,
-  ListAlt as ListAltIcon,
-  TextFormat as TextFormatIcon,
-  Telegram as TelegramIcon
+  ListAlt as ListAltIcon
 
 } from "@material-ui/icons";
 
 import MenuIcon from '@material-ui/icons/Menu';
-// import SearchIcon from '@material-ui/icons/Search';
 import AccountCircle from '@material-ui/icons/AccountCircle';
-import MailIcon from '@material-ui/icons/Mail';
 import NotificationsIcon from '@material-ui/icons/Notifications';
 import MoreIcon from '@material-ui/icons/MoreVert';
 import AccessibilityNewIcon from '@material-ui/icons/AccessibilityNew';
@@ -52,21 +41,21 @@ import AcUnitIcon from '@material-ui/icons/AcUnit';
 
 
 import Login from "./components/Login";
-import Error from "./components/Error";
-import UserList from "./components/UserList";
-import UserData from "./components/edit-user.component";
-import ContactList from "./components/ContactList";
-import ContactData from "./components/edit-contact.component";
-import CompanyList from "./components/CompanyList";
-import CompanyData from "./components/edit-company.component";
-import PropertyList from "./components/PropertyList";
-import PropertyData from "./components/edit-property.component";
-import ListingList from "./components/ListingList";
-import ListingData from "./components/edit-listing.component";
-import ArticleList from "./components/ArticleList";
-import PostList from "./components/PostList";
-import ArticleData from "./components/edit-article.component";
-import PostData from "./components/edit-post.component";
+import UserList from "./components/users/UserList";
+import UserData from "./components/users/edit-user.component";
+import ContactData from "./components/contacts/edit-contact.component";
+import CompanyList from "./components/companies/CompanyList";
+import CompanyData from "./components/companies/edit-company.component";
+import PropertyList from "./components/properties/PropertyList";
+import PropertyData from "./components/properties/edit-property.component";
+import ListingList from "./components/listings/ListingList";
+import ListingData from "./components/listings/edit-listing.component";
+import ArticleList from "./components/articles/ArticleList";
+import PostList from "./components/posts/PostList";
+import ArticleData from "./components/articles/edit-article.component";
+import PostData from "./components/posts/edit-post.component";
+import DealsList from "./components/deals/DealsList";
+import DealData from "./components/deals/edit-deal.component";
 
 const drawerWidth = 240;
 
@@ -282,17 +271,6 @@ export default function App() {
             open={isMobileMenuOpen}
             onClose={handleMobileMenuClose}
         >
-            <MenuItem onClick={handleMenuClose}>
-                <IconButton
-                    aria-label="account of current user"
-                    aria-controls="primary-search-account-menu"
-                    aria-haspopup="true"
-                    color="inherit"
-                >
-                    <AcUnitIcon />
-                </IconButton>
-                <p>Close</p>
-            </MenuItem>
 
             <Link to={"/companies"}>
                 <MenuItem primary={"Companies"}>
@@ -300,15 +278,8 @@ export default function App() {
                         <AccountCircle />
                     </ListItemIcon>
                     <p>Contacts</p>
-
-                    <ListItemIcon>
-                        <BusinessIcon />
-                    </ListItemIcon>
-                    <p>Companies</p>
-
                 </MenuItem>
             </Link>
-
 
             <MenuItem>
                 <IconButton aria-label="show 11 new notifications" color="inherit">
@@ -407,7 +378,7 @@ export default function App() {
             open={isMobileSalesOpen}
             onClose={handleMobileSalesMenuClose}
         >
-            <Link to={"/"}>
+            <Link to={"/deals"}>
                 <MenuItem primary={"Deals"}>
 
                     <ListItemIcon>
@@ -659,6 +630,9 @@ export default function App() {
                   <Route exact path="/articles/:uid" component={ArticleData} />
                   <Route exact path="/posts" component={PostList} />
                   <Route exact path="/posts/:uid" component={PostData} />
+                  <Route exact path="/deals" component={DealsList} />
+                  <Route exact path="/deals/:uid" component={DealData} />
+
               </Switch>
           </main>
           </div>

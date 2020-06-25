@@ -1,7 +1,7 @@
 import React from "react";
 import { useQuery } from "@apollo/react-hooks";
 import gql from "graphql-tag";
-import "../UserList.css";
+import "../../UserList.css";
 import { withStyles } from "@material-ui/core/styles";
 import { Link } from "react-router-dom";
 import { Grid } from "@material-ui/core";
@@ -198,7 +198,7 @@ function CompanyEdit(props) {
                               <CardContent>
                                   <Avatar>***</Avatar>
                                   <Typography gutterBottom variant="h5" component="h2">
-                                      {name ? name : "no data"} {name ? name : "no data"}
+                                      {name ? name : "no data"}
                                   </Typography>
                               </CardContent>
                               <CardActionArea>

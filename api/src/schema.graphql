@@ -13,6 +13,22 @@ type User {
   contacts:  [Contact] @relation(name: "OWNS_PROSPECT", direction: "OUT")
   listings:  [Listing] @relation(name: "IS_PRIMARY_AGENT_FOR", direction: "OUT")
 }
+
+type Deal {
+    id: ID!
+    title: String
+    start_time: DateTime
+    close_time: DateTime
+    strategy: String
+    represents: String
+    type: String
+    associate: String
+    value: String
+    stage: String
+    property:  Property @relation(name: "HAS_INTEREST_IN", direction: "OUT")
+    client:  Client @relation(name: "HAS_INTEREST_IN", direction: "IN")
+}
+
 interface Client {
     id: ID!
     name: String
@@ -50,7 +66,7 @@ type Contact implements Client{
   owner:  User @relation(name: "OWNS_PROSPECT", direction: "IN")
   address:  Address @relation(name: "HAS_ADDRESS", direction: "OUT")
   companies:  [Company] @relation(name: "ASSOCIATED_WITH", direction: "OUT")
-  properties:  [Property] @relation(name: "HAS_INTEREST_IN", direction: "OUT")
+  properties:  [Interest]
   listings:  [Listing] @relation(name: "LISTS", direction: "OUT")
   recommendations(first: Int = 300): [Article] @cypher(statement: "MATCH (article:Article), (address:Address)<-[*]-(this) WHERE distance(article.location, Point({latitude:toFloat(address.lat), longitude:toFloat(address.lng)})) < 1000000 RETURN DISTINCT article")
 #  teams: [Team] @relation(name: "BELONGS TO", direction: "OUT")
@@ -143,6 +159,21 @@ type Viewed @relation(name: "VIEWED") {
     to: Article
     timestamp: DateTime
     action: Boolean
+}
+
+#10
+type Interest @relation(name: "HAS_INTEREST_IN") {
+    from: Contact
+    to: Property
+    action: Boolean
+    associate: String
+    event_time: DateTime
+    id: String
+    represents: String
+    stage: String
+    title: String
+    type: String
+    value: Int
 }
 #3
 type OpenedSource @relation(name: "OPENED_SOURCE") {
@@ -276,9 +307,6 @@ type Address {
 #  house: Int
 }
 
-union SearchResult = Contact | Company
-
-
 type Team {
   id: ID!
   name: String
@@ -288,76 +316,22 @@ type Team {
 
 
 type Query {
-  fullTextSearch(filter: String!): [Client!]!
-    @cypher(
-        statement: "CALL db.index.fulltext.queryNodes('searchClient', $filter) YIELD node RETURN node"
-    )
 
   client(filter: String="*"): [Client]
     @cypher(
         statement: "CALL db.index.fulltext.queryNodes('searchClient', $filter) YIELD node RETURN node"
-    )
+  )
+  interest:[Interest!]!
+    @cypher(
+        statement: "MATCH (contact:Contact)-[hii:HAS_INTEREST_IN]-(:Property) WHERE hii.id IS NOT NULL RETURN hii"
+  )
+  getClient:[Client]
 
   usersBySubstring(substring: String): [Client]
     @cypher(
       statement: "MATCH (u:User) WHERE u.name CONTAINS $substring RETURN u"
-    )
-  contacts(substring: String): [Contact]
-  @cypher(
-      statement: "MATCH (c:Contact) RETURN c"
-    )
-  contact(id: Int): Contact
-  @cypher(
-      statement: "MATCH (c:Contact) WHERE c.id = $id RETURN c"
-    )
-  companies(substring: String): [Company]
-  @cypher(
-      statement: "MATCH (c:Company) RETURN c"
-    )
-  company(id: Int): Company
-  @cypher(
-      statement: "MATCH (c:Company) WHERE c.id = $id RETURN c LIMIT 1"
-    )
-  properties(substring: String): [Property]
-  @cypher(
-      statement: "MATCH (c:Property) RETURN c"
-    )
-  property(id: Int): Property
-  @cypher(
-      statement: "MATCH (c:Property) WHERE c.id = $id RETURN c"
-    )
-  listings(substring: String): [Listing]
-  @cypher(
-      statement: "MATCH (c:Listing) RETURN c"
-    )
-  listing(id: Int): Listing
-  @cypher(
-      statement: "MATCH (c:Listing) WHERE c.id = $id RETURN c"
-    )
-  users(substring: String): [User]
-  @cypher(
-      statement: "MATCH (c:User) RETURN c"
   )
-  articles(substring: String): [Article]
-  @cypher(
-      statement: "MATCH (articles:Article) RETURN articles"
-  )
-  article(id: Int): Article
-  @cypher(
-      statement: "MATCH (article:Article) WHERE article.id = $id RETURN article"
-  )
-  posts(substring: String): [Post]
-  @cypher(
-      statement: "MATCH (posts:Post) RETURN posts"
-  )
-  post(id: Int): Post
-  @cypher(
-      statement: "MATCH (post:Post) WHERE post.id = $id RETURN post"
-  )
-  user(id: Int): User
-  @cypher(
-      statement: "MATCH (c:User) WHERE c.id = $id RETURN c"
-    )
+
   loginUser(name: String, pswd: String): [User]
   @cypher(
       statement: "MATCH (user:User {last_name: $name, pswd: $pswd}) RETURN user LIMIT 1"
@@ -373,8 +347,3 @@ type Mutation {
   readArticle(reader_id: String, article_id: String ): String @cypher(statement: "MATCH (contact:Contact {id: $reader_id }) MATCH (article:Article{id:$article_id}) MERGE (contact)-[read:VIEWED]->(article) RETURN id(read) as rel_id")
 }
 
-#type LoginInput{
-#    name: String
-#    pswd: String
-#    id: String
-#}

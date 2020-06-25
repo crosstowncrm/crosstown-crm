@@ -1,7 +1,7 @@
 import React from "react";
 import { useQuery } from "@apollo/react-hooks";
 import gql from "graphql-tag";
-import "../UserList.css";
+import "../../UserList.css";
 import { withStyles } from "@material-ui/core/styles";
 import { Link } from "react-router-dom";
 
@@ -96,10 +96,10 @@ function UserEdit(props) {
               <TableCell key="email_signature">email signature</TableCell>
               <TableCell key="created_date">created date</TableCell>
               <TableCell key="address">address</TableCell>
-              <TableCell key="email_signature">follows</TableCell>
-              <TableCell key="email_signature">teams</TableCell>
-              <TableCell key="email_signature">contacts</TableCell>
-              <TableCell key="email_signature">listings</TableCell>
+              <TableCell key="follows">follows</TableCell>
+              <TableCell key="teams">teams</TableCell>
+              <TableCell key="contacts">contacts</TableCell>
+              <TableCell key="listings">listings</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>

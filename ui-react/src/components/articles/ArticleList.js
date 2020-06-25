@@ -1,7 +1,7 @@
 import React from "react";
 import { useQuery } from "@apollo/react-hooks";
 import gql from "graphql-tag";
-import "../UserList.css";
+import "../../UserList.css";
 import { withStyles } from "@material-ui/core/styles";
 import { Link } from "react-router-dom";
 import {
@@ -33,28 +33,32 @@ const styles = theme => ({
   }
 });
 
-const GET_POST = gql`
-  query postssPaginateQuery(
+const GET_ARTICLE = gql`
+  query articlesPaginateQuery(
     $first: Int
     $offset: Int
-    $orderBy: [_PostOrdering]
+    $orderBy: [_ArticleOrdering]
   ) {
-    Post(first: $first, offset: $offset, orderBy: $orderBy) {
+    Article(first: $first, offset: $offset, orderBy: $orderBy) {
       id
       title
       event_time{
           formatted
       }
+      recommendations{
+          id
+          first_name
+      }
     }
   }
 `;
 
-function PostList(props) {
+function ArticleList(props) {
   const { classes } = props;
   const [order, setOrder] = React.useState("asc");
   const [orderBy, setOrderBy] = React.useState("event_time");
 
-  const { loading, data, error } = useQuery(GET_POST, {
+  const { loading, data, error } = useQuery(GET_ARTICLE, {
     variables: {
       orderBy: orderBy + "_" + order
     }
@@ -75,7 +79,7 @@ function PostList(props) {
   return (
     <Paper className={classes.root}>
       <Typography variant="h2" gutterBottom>
-        Post List
+        Article List
       </Typography>
 
       {loading && !error && <p>Loading...</p>}
@@ -86,30 +90,48 @@ function PostList(props) {
           <TableHead>
             <TableRow>
               <TableCell
-                key="title"
-                sortDirection={orderBy === "title" ? order : false}
+                key="event_time"
+                sortDirection={orderBy === "event_time" ? order : false}
               >
                 <Tooltip title="Sort" placement="bottom-start" enterDelay={300}>
                   <TableSortLabel
-                    active={orderBy === "title"}
+                    active={orderBy === "event_time"}
                     direction={order}
-                    onClick={() => handleSortRequest("title")}
+                    onClick={() => handleSortRequest("event_time")}
                   >
-                    Title
+                    Article Date
                   </TableSortLabel>
                 </Tooltip>
               </TableCell>
+                <TableCell>
+                    Article
+                </TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {data.Post.map(post => {
+            {data.Article.map(article => {
               return (
-                <TableRow key={post.id}>
+                <TableRow key={article.id}>
                     <TableCell>
-                      <Link className="edit-link" to={"/posts/" + post.id}>
-                        {post.title}
-                      </Link>
+                        {article.event_time.formatted}
                     </TableCell>
+                    <TableCell>
+                      <Link className="edit-link" to={"/articles/" + article.id}>
+                        {article.title}
+                      </Link>
+                        <p>
+                            Recommended to contacts:
+                        </p>
+                        {article.recommendations.map(contact => (
+                            <p>
+                                <Link className="edit-link" to={"/contacts/" + contact.id}>
+                                        {contact.first_name}
+                                </Link>
+                            </p>
+                        ))}
+
+                    </TableCell>
+
                 </TableRow>
               );
             })}
@@ -120,4 +142,4 @@ function PostList(props) {
   );
 }
 
-export default withStyles(styles)(PostList);
+export default withStyles(styles)(ArticleList);

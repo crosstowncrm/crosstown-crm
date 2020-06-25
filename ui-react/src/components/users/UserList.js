@@ -1,7 +1,7 @@
 import React from "react";
 import { useQuery } from "@apollo/react-hooks";
 import gql from "graphql-tag";
-import "../UserList.css";
+import "../../UserList.css";
 import { withStyles } from "@material-ui/core/styles";
 import { Link } from "react-router-dom";
 import {
@@ -14,6 +14,7 @@ import {
   Paper,
   TableSortLabel,
   Typography,
+  TextField
 } from "@material-ui/core";
 
 const styles = theme => ({
@@ -33,33 +34,41 @@ const styles = theme => ({
   }
 });
 
-const GET_CONTACTS = gql`
-  query contactsPaginateQuery(
+const GET_USERS = gql`
+  query usersPaginateQuery(
     $first: Int
     $offset: Int
-    $orderBy: [_ContactOrdering]
+    $orderBy: [_UserOrdering]
+    $filter: _UserFilter
   ) {
-    Contact(first: $first, offset: $offset, orderBy: $orderBy) {
+    User(first: $first, offset: $offset, orderBy: $orderBy, filter: $filter) {
       id
       first_name
       last_name
-      email
-      recommendations{
-          id
-          title
-      }
     }
   }
 `;
 
-function ContactList(props) {
+function UserList(props) {
   const { classes } = props;
   const [order, setOrder] = React.useState("asc");
   const [orderBy, setOrderBy] = React.useState("first_name");
+  const [page, setPage] = React.useState(0);
+  const [rowsPerPage, setRowsPerPage] = React.useState(10);
+  const [filterState, setFilterState] = React.useState({ userFilter: "" });
 
-  const { loading, data, error } = useQuery(GET_CONTACTS, {
+  const getFilter = () => {
+    return filterState.userFilter.length > 0
+       ? { first_name_contains: filterState.userFilter }
+       : {};
+  };
+
+  const { loading, data, error } = useQuery(GET_USERS, {
     variables: {
-      orderBy: orderBy + "_" + order
+        first: rowsPerPage,
+        offset: rowsPerPage * page,
+        orderBy: orderBy + "_" + order,
+        filter: getFilter()
     }
   });
 
@@ -75,12 +84,32 @@ function ContactList(props) {
     setOrderBy(newOrderBy);
   };
 
+  const handleFilterChange = filterName => event => {
+        const val = event.target.value;
+        setFilterState(oldFilterState => ({
+            ...oldFilterState,
+            [filterName]: val
+        }));
+  };
+
   return (
     <Paper className={classes.root}>
       <Typography variant="h2" gutterBottom>
-        Contact List
+        User List
       </Typography>
-
+      <TextField
+            id="search"
+            label="User's Name Contains"
+            className={classes.textField}
+            value={filterState.userFilter}
+            onChange={handleFilterChange("userFilter")}
+            margin="normal"
+            variant="outlined"
+            type="text"
+            InputProps={{
+                className: classes.input
+            }}
+      />
       {loading && !error && <p>Loading...</p>}
       {error && !loading && <p>Error</p>}
 
@@ -98,31 +127,21 @@ function ContactList(props) {
                     direction={order}
                     onClick={() => handleSortRequest("first_name")}
                   >
-                    First Name
+                      first name
                   </TableSortLabel>
                 </Tooltip>
               </TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {data.Contact.map(contact => {
+            {data.User.map(n => {
               return (
-                <TableRow key={contact.id}>
-                    <TableCell>
-                        <Link className="edit-link" to={"/contacts/" + contact.id}>
-                          {contact.first_name} {contact.last_name} {contact.email}
-                        </Link>
-                      <p>
-                      Recommended articles:
-                      </p>
-                        {contact.recommendations.map(article => (
-                            <p>
-                                <Link className="edit-link" to={"/articles/" + article.id}>
-                                    {article.title}
-                                </Link>
-                            </p>
-                        ))}
-                    </TableCell>
+                <TableRow key={n.id}>
+                  <TableCell>
+                    <Link className="edit-link" to={"/users/" + n.id}>
+                      {n.first_name}
+                    </Link>
+                  </TableCell>
                 </TableRow>
               );
             })}
@@ -133,4 +152,4 @@ function ContactList(props) {
   );
 }
 
-export default withStyles(styles)(ContactList);
+export default withStyles(styles)(UserList);

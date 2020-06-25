@@ -1,20 +1,22 @@
 import React from "react";
+
+import Table from "@material-ui/core/Table";
+import TableBody from "@material-ui/core/TableBody";
+import TableCell from "@material-ui/core/TableCell";
+import TableHead from "@material-ui/core/TableHead";
+import TableRow from "@material-ui/core/TableRow";
+import Paper from "@material-ui/core/Paper";
+
 import { useQuery } from "@apollo/react-hooks";
 import gql from "graphql-tag";
-import "../UserList.css";
+import "../../UserList.css";
 import { withStyles } from "@material-ui/core/styles";
 import { Link } from "react-router-dom";
+
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableRow,
-  Tooltip,
-  Paper,
   TableSortLabel,
   Typography,
-  TextField
+  TextField, Tooltip
 } from "@material-ui/core";
 
 const styles = theme => ({
@@ -34,46 +36,47 @@ const styles = theme => ({
   }
 });
 
-const GET_CONTACT = gql`
-  query propertiesPaginateQuery(
+
+const GET_CLIENTS = gql`
+    query clientsPaginateQuery(
     $first: Int
     $offset: Int
-    $orderBy: [_PropertyOrdering]
-    $filter: _PropertyFilter
-  ) {
-    Property(
-      first: $first
-      offset: $offset
-      orderBy: $orderBy
-      filter: $filter
-    ) {
-      id
-      name
+    $orderBy: [_ClientOrdering]
+    $filter: String
+    ){
+        client(
+            first: $first
+            offset: $offset
+            orderBy: $orderBy
+            filter: $filter
+        ) {
+            id
+            name
+        }
     }
-  }
+    
 `;
 
-function PropertyList(props) {
+function CompanyList(props) {
   const { classes } = props;
   const [order, setOrder] = React.useState("asc");
   const [orderBy, setOrderBy] = React.useState("name");
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
-  const [filterState, setFilterState] = React.useState({ propertyFilter: "" });
+  const [filterState, setFilterState] = React.useState({ clientFilter: "" });
 
   const getFilter = () => {
-    return filterState.propertyFilter.length > 0
-      ? { name_contains: filterState.propertyFilter }
-      : {};
+    return filterState.clientFilter.length > 0
+      ? "*"+filterState.clientFilter+"*" : "*"
   };
 
-  const { loading, data, error } = useQuery(GET_CONTACT, {
-    variables: {
-      first: rowsPerPage,
-      offset: rowsPerPage * page,
-      orderBy: orderBy + "_" + order,
-      filter: getFilter()
-    }
+  const { loading, data, error } = useQuery(GET_CLIENTS, {
+      variables: {
+          first: rowsPerPage,
+          offset: rowsPerPage * page,
+          orderBy: orderBy + "_" + order,
+          filter: getFilter()
+      }
   });
 
   const handleSortRequest = property => {
@@ -100,22 +103,21 @@ function PropertyList(props) {
   return (
     <Paper className={classes.root}>
       <Typography variant="h2" gutterBottom>
-        Property List
+        Client List
       </Typography>
       <TextField
-        id="search"
-        label="Property Name Contains"
-        className={classes.textField}
-        value={filterState.propertyFilter}
-        onChange={handleFilterChange("propertyFilter")}
-        margin="normal"
-        variant="outlined"
-        type="text"
-        InputProps={{
-          className: classes.input
-        }}
+          id="search"
+          label="Client Name Contains"
+          className={classes.textField}
+          value={filterState.clientFilter}
+          onChange={handleFilterChange("clientFilter")}
+          margin="normal"
+          variant="outlined"
+          type="text"
+          InputProps={{
+              className: classes.input
+          }}
       />
-
       {loading && !error && <p>Loading...</p>}
       {error && !loading && <p>Error</p>}
 
@@ -133,20 +135,25 @@ function PropertyList(props) {
                     direction={order}
                     onClick={() => handleSortRequest("name")}
                   >
-                    Name
+                    Client Name
                   </TableSortLabel>
                 </Tooltip>
               </TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {data.Property.map(n => {
+            {data.client.map(({ id, name, __typename }) => {
               return (
-                <TableRow key={n.id}>
-                  <TableCell component="th" scope="row">
-                    <Link className="edit-link" to={"/properties/" + n.id}>
-                      {n.name}
-                    </Link>
+                <TableRow key={__typename + "-" + id}>
+                  <TableCell>
+                      {__typename.toString()==="Contact" ?
+                          <Link className="edit-link" to={"/contacts/"+id}>
+                              {name}-{__typename.toString()}
+                          </Link>
+                          :
+                          <Link className="edit-link" to={"/companies/"+id}>
+                              {name}-{__typename.toString()}
+                          </Link>}
                   </TableCell>
                 </TableRow>
               );
@@ -158,4 +165,4 @@ function PropertyList(props) {
   );
 }
 
-export default withStyles(styles)(PropertyList);
+export default withStyles(styles)(CompanyList);

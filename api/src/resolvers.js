@@ -5,6 +5,10 @@ const resolvers = {
         client:async (object, params, ctx, resolveInfo)=>{
             const result = await neo4jgraphql(object, params, ctx, resolveInfo, true)
             return result
+        },
+        getClient:async(object, params, ctx, resolveInfo)=>{
+            const result = await neo4jgraphql(object, params, ctx, resolveInfo, true)
+            return result
         }
     }
 };

@@ -346,8 +346,8 @@ type Query {
 type Mutation {
   readArticle(reader_id: String, article_id: String ): String
     @cypher(statement: "MATCH (contact:Contact {id: $reader_id }) MATCH (article:Article{id:$article_id}) MERGE (contact)-[read:VIEWED]->(article) RETURN id(read) as rel_id")
-  createDeal(client_id: String, property_id: String): String
-    @cypher(statement: "MATCH (client:Client {id: $client_id }) MATCH (property:Property{id:$property_id}) MERGE (client)-[:HAS_INTEREST_IN]->(deal:Deal{commercial: true})-[:HAS_INTEREST_IN]->(article) RETURN id(read) as rel_id")
+  createDeal(action: Int, amount: String, client_id: String, est_date: String, living: Int, property_id: String): String
+    @cypher(statement: "MATCH (client:Client {id: $client_id }) MATCH (property:Property{id:$property_id}) CREATE (deal:Deal{stage: 'start', action: $action, amount: $amount, est_date: datetime($est_date), living: $living}) MERGE (client)-[:HAS_INTEREST_IN]->(deal)-[:HAS_INTEREST_IN]->(article) RETURN id(deal) as deal_id")
 
 }
 

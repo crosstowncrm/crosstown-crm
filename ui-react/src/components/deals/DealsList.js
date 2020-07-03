@@ -1,8 +1,8 @@
 import React from "react";
-import { useQuery } from "@apollo/react-hooks";
 import gql from "graphql-tag";
 import "../../UserList.css";
 import { withStyles } from "@material-ui/core/styles";
+import { useMutation, useQuery } from "@apollo/react-hooks/lib/index";
 import {
   Table,
   TableBody,
@@ -22,9 +22,7 @@ import DialogActions from "@material-ui/core/DialogActions";
 import DialogContent from "@material-ui/core/DialogContent";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import FormControl from "@material-ui/core/FormControl";
-import InputLabel from "@material-ui/core/InputLabel";
 import MenuItem from "@material-ui/core/MenuItem";
-import Select from "@material-ui/core/Select";
 import FormHelperText from "@material-ui/core/FormHelperText";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 
@@ -114,6 +112,7 @@ function DealsList(props) {
   const [filterState, setFilterState] = React.useState({ dealFilter: "" });
   const [open, setOpen] = React.useState(false);
   const [fullWidth, setFullWidth] = React.useState(true);
+  const [formData, updateFormData] = React.useState({});
 
   const getFilter = () => {
     return filterState.dealFilter.length > 0
@@ -140,12 +139,6 @@ function DealsList(props) {
     }));
   };
 
-  const createDeal = gql`
-    mutation createDeal($client_id: String, $property_id: String) {
-      createDeal(client_id: $client_id, property_id: $property_id)
-    }
-  `;
-
   const {
     loading: dealsQueryLoading,
     data: deals,
@@ -165,7 +158,6 @@ function DealsList(props) {
     error: clientsQueryError
   } = useQuery(GET_CLIENTS, {
     variables: {
-      first: rowsPerPage,
       orderBy: orderBy + "_" + order
     }
   });
@@ -176,7 +168,6 @@ function DealsList(props) {
     error: propertiesQueryError
   } = useQuery(GET_PROPERTIES, {
     variables: {
-      first: rowsPerPage,
       orderBy: orderBy + "_" + order
     }
   });
@@ -189,10 +180,32 @@ function DealsList(props) {
     setOpen(false);
   };
 
-  const handleOk = form => {
-    createNewDeal(form.data);
+  const handleChange = (e, value) => {
+    let name = "";
+    switch (typeof value) {
+      case "object":
+        let target = e.target.id.split("-");
+        name = target[0];
+        value = value.id;
+        break;
+      default:
+        value = e.target.value.trim();
+        name = e.target.name;
+    }
+
+    updateFormData({
+      ...formData,
+      [name]: value
+    });
   };
-  const createNewDeal = data => {};
+
+  const handleSubmit = e => {
+    e.preventDefault();
+    console.log(formData);
+    createNewDeal({
+      variables: formData
+    });
+  };
 
   const actions = [
     { title: "Sales", id: 1 },
@@ -200,6 +213,36 @@ function DealsList(props) {
     { title: "Buys", id: 3 },
     { title: "Rents", id: 4 }
   ];
+
+  const livings = [
+    { title: "Commercial", id: 1 },
+    { title: "Residential", id: 2 }
+  ];
+
+  const CREATE_NEW_DEAL = gql`
+    mutation createDeal(
+      $action: Int
+      $amount: String
+      $client: String
+      $est_date: String
+      $living: Int
+      $property: String
+    ) {
+      createDeal(
+        client_id: $client
+        property_id: $property
+        action: $action
+        amount: $amount
+        est_date: $est_date
+        living: $living
+      )
+    }
+  `;
+
+  const [
+    createNewDeal,
+    { loading: cndMutationLoading, error: cndQMutationError }
+  ] = useMutation(CREATE_NEW_DEAL);
 
   return (
     <div className={classes.root}>
@@ -235,10 +278,12 @@ function DealsList(props) {
             {clients && !clientsQueryLoading && !clientsQueryError && (
               <FormControl>
                 <Autocomplete
-                  id="combo-box-demo"
+                  id="client"
+                  name="client"
                   options={clients.client}
                   getOptionLabel={option => option.name}
                   style={{ width: 300 }}
+                  onChange={handleChange}
                   renderInput={params => (
                     <TextField {...params} label="Client" variant="outlined" />
                   )}
@@ -247,10 +292,12 @@ function DealsList(props) {
             )}
             <FormControl className={classes.formControl}>
               <Autocomplete
-                id="combo-box-demo"
+                id="action"
                 options={actions}
                 getOptionLabel={option => option.title}
                 style={{ width: 300 }}
+                onChange={handleChange}
+                name="action"
                 renderInput={params => (
                   <TextField {...params} label="does" variant="outlined" />
                 )}
@@ -265,30 +312,66 @@ function DealsList(props) {
 
             {properties && !propertiesQueryLoading && !propertiesQueryError && (
               <FormControl className={classes.formControl}>
-                <FormControl>
-                  <Autocomplete
-                    id="combo-box-demo"
-                    options={properties.Property}
-                    getOptionLabel={option => option.name}
-                    style={{ width: 300 }}
-                    renderInput={params => (
-                      <TextField
-                        {...params}
-                        label="Property"
-                        variant="outlined"
-                      />
-                    )}
-                  />
-                </FormControl>
+                <Autocomplete
+                  id="property"
+                  options={properties.Property}
+                  getOptionLabel={option => option.name}
+                  style={{ width: 300 }}
+                  onChange={handleChange}
+                  name="property"
+                  renderInput={params => (
+                    <TextField
+                      {...params}
+                      label="Property"
+                      variant="outlined"
+                    />
+                  )}
+                />
               </FormControl>
             )}
+
+            <FormControl className={classes.formControl}>
+              <Autocomplete
+                id="living"
+                options={livings}
+                getOptionLabel={option => option.title}
+                style={{ width: 300 }}
+                onChange={handleChange}
+                name="living"
+                renderInput={params => (
+                  <TextField {...params} label="livings" variant="outlined" />
+                )}
+              />
+            </FormControl>
+            <FormControl className={classes.formControl}>
+              <TextField
+                label="estimated value"
+                variant="outlined"
+                onChange={handleChange}
+                name="amount"
+              />
+            </FormControl>
+            <FormControl className={classes.formControl}>
+              <TextField
+                id="datetime-local"
+                label="Next appointment"
+                type="datetime-local"
+                defaultValue="2020-08-24T10:30"
+                className={classes.textField}
+                InputLabelProps={{
+                  shrink: true
+                }}
+                onChange={handleChange}
+                name="est_date"
+              />
+            </FormControl>
           </form>
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose} color="primary">
             Close
           </Button>
-          <Button onClick={handleOk} color="primary">
+          <Button onClick={handleSubmit} color="primary">
             Сonduct
           </Button>
         </DialogActions>

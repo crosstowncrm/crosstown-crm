@@ -34,26 +34,33 @@ const styles = theme => ({
 
 const GET_DEAL = gql`
   query userQuery($id: ID) {
-      Deal (id:$id){
-          id
-          start_time{formatted}
-          close_time{formatted}
-          value
-          title
-          strategy
-          represents
-          type
-          associate
-          stage
-          property{
-              id
-              name
-          }
-          client{
-              id
-              name
-          }
+    Deal(id: $id) {
+      id
+      start_time {
+        formatted
       }
+      est_date {
+        formatted
+      }
+      amount
+      strategy {
+        id
+        name
+      }
+      type {
+        id
+        name
+      }
+      stage
+      property {
+        id
+        name
+      }
+      client {
+        id
+        name
+      }
+    }
   }
 `;
 
@@ -65,7 +72,6 @@ function DealEdit(props) {
       id: params["uid"]
     }
   });
-
 
   return (
     <div className={classes.root}>
@@ -79,7 +85,6 @@ function DealEdit(props) {
         <Table className={classes.table}>
           <TableHead>
             <TableRow>
-              <TableCell key="title">title</TableCell>
               <TableCell key="strategy">strategy</TableCell>
               <TableCell key="start_time">start time</TableCell>
               <TableCell key="close_time">close time</TableCell>
@@ -91,28 +96,66 @@ function DealEdit(props) {
             </TableRow>
           </TableHead>
           <TableBody>
-            {data.Deal.map(({id,title,start_time, close_time, strategy,represents,type,associate,value,stage}) => {
-              return (
-                <TableRow key={id}>
-
-                  <TableCell>{title ? title: "no data"}</TableCell>
-                  <TableCell>{strategy ? strategy: "no data"}</TableCell>
-                  <TableCell>{start_time? start_time.formatted: "no data"}</TableCell>
-                  <TableCell>{close_time? close_time.formatted: "no data"}</TableCell>
-                  <TableCell>{represents ? represents: "no data"}</TableCell>
-                  <TableCell>{type ? type: "no data"}</TableCell>
-                  <TableCell>{associate ? associate: "no data"}</TableCell>
-                  <TableCell>{value ? value: "no data"}</TableCell>
-                  <TableCell>{stage ? stage: "no data"}</TableCell>
-
-                </TableRow>
-              );
-            })}
+            {data.Deal.map(
+              ({
+                id,
+                start_time,
+                est_date,
+                strategy,
+                represents,
+                type,
+                amount,
+                stage,
+                client,
+                property
+              }) => {
+                return (
+                  <TableRow key={id}>
+                    <TableCell>
+                      {strategy ? strategy.name : "no data"}
+                    </TableCell>
+                    <TableCell>
+                      {start_time ? start_time.formatted : "no data"}
+                    </TableCell>
+                    <TableCell>
+                      {est_date ? est_date.formatted : "no data"}
+                    </TableCell>
+                    <TableCell>
+                      {client.__typename.toString() === "Contact" ? (
+                        <Link
+                          className="edit-link"
+                          to={"/contacts/" + client.id}
+                        >
+                          {client.name}
+                        </Link>
+                      ) : (
+                        <Link
+                          className="edit-link"
+                          to={"/companies/" + client.id}
+                        >
+                          {client.name}
+                        </Link>
+                      )}
+                    </TableCell>
+                    <TableCell>{type ? type.name : "no data"}</TableCell>
+                    <TableCell>
+                      <Link
+                        className="edit-link"
+                        to={"/properties/" + property.id}
+                      >
+                        {property.name}
+                      </Link>
+                    </TableCell>
+                    <TableCell>{amount ? amount : "no data"}</TableCell>
+                    <TableCell>{stage ? stage : "no data"}</TableCell>
+                  </TableRow>
+                );
+              }
+            )}
           </TableBody>
         </Table>
       )}
     </div>
-
   );
 }
 

@@ -13,16 +13,16 @@ import {
   TableSortLabel,
   Typography,
   TextField,
-  Link,
   Button,
   Dialog
 } from "@material-ui/core";
+
+import { Link } from "react-router-dom";
 
 import DialogActions from "@material-ui/core/DialogActions";
 import DialogContent from "@material-ui/core/DialogContent";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import FormControl from "@material-ui/core/FormControl";
-import MenuItem from "@material-ui/core/MenuItem";
 import FormHelperText from "@material-ui/core/FormHelperText";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 
@@ -45,17 +45,17 @@ const styles = theme => ({
 
 const GET_DEALS = gql`
   query dealsPaginateQuery(
-    $first: Int
+    #    $first: Int
     $offset: Int
     $orderBy: [_DealOrdering]
     $filter: _DealFilter
   ) {
-    Deal(first: $first, offset: $offset, orderBy: $orderBy, filter: $filter) {
+    Deal(offset: $offset, orderBy: $orderBy, filter: $filter) {
       id
       start_time {
         formatted
       }
-      close_time {
+      est_date {
         formatted
       }
       property {
@@ -145,7 +145,7 @@ function DealsList(props) {
     error: dealsQueryError
   } = useQuery(GET_DEALS, {
     variables: {
-      first: rowsPerPage,
+      // first: rowsPerPage,
       offset: rowsPerPage * page,
       orderBy: orderBy + "_" + order,
       filter: getFilter()
@@ -203,20 +203,23 @@ function DealsList(props) {
     e.preventDefault();
     console.log(formData);
     createNewDeal({
-      variables: formData
+      variables: formData,
+
+      refetchQueries: [{ query: GET_DEALS }]
     });
+    handleClose();
   };
-
+  //type
   const actions = [
-    { title: "Sales", id: 1 },
-    { title: "Leases", id: 2 },
-    { title: "Buys", id: 3 },
-    { title: "Rents", id: 4 }
+    { name: "Sales", id: 1 },
+    { name: "Leases", id: 2 },
+    { name: "Buys", id: 3 },
+    { name: "Rents", id: 4 }
   ];
-
+  // strategy
   const livings = [
-    { title: "Commercial", id: 1 },
-    { title: "Residential", id: 2 }
+    { name: "Commercial", id: 1 },
+    { name: "Residential", id: 2 }
   ];
 
   const CREATE_NEW_DEAL = gql`
@@ -238,6 +241,24 @@ function DealsList(props) {
       )
     }
   `;
+  // const updateCache = (cache, {data}) => {
+  //
+  //     // Fetch the todos from the cache
+  //     const existingDeals = cache.readQuery({
+  //         query: GET_DEALS
+  //     });
+  //     // Add the new todo to the cache
+  //     const newDeal = {
+  //         id: '6q',
+  //         text: 'Start using Apollo Client.',
+  //         completed: false,
+  //         __typename: 'Todo',
+  //     };
+  //     cache.writeQuery({
+  //         query: GET_DEALS,
+  //         data: {Deals: [newDeal, ...existingDeals.Deals]}
+  //     });
+  // };
 
   const [
     createNewDeal,
@@ -294,7 +315,7 @@ function DealsList(props) {
               <Autocomplete
                 id="action"
                 options={actions}
-                getOptionLabel={option => option.title}
+                getOptionLabel={option => option.name}
                 style={{ width: 300 }}
                 onChange={handleChange}
                 name="action"
@@ -334,7 +355,7 @@ function DealsList(props) {
               <Autocomplete
                 id="living"
                 options={livings}
-                getOptionLabel={option => option.title}
+                getOptionLabel={option => option.name}
                 style={{ width: 300 }}
                 onChange={handleChange}
                 name="living"

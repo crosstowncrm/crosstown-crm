@@ -18,13 +18,11 @@ type Deal {
     id: ID!
     title: String
     start_time: DateTime
-    close_time: DateTime
-    strategy: String
-    represents: String
-    type: String
-    associate: String
-    value: String
+    est_date: DateTime
+    amount: String
     stage: String
+    strategy: Strategy @relation(name: "HAS_STRATEGY", direction: "OUT")
+    type: Type @relation(name: "HAS_TYPE", direction: "OUT")
     property:  Property @relation(name: "HAS_INTEREST_IN", direction: "OUT")
     client:  Client @relation(name: "HAS_INTEREST_IN", direction: "IN")
 }
@@ -134,6 +132,16 @@ type Mailed @relation(name: "MAILS") {
     to: Mail
     timestamp: DateTime
     action: Boolean
+}
+
+type Type{
+    id: ID!
+    name: String
+}
+
+type Strategy{
+    id: ID!
+    name: String
 }
 
 #1
@@ -346,8 +354,9 @@ type Query {
 type Mutation {
   readArticle(reader_id: String, article_id: String ): String
     @cypher(statement: "MATCH (contact:Contact {id: $reader_id }) MATCH (article:Article{id:$article_id}) MERGE (contact)-[read:VIEWED]->(article) RETURN id(read) as rel_id")
-  createDeal(action: Int, amount: String, client_id: String, est_date: String, living: Int, property_id: String): String
-    @cypher(statement: "MATCH (client:Client {id: $client_id }) MATCH (property:Property{id:$property_id}) CREATE (deal:Deal{stage: 'start', action: $action, amount: $amount, est_date: datetime($est_date), living: $living}) MERGE (client)-[:HAS_INTEREST_IN]->(deal)-[:HAS_INTEREST_IN]->(article) RETURN id(deal) as deal_id")
 
+  createDeal(action: Int, amount: String, client_id: String, est_date: String, living: Int, property_id: String): String
+    @cypher(statement: "MATCH (client:Client {id: $client_id }) MATCH (property:Property{id:$property_id}) MATCH (strategy:Strategy {id: $living }) MATCH (type:Type {id: $action }) CREATE (deal:Deal{stage: 'start', action: $action, amount: $amount, start_time: datetime(), est_date: datetime($est_date), living: $living}) MERGE (client)-[:HAS_INTEREST_IN]->(deal)-[:HAS_INTEREST_IN]->(property) MERGE (type)<-[:HAS_TYPE]-(deal)-[:HAS_STRATEGY]->(strategy) SET deal.id = toString(id(deal)) RETURN deal.id as deal_id")
 }
+
 

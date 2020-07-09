@@ -1,5 +1,5 @@
 import React from "react";
-import { useQuery, useMutation } from "@apollo/react-hooks";
+import { useQuery } from "@apollo/react-hooks";
 import gql from "graphql-tag";
 import "../../UserList.css";
 import { withStyles } from "@material-ui/core/styles";
@@ -11,7 +11,6 @@ import {
   TableCell,
   TableHead,
   TableRow,
-  Paper,
   Typography
 } from "@material-ui/core";
 

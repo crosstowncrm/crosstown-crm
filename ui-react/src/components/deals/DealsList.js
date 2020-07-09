@@ -113,6 +113,7 @@ function DealsList(props) {
   const [open, setOpen] = React.useState(false);
   const [fullWidth, setFullWidth] = React.useState(true);
   const [formData, updateFormData] = React.useState({});
+  const [errors, setErrors] = React.useState({});
 
   const getFilter = () => {
     return filterState.dealFilter.length > 0
@@ -199,16 +200,72 @@ function DealsList(props) {
     });
   };
 
+  // const required = value => (value ? undefined : "Required");
+
+  const validate = values => {
+    let clientError = "";
+    let actionError = "";
+    let propertyError = "";
+    let amountError = "";
+    let livingError = "";
+    let est_dateError = "";
+
+    console.log(values);
+
+    if (!values.client) {
+      clientError = "Required";
+    }
+    if (!values.action) {
+      actionError = "Required";
+    }
+    if (!values.property) {
+      propertyError = "Required";
+    }
+    if (!values.amount) {
+      amountError = "Required";
+    }
+    if (!values.living) {
+      livingError = "Required";
+    }
+    if (!values.est_date) {
+      est_dateError = "Required";
+    }
+    if (
+      clientError ||
+      actionError ||
+      propertyError ||
+      amountError ||
+      livingError ||
+      est_dateError
+    ) {
+      setErrors({
+        clientError,
+        actionError,
+        propertyError,
+        amountError,
+        livingError,
+        est_dateError
+      });
+      return false;
+    }
+
+    return true;
+  };
+
   const handleSubmit = e => {
     e.preventDefault();
-    console.log(formData);
-    createNewDeal({
-      variables: formData,
 
-      refetchQueries: [{ query: GET_DEALS }]
-    });
-    handleClose();
+    const isValid = validate(formData);
+    if (isValid) {
+      createNewDeal({
+        variables: formData
+      });
+      // clear form
+      updateFormData({});
+      handleClose();
+    }
   };
+
   //type
   const actions = [
     { name: "Sales", id: 1 },
@@ -238,32 +295,50 @@ function DealsList(props) {
         amount: $amount
         est_date: $est_date
         living: $living
-      )
+      ) {
+        id
+        start_time {
+          formatted
+        }
+        est_date {
+          formatted
+        }
+        client {
+          id
+          name
+        }
+        property {
+          id
+          name
+        }
+      }
     }
   `;
-  // const updateCache = (cache, {data}) => {
-  //
-  //     // Fetch the todos from the cache
-  //     const existingDeals = cache.readQuery({
-  //         query: GET_DEALS
-  //     });
-  //     // Add the new todo to the cache
-  //     const newDeal = {
-  //         id: '6q',
-  //         text: 'Start using Apollo Client.',
-  //         completed: false,
-  //         __typename: 'Todo',
-  //     };
-  //     cache.writeQuery({
-  //         query: GET_DEALS,
-  //         data: {Deals: [newDeal, ...existingDeals.Deals]}
-  //     });
-  // };
 
   const [
     createNewDeal,
     { loading: cndMutationLoading, error: cndQMutationError }
-  ] = useMutation(CREATE_NEW_DEAL);
+  ] = useMutation(CREATE_NEW_DEAL, {
+    update: (proxy, { data: { createDeal } }) => {
+      console.log("createDeal\n" + createDeal.id);
+      // Read the data from our cache for this query.
+      const data = proxy.readQuery({
+        query: GET_DEALS,
+        variables: {
+          offset: rowsPerPage * page,
+          orderBy: orderBy + "_" + order,
+          filter: getFilter()
+        }
+      });
+
+      data.Deal.push(createDeal);
+      // Write our data back to the cache.
+      proxy.writeQuery({
+        query: GET_DEALS,
+        data: { data: data.Deal.concat(createDeal) }
+      });
+    }
+  });
 
   return (
     <div className={classes.root}>
@@ -292,7 +367,7 @@ function DealsList(props) {
       >
         <DialogTitle id="max-width-dialog-title">New Deal</DialogTitle>
         <DialogContent>
-          <form className={classes.form} noValidate>
+          <form className={classes.form} validate={validate}>
             {clientsQueryLoading && !clientsQueryError && <p>Loading...</p>}
             {clientsQueryError && !clientsQueryLoading && <p>Error</p>}
 
@@ -306,9 +381,18 @@ function DealsList(props) {
                   style={{ width: 300 }}
                   onChange={handleChange}
                   renderInput={params => (
-                    <TextField {...params} label="Client" variant="outlined" />
+                    <TextField
+                      {...params}
+                      label="Client"
+                      variant="outlined"
+                      data-validators="isRequired"
+                      required={true}
+                    />
                   )}
                 />
+                <div style={{ fontSize: 12, color: "red" }}>
+                  {errors.clientError}
+                </div>
               </FormControl>
             )}
             <FormControl className={classes.formControl}>
@@ -323,6 +407,9 @@ function DealsList(props) {
                   <TextField {...params} label="does" variant="outlined" />
                 )}
               />
+              <div style={{ fontSize: 12, color: "red" }}>
+                {errors.actionError}
+              </div>
               <FormHelperText>Some important helper text</FormHelperText>
             </FormControl>
 
@@ -348,6 +435,9 @@ function DealsList(props) {
                     />
                   )}
                 />
+                <div style={{ fontSize: 12, color: "red" }}>
+                  {errors.propertyError}
+                </div>
               </FormControl>
             )}
 
@@ -363,6 +453,9 @@ function DealsList(props) {
                   <TextField {...params} label="livings" variant="outlined" />
                 )}
               />
+              <div style={{ fontSize: 12, color: "red" }}>
+                {errors.livingError}
+              </div>
             </FormControl>
             <FormControl className={classes.formControl}>
               <TextField
@@ -371,6 +464,9 @@ function DealsList(props) {
                 onChange={handleChange}
                 name="amount"
               />
+              <div style={{ fontSize: 12, color: "red" }}>
+                {errors.amountError}
+              </div>
             </FormControl>
             <FormControl className={classes.formControl}>
               <TextField
@@ -385,6 +481,9 @@ function DealsList(props) {
                 onChange={handleChange}
                 name="est_date"
               />
+              <div style={{ fontSize: 12, color: "red" }}>
+                {errors.est_dateError}
+              </div>
             </FormControl>
           </form>
         </DialogContent>
@@ -431,7 +530,7 @@ function DealsList(props) {
           </TableHead>
           <TableBody>
             {deals.Deal.map(
-              ({ id, property, client, start_time, close_time }) => {
+              ({ id, property, client, start_time, est_date }) => {
                 return (
                   <TableRow key={id}>
                     <TableCell>
@@ -443,7 +542,7 @@ function DealsList(props) {
                       </Link>
                     </TableCell>
                     <TableCell>
-                      {close_time ? close_time.formatted : "no data yet"}
+                      {est_date ? est_date.formatted : "no data yet"}
                     </TableCell>
                   </TableRow>
                 );

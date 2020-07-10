@@ -335,6 +335,26 @@ type Query {
   )
   getClient:[Client]
 
+  getClientCount: Int
+    @cypher(
+        statement: "MATCH (client:Client) RETURN count(client) as client_count"
+    )
+  getDealCount: Int
+    @cypher(
+        statement: "MATCH (deal:Deal) RETURN count(deal) as deal_count"
+    )
+  getListingCount: Int
+    @cypher(
+        statement: "MATCH (listing:Listing) RETURN count(listing) as listing_count"
+    )
+  getPropertyCount: Int
+    @cypher(
+        statement: "MATCH (property:Property) RETURN count(property) as property_count"
+    )
+  getUserCount: Int
+    @cypher(
+        statement: "MATCH (user:User) RETURN count(user) as user_count"
+    )
   usersBySubstring(substring: String): [Client]
     @cypher(
       statement: "MATCH (u:User) WHERE u.name CONTAINS $substring RETURN u"

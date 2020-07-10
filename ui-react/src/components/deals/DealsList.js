@@ -25,6 +25,7 @@ import DialogTitle from "@material-ui/core/DialogTitle";
 import FormControl from "@material-ui/core/FormControl";
 import FormHelperText from "@material-ui/core/FormHelperText";
 import Autocomplete from "@material-ui/lab/Autocomplete";
+import TablePagination from "@material-ui/core/TablePagination";
 
 const styles = theme => ({
   root: {
@@ -100,6 +101,12 @@ const GET_PROPERTIES = gql`
       id
       name
     }
+  }
+`;
+
+const GET_DEALS_COUNT = gql`
+  query dealsCountQuery {
+    getDealCount
   }
 `;
 
@@ -199,8 +206,6 @@ function DealsList(props) {
       [name]: value
     });
   };
-
-  // const required = value => (value ? undefined : "Required");
 
   const validate = values => {
     let clientError = "";
@@ -339,6 +344,21 @@ function DealsList(props) {
       });
     }
   });
+
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = event => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
+
+  const {
+    loading: dealsCountQueryLoading,
+    data: dealsCount,
+    error: dealsCountQueryError
+  } = useQuery(GET_DEALS_COUNT);
 
   return (
     <div className={classes.root}>
@@ -481,9 +501,6 @@ function DealsList(props) {
                 onChange={handleChange}
                 name="est_date"
               />
-              <div style={{ fontSize: 12, color: "red" }}>
-                {errors.est_dateError}
-              </div>
             </FormControl>
           </form>
         </DialogContent>
@@ -550,6 +567,19 @@ function DealsList(props) {
             )}
           </TableBody>
         </Table>
+      )}
+      {dealsCountQueryLoading && !dealsCountQueryError && <p>Loading...</p>}
+      {dealsCountQueryError && !dealsCountQueryLoading && <p>Error</p>}
+
+      {dealsCount && !dealsCountQueryLoading && !dealsCountQueryError && (
+        <TablePagination
+          component="div"
+          count={dealsCount.getDealCount}
+          page={page}
+          onChangePage={handleChangePage}
+          rowsPerPage={rowsPerPage}
+          onChangeRowsPerPage={handleChangeRowsPerPage}
+        />
       )}
     </div>
   );

@@ -4,6 +4,7 @@ import gql from "graphql-tag";
 import "../../UserList.css";
 import { withStyles } from "@material-ui/core/styles";
 import { Link } from "react-router-dom";
+import TablePagination from "@material-ui/core/TablePagination";
 import {
   Table,
   TableBody,
@@ -53,6 +54,12 @@ const GET_PROPERTY = gql`
   }
 `;
 
+const GET_PROPERTIES_COUNT = gql`
+  query propertiesCountQuery {
+    getPropertyCount
+  }
+`;
+
 function PropertyList(props) {
   const { classes } = props;
   const [order, setOrder] = React.useState("asc");
@@ -96,6 +103,21 @@ function PropertyList(props) {
       [filterName]: val
     }));
   };
+
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = event => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
+
+  const {
+    loading: propertiesCountQueryLoading,
+    data: propertiesCount,
+    error: propertiesCountQueryError
+  } = useQuery(GET_PROPERTIES_COUNT);
 
   return (
     <Paper className={classes.root}>
@@ -152,6 +174,25 @@ function PropertyList(props) {
               );
             })}
           </TableBody>
+          {propertiesCountQueryLoading && !propertiesCountQueryError && (
+            <p>Loading...</p>
+          )}
+          {propertiesCountQueryError && !propertiesCountQueryLoading && (
+            <p>Error</p>
+          )}
+
+          {propertiesCount &&
+            !propertiesCountQueryLoading &&
+            !propertiesCountQueryError && (
+              <TablePagination
+                component="div"
+                count={propertiesCount.getPropertyCount}
+                page={page}
+                onChangePage={handleChangePage}
+                rowsPerPage={rowsPerPage}
+                onChangeRowsPerPage={handleChangeRowsPerPage}
+              />
+            )}
         </Table>
       )}
     </Paper>

@@ -13,10 +13,13 @@ import "../../UserList.css";
 import { withStyles } from "@material-ui/core/styles";
 import { Link } from "react-router-dom";
 
+import TablePagination from "@material-ui/core/TablePagination";
+
 import {
   TableSortLabel,
   Typography,
-  TextField, Tooltip
+  TextField,
+  Tooltip
 } from "@material-ui/core";
 
 const styles = theme => ({
@@ -36,25 +39,24 @@ const styles = theme => ({
   }
 });
 
-
 const GET_CLIENTS = gql`
-    query clientsPaginateQuery(
+  query clientsPaginateQuery(
     $first: Int
     $offset: Int
     $orderBy: [_ClientOrdering]
     $filter: String
-    ){
-        client(
-            first: $first
-            offset: $offset
-            orderBy: $orderBy
-            filter: $filter
-        ) {
-            id
-            name
-        }
+  ) {
+    client(first: $first, offset: $offset, orderBy: $orderBy, filter: $filter) {
+      id
+      name
     }
-    
+  }
+`;
+
+const GET_CLIENTS_COUNT = gql`
+  query clientsCountQuery {
+    getClientCount
+  }
 `;
 
 function CompanyList(props) {
@@ -67,16 +69,17 @@ function CompanyList(props) {
 
   const getFilter = () => {
     return filterState.clientFilter.length > 0
-      ? "*"+filterState.clientFilter+"*" : "*"
+      ? "*" + filterState.clientFilter + "*"
+      : "*";
   };
 
   const { loading, data, error } = useQuery(GET_CLIENTS, {
-      variables: {
-          first: rowsPerPage,
-          offset: rowsPerPage * page,
-          orderBy: orderBy + "_" + order,
-          filter: getFilter()
-      }
+    variables: {
+      first: rowsPerPage,
+      offset: rowsPerPage * page,
+      orderBy: orderBy + "_" + order,
+      filter: getFilter()
+    }
   });
 
   const handleSortRequest = property => {
@@ -100,23 +103,38 @@ function CompanyList(props) {
     }));
   };
 
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = event => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
+
+  const {
+    loading: clientsCountQueryLoading,
+    data: clientsCount,
+    error: clientsCountQueryError
+  } = useQuery(GET_CLIENTS_COUNT);
+
   return (
     <Paper className={classes.root}>
       <Typography variant="h2" gutterBottom>
         Client List
       </Typography>
       <TextField
-          id="search"
-          label="Client Name Contains"
-          className={classes.textField}
-          value={filterState.clientFilter}
-          onChange={handleFilterChange("clientFilter")}
-          margin="normal"
-          variant="outlined"
-          type="text"
-          InputProps={{
-              className: classes.input
-          }}
+        id="search"
+        label="Client Name Contains"
+        className={classes.textField}
+        value={filterState.clientFilter}
+        onChange={handleFilterChange("clientFilter")}
+        margin="normal"
+        variant="outlined"
+        type="text"
+        InputProps={{
+          className: classes.input
+        }}
       />
       {loading && !error && <p>Loading...</p>}
       {error && !loading && <p>Error</p>}
@@ -146,19 +164,37 @@ function CompanyList(props) {
               return (
                 <TableRow key={__typename + "-" + id}>
                   <TableCell>
-                      {__typename.toString()==="Contact" ?
-                          <Link className="edit-link" to={"/contacts/"+id}>
-                              {name}-{__typename.toString()}
-                          </Link>
-                          :
-                          <Link className="edit-link" to={"/companies/"+id}>
-                              {name}-{__typename.toString()}
-                          </Link>}
+                    {__typename.toString() === "Contact" ? (
+                      <Link className="edit-link" to={"/contacts/" + id}>
+                        {name}-{__typename.toString()}
+                      </Link>
+                    ) : (
+                      <Link className="edit-link" to={"/companies/" + id}>
+                        {name}-{__typename.toString()}
+                      </Link>
+                    )}
                   </TableCell>
                 </TableRow>
               );
             })}
           </TableBody>
+          {clientsCountQueryLoading && !clientsCountQueryError && (
+            <p>Loading...</p>
+          )}
+          {clientsCountQueryError && !clientsCountQueryLoading && <p>Error</p>}
+
+          {clientsCount &&
+            !clientsCountQueryLoading &&
+            !clientsCountQueryError && (
+              <TablePagination
+                component="div"
+                count={clientsCount.getClientCount}
+                page={page}
+                onChangePage={handleChangePage}
+                rowsPerPage={rowsPerPage}
+                onChangeRowsPerPage={handleChangeRowsPerPage}
+              />
+            )}
         </Table>
       )}
     </Paper>

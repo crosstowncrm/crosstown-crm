@@ -1,9 +1,8 @@
 import React from "react";
-import {  makeStyles } from '@material-ui/core/styles';
-import Badge from '@material-ui/core/Badge';
-import MenuItem from '@material-ui/core/MenuItem';
-import Menu from '@material-ui/core/Menu';
-
+import { makeStyles } from "@material-ui/core/styles";
+import Badge from "@material-ui/core/Badge";
+import MenuItem from "@material-ui/core/MenuItem";
+import Menu from "@material-ui/core/Menu";
 
 import {
   BrowserRouter as Router,
@@ -28,17 +27,15 @@ import {
   Rowing as RowingIcon,
   EmojiTransportation as EmojiTransportationIcon,
   ListAlt as ListAltIcon
-
 } from "@material-ui/icons";
 
-import MenuIcon from '@material-ui/icons/Menu';
-import AccountCircle from '@material-ui/icons/AccountCircle';
-import NotificationsIcon from '@material-ui/icons/Notifications';
-import MoreIcon from '@material-ui/icons/MoreVert';
-import AccessibilityNewIcon from '@material-ui/icons/AccessibilityNew';
-import CameraRollIcon from '@material-ui/icons/CameraRoll';
-import AcUnitIcon from '@material-ui/icons/AcUnit';
-
+import MenuIcon from "@material-ui/icons/Menu";
+import AccountCircle from "@material-ui/icons/AccountCircle";
+import NotificationsIcon from "@material-ui/icons/Notifications";
+import MoreIcon from "@material-ui/icons/MoreVert";
+import AccessibilityNewIcon from "@material-ui/icons/AccessibilityNew";
+import CameraRollIcon from "@material-ui/icons/CameraRoll";
+import AcUnitIcon from "@material-ui/icons/AcUnit";
 
 import Login from "./components/Login";
 import UserList from "./components/users/UserList";
@@ -60,584 +57,520 @@ import DealData from "./components/deals/edit-deal.component";
 const drawerWidth = 240;
 
 function isAuthenticated() {
-    // Check whether the current time is past the
-    // access token's expiry time
-    let userId = localStorage.getItem('userId');
-    return userId !== null;
+  // Check whether the current time is past the
+  // access token's expiry time
+  let userId = localStorage.getItem("userId");
+  return userId !== null;
 }
 
-
-const useStyles = makeStyles((theme) => ({
-    root: {
-        display: 'flex',
-    },
-    toolbar: {
-        paddingRight: 24, // keep right padding when drawer closed
-    },
-    toolbarIcon: {
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'flex-end',
-        padding: '0 8px',
-        ...theme.mixins.toolbar,
-    },
-    appBar: {
-        zIndex: theme.zIndex.drawer + 1,
-        transition: theme.transitions.create(['width', 'margin'], {
-            easing: theme.transitions.easing.sharp,
-            duration: theme.transitions.duration.leavingScreen,
-        }),
-    },
-    appBarShift: {
-        marginLeft: drawerWidth,
-        width: `calc(100% - ${drawerWidth}px)`,
-        transition: theme.transitions.create(['width', 'margin'], {
-            easing: theme.transitions.easing.sharp,
-            duration: theme.transitions.duration.enteringScreen,
-        }),
-    },
-    menuButton: {
-        marginRight: 36,
-    },
-    menuButtonHidden: {
-        display: 'none',
-    },
-    title: {
-        flexGrow: 1,
-    },
-    drawerPaper: {
-        position: 'relative',
-        whiteSpace: 'nowrap',
-        width: drawerWidth,
-        transition: theme.transitions.create('width', {
-            easing: theme.transitions.easing.sharp,
-            duration: theme.transitions.duration.enteringScreen,
-        }),
-    },
-    drawerPaperClose: {
-        overflowX: 'hidden',
-        transition: theme.transitions.create('width', {
-            easing: theme.transitions.easing.sharp,
-            duration: theme.transitions.duration.leavingScreen,
-        }),
-        width: theme.spacing(7),
-        [theme.breakpoints.up('sm')]: {
-            width: theme.spacing(9),
-        },
-    },
-    appBarSpacer: theme.mixins.toolbar,
-    content: {
-        flexGrow: 1,
-        height: '100vh',
-        overflow: 'auto',
-        paddingTop: 100,
-    },
-    container: {
-        paddingTop: theme.spacing(4),
-        paddingBottom: theme.spacing(4),
-    },
-    paper: {
-        padding: theme.spacing(2),
-        display: 'flex',
-        overflow: 'auto',
-        flexDirection: 'column',
-    },
-    fixedHeight: {
-        height: 240,
-    },
-    navLink: {
-        textDecoration: 'none',
-        color: 'inherit',
-    },
-    appBarImage: {
-        maxHeight: '75px',
-        paddingRight: '20px',
-    },
+const useStyles = makeStyles(theme => ({
+  root: {
+    display: "flex"
+  },
+  toolbar: {
+    paddingRight: 24 // keep right padding when drawer closed
+  },
+  toolbarIcon: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "flex-end",
+    padding: "0 8px",
+    ...theme.mixins.toolbar
+  },
+  appBar: {
+    zIndex: theme.zIndex.drawer + 1,
+    transition: theme.transitions.create(["width", "margin"], {
+      easing: theme.transitions.easing.sharp,
+      duration: theme.transitions.duration.leavingScreen
+    })
+  },
+  appBarShift: {
+    marginLeft: drawerWidth,
+    width: `calc(100% - ${drawerWidth}px)`,
+    transition: theme.transitions.create(["width", "margin"], {
+      easing: theme.transitions.easing.sharp,
+      duration: theme.transitions.duration.enteringScreen
+    })
+  },
+  menuButton: {
+    marginRight: 36
+  },
+  menuButtonHidden: {
+    display: "none"
+  },
+  title: {
+    flexGrow: 1
+  },
+  drawerPaper: {
+    position: "relative",
+    whiteSpace: "nowrap",
+    width: drawerWidth,
+    transition: theme.transitions.create("width", {
+      easing: theme.transitions.easing.sharp,
+      duration: theme.transitions.duration.enteringScreen
+    })
+  },
+  drawerPaperClose: {
+    overflowX: "hidden",
+    transition: theme.transitions.create("width", {
+      easing: theme.transitions.easing.sharp,
+      duration: theme.transitions.duration.leavingScreen
+    }),
+    width: theme.spacing(7),
+    [theme.breakpoints.up("sm")]: {
+      width: theme.spacing(9)
+    }
+  },
+  appBarSpacer: theme.mixins.toolbar,
+  content: {
+    flexGrow: 1,
+    height: "100vh",
+    overflow: "auto",
+    paddingTop: 100
+  },
+  container: {
+    paddingTop: theme.spacing(4),
+    paddingBottom: theme.spacing(4)
+  },
+  paper: {
+    padding: theme.spacing(2),
+    display: "flex",
+    overflow: "auto",
+    flexDirection: "column"
+  },
+  fixedHeight: {
+    height: 240
+  },
+  navLink: {
+    textDecoration: "none",
+    color: "inherit"
+  },
+  appBarImage: {
+    maxHeight: "75px",
+    paddingRight: "20px"
+  }
 }));
 
 export default function App() {
-    const classes = useStyles();
-    const [anchorEl, setAnchorEl] = React.useState(null);
-    const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
-    const [mobilePropertyEl, setMobilePropertyEl] = React.useState(null);
-    const [mobileProfileEl, setMobileProfileEl] = React.useState(null);
-    const [mobileSalesEl, setMobileSalesEl] = React.useState(null);
-    const [mobileMarketingEl, setMobileMarketingEl] = React.useState(null);
-    const [mobileSupportEl, setMobileSupportEl] = React.useState(null);
-    const [mobileOpen, setMobileOpen] = React.useState(false);
+  const classes = useStyles();
+  const [anchorEl, setAnchorEl] = React.useState(null);
+  const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
+  const [mobilePropertyEl, setMobilePropertyEl] = React.useState(null);
+  const [mobileProfileEl, setMobileProfileEl] = React.useState(null);
+  const [mobileSalesEl, setMobileSalesEl] = React.useState(null);
+  const [mobileMarketingEl, setMobileMarketingEl] = React.useState(null);
+  const [mobileSupportEl, setMobileSupportEl] = React.useState(null);
+  const [mobileOpen, setMobileOpen] = React.useState(false);
 
-    const handleDrawerToggle = () => {
-        setMobileOpen(!mobileOpen);
-    };
+  const handleDrawerToggle = () => {
+    setMobileOpen(!mobileOpen);
+  };
 
-    const isMenuOpen = Boolean(anchorEl);
-    const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
+  const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
+  const isMobilePropertyOpen = Boolean(mobilePropertyEl);
+  const isMobileProfileOpen = Boolean(mobileProfileEl);
 
-    const isMobilePropertyOpen = Boolean(mobilePropertyEl);
+  const handleProfileMenuOpen = event => {
+    setMobileProfileEl(event.currentTarget);
+  };
 
-    const isMobileProfileOpen = Boolean(mobileProfileEl);
+  const isMobileSalesOpen = Boolean(mobileSalesEl);
 
-    const handleProfileMenuOpen = (event) => {
-        setMobileProfileEl(event.currentTarget);
-    };
+  const handleSalesMenuOpen = event => {
+    setMobileSalesEl(event.currentTarget);
+  };
 
-    const isMobileSalesOpen = Boolean(mobileSalesEl);
+  const isMobileMarketingOpen = Boolean(mobileMarketingEl);
 
-    const handleSalesMenuOpen = (event) => {
-        setMobileSalesEl(event.currentTarget);
-    };
+  const handleMarketingMenuOpen = event => {
+    setMobileMarketingEl(event.currentTarget);
+  };
 
-    const isMobileMarketingOpen = Boolean(mobileMarketingEl);
+  const isMobileSupportOpen = Boolean(mobileSupportEl);
 
-    const handleMarketingMenuOpen = (event) => {
-        setMobileMarketingEl(event.currentTarget);
-    };
+  const handleSupportMenuOpen = event => {
+    setMobileSupportEl(event.currentTarget);
+  };
 
-    const isMobileSupportOpen = Boolean(mobileSupportEl);
+  const handlePropertyMenuOpen = event => {
+    setMobilePropertyEl(event.currentTarget);
+  };
 
-    const handleSupportMenuOpen = (event) => {
-        setMobileSupportEl(event.currentTarget);
-    };
+  const handleMobileMenuClose = () => {
+    setMobileMoreAnchorEl(null);
+  };
 
-    const handlePropertyMenuOpen = (event) => {
-        setMobilePropertyEl(event.currentTarget);
-    };
+  const handleMobilePropertMenuClose = () => {
+    setMobilePropertyEl(null);
+  };
 
-    const handleMobileMenuClose = () => {
-        setMobileMoreAnchorEl(null);
-    };
+  const handleMobileProfileMenuClose = () => {
+    setMobileProfileEl(null);
+  };
 
-    const handleMobilePropertMenuClose = () => {
-        setMobilePropertyEl(null);
-    };
+  const handleMobileSalesMenuClose = () => {
+    setMobileSalesEl(null);
+  };
+  const handleMobileMarketingMenuClose = () => {
+    setMobileMarketingEl(null);
+  };
+  const handleMobileSupportMenuClose = () => {
+    setMobileSupportEl(null);
+  };
 
-    const handleMobileProfileMenuClose = () => {
-        setMobileProfileEl(null);
-    };
+  const handleMobileMenuOpen = event => {
+    setMobileMoreAnchorEl(event.currentTarget);
+  };
 
-    const handleMobileSalesMenuClose = () => {
-        setMobileSalesEl(null);
-    };
-    const handleMobileMarketingMenuClose = () => {
-        setMobileMarketingEl(null);
-    };
-    const handleMobileSupportMenuClose = () => {
-        setMobileSupportEl(null);
-    };
+  const handlePropertyMenuClose = () => {
+    setMobilePropertyEl(null);
+    handleMobilePropertMenuClose();
+  };
 
-    const handleMobileMenuOpen = (event) => {
-        setMobileMoreAnchorEl(event.currentTarget);
-    }
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+    handleMobileMenuClose();
+  };
 
-    const handlePropertyMenuClose = () => {
-        setMobilePropertyEl(null);
-        handleMobilePropertMenuClose();
-    };
+  const handleMobilePropertyMenuOpen = event => {
+    setMobilePropertyEl(event.currentTarget);
+  };
 
-    const handleMenuClose = () => {
-        setAnchorEl(null);
-        handleMobileMenuClose();
-    };
+  const mobileMenuId = "primary-search-account-menu-mobile";
+  const renderMobileMenu = (
+    <Menu
+      anchorEl={mobileMoreAnchorEl}
+      anchorOrigin={{ vertical: "top", horizontal: "right" }}
+      id={mobileMenuId}
+      keepMounted
+      transformOrigin={{ vertical: "top", horizontal: "right" }}
+      open={isMobileMenuOpen}
+      onClose={handleMobileMenuClose}
+    >
+      <Link to={"/clients"}>
+        <MenuItem primary={"Clients"}>
+          <ListItemIcon>
+            <AccountCircle />
+          </ListItemIcon>
+          <p>Clients</p>
+        </MenuItem>
+      </Link>
 
-    const handleMobilePropertyMenuOpen = (event) => {
-        setMobilePropertyEl(event.currentTarget);
-    };
+      <MenuItem>
+        <IconButton aria-label="show 11 new notifications" color="inherit">
+          <Badge badgeContent={11} color="secondary">
+            <NotificationsIcon />
+          </Badge>
+        </IconButton>
+        <p>Activity Feed</p>
+      </MenuItem>
+    </Menu>
+  );
+  const mobilePropertyMenuId = "primary-search-account-property-menu-mobile";
+  const renderMobilePropertyMenu = (
+    <Menu
+      anchorEl={mobilePropertyEl}
+      anchorOrigin={{ vertical: "top", horizontal: "right" }}
+      id={mobilePropertyMenuId}
+      keepMounted
+      transformOrigin={{ vertical: "top", horizontal: "right" }}
+      open={isMobilePropertyOpen}
+      onClose={handleMobilePropertMenuClose}
+    >
+      <Link to={"/properties"}>
+        <MenuItem primary={"Properties"}>
+          <ListItemIcon>
+            <EmojiTransportationIcon />
+          </ListItemIcon>
+          <p>Properties</p>
+        </MenuItem>
+      </Link>
 
-    const menuId = 'primary-search-account-menu';
-    const renderMenu = (
-        <Menu
-            anchorEl={anchorEl}
-            anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
-            id={menuId}
-            keepMounted
-            transformOrigin={{ vertical: 'top', horizontal: 'right' }}
-            open={isMenuOpen}
-            onClose={handleMenuClose}
-        >
-            <MenuItem onClick={handleMenuClose}>Contacts</MenuItem>
-            <MenuItem onClick={handleMenuClose}>Companies</MenuItem>
-            <MenuItem onClick={handleMenuClose}>Activity Feed</MenuItem>
-        </Menu>
-    );
+      <Link to={"/listings"}>
+        <MenuItem primary={"Listings"}>
+          <ListItemIcon>
+            <Badge badgeContent={4} color="secondary">
+              <ListAltIcon />
+            </Badge>
+          </ListItemIcon>
+          <p>Listings</p>
+        </MenuItem>
+      </Link>
+    </Menu>
+  );
+  const mobileProfileMenuId = "primary-search-account-profile-menu-mobile";
+  const renderMobileProfileMenu = (
+    <Menu
+      anchorEl={mobileProfileEl}
+      anchorOrigin={{ vertical: "top", horizontal: "right" }}
+      id={mobileProfileMenuId}
+      keepMounted
+      transformOrigin={{ vertical: "top", horizontal: "right" }}
+      open={isMobileProfileOpen}
+      onClose={handleMobileProfileMenuClose}
+    >
+      <Link to={"/users/1"}>
+        <MenuItem primary={"Profile"}>
+          <ListItemIcon>
+            <AccountCircle />
+          </ListItemIcon>
+          <p>Profile</p>
+        </MenuItem>
+      </Link>
 
-    const mobileMenuId = 'primary-search-account-menu-mobile';
-    const renderMobileMenu = (
-        <Menu
-            anchorEl={mobileMoreAnchorEl}
-            anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
-            id={mobileMenuId}
-            keepMounted
-            transformOrigin={{ vertical: 'top', horizontal: 'right' }}
-            open={isMobileMenuOpen}
-            onClose={handleMobileMenuClose}
-        >
+      <Link to={"/login"}>
+        <MenuItem primary={"Login"}>
+          <ListItemIcon>
+            <ListAltIcon />
+          </ListItemIcon>
+          <p>Login</p>
+        </MenuItem>
+      </Link>
+    </Menu>
+  );
+  const mobileSalesMenuId = "primary-search-account-sales-menu-mobile";
+  const renderMobileSalesMenu = (
+    <Menu
+      anchorEl={mobileSalesEl}
+      anchorOrigin={{ vertical: "top", horizontal: "right" }}
+      id={mobileSalesMenuId}
+      keepMounted
+      transformOrigin={{ vertical: "top", horizontal: "right" }}
+      open={isMobileSalesOpen}
+      onClose={handleMobileSalesMenuClose}
+    >
+      <Link to={"/deals"}>
+        <MenuItem primary={"Deals"}>
+          <ListItemIcon>
+            <AccountCircle />
+          </ListItemIcon>
+          <p>Deals</p>
+        </MenuItem>
+      </Link>
 
-            <Link to={"/companies"}>
-                <MenuItem primary={"Companies"}>
-                    <ListItemIcon>
-                        <AccountCircle />
-                    </ListItemIcon>
-                    <p>Contacts</p>
-                </MenuItem>
-            </Link>
+      <Link to={"/"}>
+        <MenuItem primary={"Tasks"}>
+          <ListItemIcon>
+            <ListAltIcon />
+          </ListItemIcon>
+          <p>Tasks</p>
+        </MenuItem>
+      </Link>
 
-            <MenuItem>
-                <IconButton aria-label="show 11 new notifications" color="inherit">
-                    <Badge badgeContent={11} color="secondary">
-                        <NotificationsIcon />
-                    </Badge>
+      <Link to={"/"}>
+        <MenuItem primary={"Documents"}>
+          <ListItemIcon>
+            <ListAltIcon />
+          </ListItemIcon>
+          <p>Documents</p>
+        </MenuItem>
+      </Link>
+
+      <Link to={"/"}>
+        <MenuItem primary={"Workflows"}>
+          <ListItemIcon>
+            <ListAltIcon />
+          </ListItemIcon>
+          <p>Workflows (TBD)</p>
+        </MenuItem>
+      </Link>
+    </Menu>
+  );
+  const mobileMarketingMenuId = "primary-search-account-marketing-menu-mobile";
+  const renderMobileMarketingMenu = (
+    <Menu
+      anchorEl={mobileMarketingEl}
+      anchorOrigin={{ vertical: "top", horizontal: "right" }}
+      id={mobileMarketingMenuId}
+      keepMounted
+      transformOrigin={{ vertical: "top", horizontal: "right" }}
+      open={isMobileMarketingOpen}
+      onClose={handleMobileMarketingMenuClose}
+    >
+      <Link to={"/"}>
+        <MenuItem primary={"Email"}>
+          <ListItemIcon>
+            <AccountCircle />
+          </ListItemIcon>
+          <p>Email</p>
+        </MenuItem>
+      </Link>
+
+      <Link to={"/"}>
+        <MenuItem primary={"Social"}>
+          <ListItemIcon>
+            <ListAltIcon />
+          </ListItemIcon>
+          <p>Social (TBD)</p>
+        </MenuItem>
+      </Link>
+
+      <Link to={"/"}>
+        <MenuItem primary={"Content"}>
+          <ListItemIcon>
+            <ListAltIcon />
+          </ListItemIcon>
+          <p>Content</p>
+        </MenuItem>
+      </Link>
+
+      <Link to={"/"}>
+        <MenuItem primary={"Ads"}>
+          <ListItemIcon>
+            <ListAltIcon />
+          </ListItemIcon>
+          <p>Ads (TBD)</p>
+        </MenuItem>
+      </Link>
+    </Menu>
+  );
+
+  const mobileSupportMenuId = "primary-search-account-support-menu-mobile";
+  const renderMobileSupportMenu = (
+    <Menu
+      anchorEl={mobileSupportEl}
+      anchorOrigin={{ vertical: "top", horizontal: "right" }}
+      id={mobileSupportMenuId}
+      keepMounted
+      transformOrigin={{ vertical: "top", horizontal: "right" }}
+      open={isMobileSupportOpen}
+      onClose={handleMobileSupportMenuClose}
+    >
+      <Link to={"/"}>
+        <MenuItem primary={"Tickets"}>
+          <ListItemIcon>
+            <AccountCircle />
+          </ListItemIcon>
+          <p>Tickets</p>
+        </MenuItem>
+      </Link>
+    </Menu>
+  );
+
+  return (
+    <Router>
+      <React.Fragment>
+        <CssBaseline />
+        <div className={classes.root}>
+          <AppBar position="fixed" className={classes.appBar}>
+            <Toolbar>
+              <IconButton
+                color="inherit"
+                aria-label="open"
+                edge="start"
+                onClick={handleDrawerToggle}
+                className={classes.menuButton}
+              >
+                <MenuIcon />
+              </IconButton>
+              <Typography className={classes.title} variant="h6" noWrap>
+                crosstown-crm
+              </Typography>
+              <div className={classes.grow} />
+              <div className={classes.sectionDesktop}>
+                <IconButton
+                  edge="end"
+                  aria-label="account of current user"
+                  aria-haspopup="true"
+                  onClick={handleMobileMenuOpen}
+                  color="inherit"
+                >
+                  <PeopleIcon />
+                  Clients
                 </IconButton>
-                <p>Activity Feed</p>
-            </MenuItem>
-        </Menu>
-    );
-    const mobilePropertyMenuId = 'primary-search-account-property-menu-mobile';
-    const renderMobilePropertyMenu = (
-        <Menu
-            anchorEl={mobilePropertyEl}
-            anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
-            id={mobilePropertyMenuId}
-            keepMounted
-            transformOrigin={{ vertical: 'top', horizontal: 'right' }}
-            open={isMobilePropertyOpen}
-            onClose={handleMobilePropertMenuClose}
-        >
 
-
-            <Link to={"/properties"}>
-                <MenuItem primary={"Properties"}>
-
-                    <ListItemIcon>
-                        <EmojiTransportationIcon />
-                    </ListItemIcon>
-                    <p>Properties</p>
-
-                </MenuItem>
-            </Link>
-
-            <Link to={"/listings"}>
-                <MenuItem primary={"Listings"}>
-
-                    <ListItemIcon>
-                        <Badge badgeContent={4} color="secondary">
-                            <ListAltIcon />
-                        </Badge>
-                    </ListItemIcon>
-                    <p>Listings</p>
-
-                </MenuItem>
-            </Link>
-
-        </Menu>
-    );
-    const mobileProfileMenuId = 'primary-search-account-profile-menu-mobile';
-    const renderMobileProfileMenu = (
-        <Menu
-            anchorEl={mobileProfileEl}
-            anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
-            id={mobileProfileMenuId}
-            keepMounted
-            transformOrigin={{ vertical: 'top', horizontal: 'right' }}
-            open={isMobileProfileOpen}
-            onClose={handleMobileProfileMenuClose}
-        >
-
-
-            <Link to={"/users/1"}>
-                <MenuItem primary={"Profile"}>
-
-                    <ListItemIcon>
-                        <AccountCircle />
-                    </ListItemIcon>
-                    <p>Profile</p>
-
-                </MenuItem>
-            </Link>
-
-            <Link to={"/login"}>
-                <MenuItem primary={"Login"}>
-
-                    <ListItemIcon>
-                            <ListAltIcon />
-                    </ListItemIcon>
-                    <p>Login</p>
-
-                </MenuItem>
-            </Link>
-
-        </Menu>
-    );
-    const mobileSalesMenuId = 'primary-search-account-sales-menu-mobile';
-    const renderMobileSalesMenu = (
-        <Menu
-            anchorEl={mobileSalesEl}
-            anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
-            id={mobileSalesMenuId}
-            keepMounted
-            transformOrigin={{ vertical: 'top', horizontal: 'right' }}
-            open={isMobileSalesOpen}
-            onClose={handleMobileSalesMenuClose}
-        >
-            <Link to={"/deals"}>
-                <MenuItem primary={"Deals"}>
-
-                    <ListItemIcon>
-                        <AccountCircle />
-                    </ListItemIcon>
-                    <p>Deals</p>
-
-                </MenuItem>
-            </Link>
-
-            <Link to={"/"}>
-                <MenuItem primary={"Tasks"}>
-
-                    <ListItemIcon>
-                        <ListAltIcon />
-                    </ListItemIcon>
-                    <p>Tasks</p>
-
-                </MenuItem>
-            </Link>
-
-            <Link to={"/"}>
-                <MenuItem primary={"Documents"}>
-
-                    <ListItemIcon>
-                        <ListAltIcon />
-                    </ListItemIcon>
-                    <p>Documents</p>
-
-                </MenuItem>
-            </Link>
-
-            <Link to={"/"}>
-                <MenuItem primary={"Workflows"}>
-
-                    <ListItemIcon>
-                        <ListAltIcon />
-                    </ListItemIcon>
-                    <p>Workflows (TBD)</p>
-
-                </MenuItem>
-            </Link>
-        </Menu>
-    );
-    const mobileMarketingMenuId = 'primary-search-account-marketing-menu-mobile';
-    const renderMobileMarketingMenu = (
-        <Menu
-            anchorEl={mobileMarketingEl}
-            anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
-            id={mobileMarketingMenuId}
-            keepMounted
-            transformOrigin={{ vertical: 'top', horizontal: 'right' }}
-            open={isMobileMarketingOpen}
-            onClose={handleMobileMarketingMenuClose}
-        >
-            <Link to={"/"}>
-                <MenuItem primary={"Email"}>
-
-                    <ListItemIcon>
-                        <AccountCircle />
-                    </ListItemIcon>
-                    <p>Email</p>
-
-                </MenuItem>
-            </Link>
-
-            <Link to={"/"}>
-                <MenuItem primary={"Social"}>
-
-                    <ListItemIcon>
-                        <ListAltIcon />
-                    </ListItemIcon>
-                    <p>Social (TBD)</p>
-
-                </MenuItem>
-            </Link>
-
-            <Link to={"/"}>
-                <MenuItem primary={"Content"}>
-
-                    <ListItemIcon>
-                        <ListAltIcon />
-                    </ListItemIcon>
-                    <p>Content</p>
-
-                </MenuItem>
-            </Link>
-
-            <Link to={"/"}>
-                <MenuItem primary={"Ads"}>
-
-                    <ListItemIcon>
-                        <ListAltIcon />
-                    </ListItemIcon>
-                    <p>Ads (TBD)</p>
-
-                </MenuItem>
-            </Link>
-        </Menu>
-    );
-
-    const mobileSupportMenuId = 'primary-search-account-support-menu-mobile';
-    const renderMobileSupportMenu = (
-        <Menu
-            anchorEl={mobileSupportEl}
-            anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
-            id={mobileSupportMenuId}
-            keepMounted
-            transformOrigin={{ vertical: 'top', horizontal: 'right' }}
-            open={isMobileSupportOpen}
-            onClose={handleMobileSupportMenuClose}
-        >
-            <Link to={"/"}>
-                <MenuItem primary={"Tickets"}>
-
-                    <ListItemIcon>
-                        <AccountCircle />
-                    </ListItemIcon>
-                    <p>Tickets</p>
-
-                </MenuItem>
-            </Link>
-        </Menu>
-    );
-
-    return (
-      <Router>
-        <React.Fragment>
-          <CssBaseline />
-          <div className={classes.root}>
-              <AppBar position="fixed" className={classes.appBar}>
-                  <Toolbar>
-                      <IconButton
-                          color="inherit"
-                          aria-label="open drawer"
-                          edge="start"
-                          onClick={handleDrawerToggle}
-                          className={classes.menuButton}
-                      >
-                          <MenuIcon />
-                      </IconButton>
-                          {/*<img*/}
-                          {/*className={classes.appBarImage}*/}
-                          {/*src="img/grandstack.png"*/}
-                          {/*alt="GRANDstack logo"*/}
-                          {/*/>*/}
-                      <Typography className={classes.title} variant="h6" noWrap
-                      >crosstown-crm
-                      </Typography>
-                      <div className={classes.grow} />
-                      <div className={classes.sectionDesktop}>
-                          <IconButton
-                              edge="end"
-                              aria-label="account of current user"
-                              aria-controls={menuId}
-                              aria-haspopup="true"
-                              onClick={handleMobileMenuOpen}
-                              color="inherit"
-                          >
-                              <PeopleIcon />Contacts
-                          </IconButton>
-                          <IconButton
-                              edge="end"
-                              aria-label="account of current user"
-                              aria-controls={menuId}
-                              aria-haspopup="true"
-                              onClick={handleMobilePropertyMenuOpen}
-                              color="inherit"
-                          >
-                              <EmojiTransportationIcon />Properties
-                          </IconButton>
-                          <IconButton
-                              edge="end"
-                              aria-label="account of current user"
-                              aria-controls={menuId}
-                              aria-haspopup="true"
-                              onClick={handleSalesMenuOpen}
-                              color="inherit"
-                          >
-                              <AccessibilityNewIcon />Sales
-                          </IconButton>
-                          <IconButton
-                              edge="end"
-                              aria-label="account of current user"
-                              aria-controls={menuId}
-                              aria-haspopup="true"
-                              onClick={handleMarketingMenuOpen}
-                              color="inherit"
-                          >
-                              <CameraRollIcon />Marketing
-                          </IconButton>
-                          <IconButton
-                              edge="end"
-                              aria-label="account of current user"
-                              aria-controls={menuId}
-                              aria-haspopup="true"
-                              onClick={handleSupportMenuOpen}
-                              color="inherit"
-                          >
-                              <RowingIcon />Support
-                          </IconButton>
-                          <IconButton
-                              edge="end"
-                              aria-label="account of current user"
-                              aria-controls={menuId}
-                              aria-haspopup="true"
-                              onClick={handleProfileMenuOpen}
-                              color="inherit"
-                          >
-                              <AccountCircle />Profile
-                          </IconButton>
-
-
-
-                      </div>
-                      <div className={classes.sectionMobile}>
-                          <IconButton
-                              aria-label="show more"
-                              aria-controls={mobileMenuId}
-                              aria-haspopup="true"
-                              onClick={handleMobileMenuOpen}
-                              color="inherit"
-                          >
-                              <MoreIcon />
-                          </IconButton>
-                      </div>
-                  </Toolbar>
-              </AppBar>
-            {renderMobileMenu}
-            {renderMenu}
-            {renderMobilePropertyMenu}
-              {renderMobileProfileMenu}
-              {renderMobileSalesMenu}
-              {renderMobileMarketingMenu}
-              {renderMobileSupportMenu}
-          <main className={classes.content} >
-              <Switch>
-                  <Route exact path="/login" component={Login} />
-                  <Route exact path="/users" component={UserList} />
-                  <Route exact path="/users/:uid" component={UserData} />
-                  <Route exact path="/contacts/:uid" component={ContactData} />
-                  <Route exact path="/companies" component={CompanyList} />
-                  <Route exact path="/companies/:uid" component={CompanyData} />
-                  <Route exact path="/properties" component={PropertyList} />
-                  <Route exact path="/properties/:uid" component={PropertyData} />
-                  <Route exact path="/listings" component={ListingList} />
-                  <Route exact path="/listings/:uid" component={ListingData} />
-                  <Route exact path="/articles" component={ArticleList} />
-                  <Route exact path="/articles/:uid" component={ArticleData} />
-                  <Route exact path="/posts" component={PostList} />
-                  <Route exact path="/posts/:uid" component={PostData} />
-                  <Route exact path="/deals" component={DealsList} />
-                  <Route exact path="/deals/:uid" component={DealData} />
-
-              </Switch>
+                <IconButton
+                  edge="end"
+                  aria-label="account of current user"
+                  aria-haspopup="true"
+                  onClick={handleMobilePropertyMenuOpen}
+                  color="inherit"
+                >
+                  <EmojiTransportationIcon />
+                  Properties
+                </IconButton>
+                <IconButton
+                  edge="end"
+                  aria-label="account of current user"
+                  aria-haspopup="true"
+                  onClick={handleSalesMenuOpen}
+                  color="inherit"
+                >
+                  <AccessibilityNewIcon />
+                  Sales
+                </IconButton>
+                <IconButton
+                  edge="end"
+                  aria-label="account of current user"
+                  aria-haspopup="true"
+                  onClick={handleMarketingMenuOpen}
+                  color="inherit"
+                >
+                  <CameraRollIcon />
+                  Marketing
+                </IconButton>
+                <IconButton
+                  edge="end"
+                  aria-label="account of current user"
+                  aria-haspopup="true"
+                  onClick={handleSupportMenuOpen}
+                  color="inherit"
+                >
+                  <RowingIcon />
+                  Support
+                </IconButton>
+                <IconButton
+                  edge="end"
+                  aria-label="account of current user"
+                  aria-haspopup="true"
+                  onClick={handleProfileMenuOpen}
+                  color="inherit"
+                >
+                  <AccountCircle />
+                  Profile
+                </IconButton>
+              </div>
+              <div className={classes.sectionMobile}>
+                <IconButton
+                  aria-label="show more"
+                  aria-controls={mobileMenuId}
+                  aria-haspopup="true"
+                  onClick={handleMobileMenuOpen}
+                  color="inherit"
+                >
+                  <MoreIcon />
+                </IconButton>
+              </div>
+            </Toolbar>
+          </AppBar>
+          {renderMobileMenu}
+          {renderMobilePropertyMenu}
+          {renderMobileProfileMenu}
+          {renderMobileSalesMenu}
+          {renderMobileMarketingMenu}
+          {renderMobileSupportMenu}
+          <main className={classes.content}>
+            <Switch>
+              <Route exact path="/login" component={Login} />
+              <Route exact path="/users" component={UserList} />
+              <Route exact path="/users/:uid" component={UserData} />
+              <Route exact path="/contacts/:uid" component={ContactData} />
+              <Route exact path="/clients" component={CompanyList} />
+              <Route exact path="/companies/:uid" component={CompanyData} />
+              <Route exact path="/properties" component={PropertyList} />
+              <Route exact path="/properties/:uid" component={PropertyData} />
+              <Route exact path="/listings" component={ListingList} />
+              <Route exact path="/listings/:uid" component={ListingData} />
+              <Route exact path="/articles" component={ArticleList} />
+              <Route exact path="/articles/:uid" component={ArticleData} />
+              <Route exact path="/posts" component={PostList} />
+              <Route exact path="/posts/:uid" component={PostData} />
+              <Route exact path="/deals" component={DealsList} />
+              <Route exact path="/deals/:uid" component={DealData} />
+            </Switch>
           </main>
-          </div>
-        </React.Fragment>
-      </Router>
-    );
+        </div>
+      </React.Fragment>
+    </Router>
+  );
 }
-

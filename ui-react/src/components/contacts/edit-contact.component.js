@@ -5,21 +5,18 @@ import "../../UserList.css";
 import { withStyles } from "@material-ui/core/styles";
 import { Link } from "react-router-dom";
 import { Grid } from "@material-ui/core";
-import Card from '@material-ui/core/Card';
-import CardActionArea from '@material-ui/core/CardActionArea';
-import CardActions from '@material-ui/core/CardActions';
-import CardContent from '@material-ui/core/CardContent';
-import Button from '@material-ui/core/Button';
-import Typography from '@material-ui/core/Typography';
-import Avatar from '@material-ui/core/Avatar';
+import Card from "@material-ui/core/Card";
+import CardActionArea from "@material-ui/core/CardActionArea";
+import CardActions from "@material-ui/core/CardActions";
+import CardContent from "@material-ui/core/CardContent";
+import Button from "@material-ui/core/Button";
+import Typography from "@material-ui/core/Typography";
+import Avatar from "@material-ui/core/Avatar";
 import ArrowForwardIcon from "@material-ui/icons/ArrowForward";
-import Switch from '@material-ui/core/Switch';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
+import Switch from "@material-ui/core/Switch";
+import FormControlLabel from "@material-ui/core/FormControlLabel";
 
-import {
-    CardHeader,
-    Divider,
-} from "@material-ui/core";
+import { CardHeader, Divider } from "@material-ui/core";
 
 const styles = theme => ({
   root: {
@@ -66,41 +63,44 @@ const GET_CONTACT = gql`
       first_seen
       email_domain
       marital_status
-      address{
-          id
-          street_address1
+      address {
+        id
+        street_address1
       }
-      properties{
-          id
-          name
-      }
-      listings{
+      properties {
+        id
+        Property {
           id
           name
+        }
       }
-#      teams
-      companies{
+      listings {
+        id
+        name
+      }
+      companies {
+        id
+        name
+      }
+      owner {
+        id
+        first_name
+      }
+      viewed(filter: { action: true }) {
+        timestamp {
+          formatted
+        }
+        Article {
           id
-          name
-      }
-      owner{
-          id
-          first_name
-      }
-      viewed(filter: {action: true}){
-          timestamp {
-              formatted
-          }
-          Article {
-              id
-              title
-          }
+          title
+        }
       }
     }
   }
 `;
 
 function ContactEdit(props) {
+  console.log("hehehe");
   const { classes } = props;
   const params = props.match.params;
   const [showContent, setShowContent] = React.useState(false);
@@ -111,253 +111,288 @@ function ContactEdit(props) {
   });
 
   return (
-      <>
-
+    <>
       {loading && !error && <p>Loading...</p>}
       {error && !loading && <p>Error</p>}
 
       {data && !loading && !error && (
-
-          <Grid
+        <Grid
           container
           spacing={3}
           style={{
             border: "3px solid blue",
             margin: "12px"
           }}
-          >
-              <Grid item md={3}>
-                  <Grid
-                      item
-                      md={10}
-                      style={{
-                          border: "2px solid blue",
-                          margin: "2px"
-                      }}
-                  >
-                      About
-                  </Grid>
-                  <Grid
-                      item
-                      md={10}
-                      style={{
-                          border: "2px solid blue",
-                          margin: "2px"
-                      }}
-                  >
-
-                      {data.Contact.map(({
-                             first_name,
-                             id,
-                             last_name,
-                             description,
-                             email, viewed,
-                             phone, mobile,
-                             birthday,
-                             lead_status,
-                             lead_type,
-                             lead_date,
-                             last_activity,
-                             last_seen,
-                             first_seen
-                         }) => (
-                          <Card  key="{card-$id}">
-
-                          <CardContent>
-                              <Avatar>***</Avatar>
-                              <Typography gutterBottom variant="h5" component="h2">
-                                  {first_name ? first_name : "no data"} {last_name ? last_name : "no data"}
-                              </Typography>
-                          </CardContent>
-                              <CardActionArea>
-                          <CardActions>
-                          <Link to="/" size="small" color="primary">
-                          Note
-                          </Link>
-                          <Link to="/" size="small" color="primary">
-                          Email
-                          </Link>
-                          <Link to="/" size="small" color="primary">
-                          Call
-                          </Link>
-                          <Link to="/" size="small" color="primary">
-                          Log
-                          </Link>
-                          <Link to="/" size="small" color="primary">
-                          Task
-                          </Link>
-                          <Link to="/" size="small" color="primary">
-                          Meet
-                          </Link>
-                          </CardActions>
-                              </CardActionArea>
-                              <Divider />
-
-                              <FormControlLabel
-                                  control={
-                                      <Switch
-                                          onClick={() => setShowContent(!showContent)}
-                                          color="primary"
-                                      />
-                                  }
-                                  label="About this Contact"
-                              />
-
-                              {showContent && <CardContent>
-
-                              <Typography variant="body2" color="textSecondary" component="p">
-                                  <span>Name:</span>
-                                  <span>{first_name}</span>
-                                  </Typography>
-                                  <Typography variant="body2" color="textSecondary" component="p">
-                                  <span>Last name:</span>
-                                  <span>{last_name}</span>
-                                  </Typography>
-                                  <Typography variant="body2" color="textSecondary" component="p">
-                                  <span>email:</span>
-                                  <span>{email}</span>
-                                  </Typography>
-                                  <Typography variant="body2" color="textSecondary" component="p">
-                                  <span>phone:</span>
-                                  <span>{phone}</span>
-                                  <Typography variant="body2" color="textSecondary" component="p">
-                                      <span>mobile:</span>
-                                      <span>{mobile}</span>
-                                  </Typography>
-                                  <Typography variant="body2" color="textSecondary" component="p">
-                                      <span>birthday:</span>
-                                      <span>{birthday}</span>
-                                  </Typography>
-                                  <Typography variant="body2" color="textSecondary" component="p">
-                                      <span>lead_status:</span>
-                                      <span>{lead_status}</span>
-                                  </Typography>
-                                  <Typography variant="body2" color="textSecondary" component="p">
-                                      <span>lead_type:</span>
-                                      <span>{lead_type}</span>
-                                  </Typography>
-                                  <Typography variant="body2" color="textSecondary" component="p">
-                                      <span>lead_date:</span>
-                                      <span>{lead_date}</span>
-                                  </Typography>
-                                      <Typography variant="body2" color="textSecondary" component="p">
-                                          <span>last_activity:</span>
-                                          <span>{last_activity}</span>
-                                      </Typography>
-                                      <Typography variant="body2" color="textSecondary" component="p">
-                                          <span>last_seen:</span>
-                                          <span>{last_seen}</span>
-                                      </Typography>
-                                      <Typography variant="body2" color="textSecondary" component="p">
-                                          <span>first_seen:</span>
-                                          <span>{first_seen}</span>
-                                      </Typography>
-
-                              </Typography>
-                          </CardContent>}
-
-
-                          </Card>
-                      ))}
-
-
-                  </Grid>
-
-              </Grid>
-          <Grid item md={6}>
-          <Grid
+        >
+          <Grid item md={3}>
+            <Grid
               item
               md={10}
               style={{
-                  border: "2px solid blue",
-                  margin: "2px"
+                border: "2px solid blue",
+                margin: "2px"
               }}
-          >
-              Activity
-          </Grid>
-          <Grid
-          item
-          md={10}
-          style={{
-          border: "2px solid blue",
-          margin: "2px"
-      }}
-          >
-              {data.Contact.map(({viewed}) => (
-                  viewed.map((article) => (
-                  <Card key={"card" + article.Article.id}>
-                      <CardHeader title={"Article read "}  subheader={article.timestamp.formatted}/>
-
-                      <Divider />
-
-                      <CardContent key={"cd" + article.Article.id}>
-
-                          <Typography key={"tp" + article.Article.id}>
-                              <Link key={"link" + article.Article.id} className="edit-link" to={"/articles/" + article.Article.id}>
-                                   {article.Article.title}
-                              </Link>
-                          </Typography>
-
-                      </CardContent>
-                      <CardActions className={classes.actions}>
-                          <Button size="small" color="primary" variant="text">
-                              Session Details
-                              <ArrowForwardIcon className={classes.arrowForwardIcon} />
-                          </Button>
+            >
+              About
+            </Grid>
+            <Grid
+              item
+              md={10}
+              style={{
+                border: "2px solid blue",
+                margin: "2px"
+              }}
+            >
+              {data.Contact.map(
+                ({
+                  first_name,
+                  id,
+                  last_name,
+                  description,
+                  email,
+                  viewed,
+                  phone,
+                  mobile,
+                  birthday,
+                  lead_status,
+                  lead_type,
+                  lead_date,
+                  last_activity,
+                  last_seen,
+                  first_seen
+                }) => (
+                  <Card key="{card-$id}">
+                    <CardContent>
+                      <Avatar>***</Avatar>
+                      <Typography gutterBottom variant="h5" component="h2">
+                        {first_name ? first_name : "no data"}{" "}
+                        {last_name ? last_name : "no data"}
+                      </Typography>
+                    </CardContent>
+                    <CardActionArea>
+                      <CardActions>
+                        <Link to="/" size="small" color="primary">
+                          Note
+                        </Link>
+                        <Link to="/" size="small" color="primary">
+                          Email
+                        </Link>
+                        <Link to="/" size="small" color="primary">
+                          Call
+                        </Link>
+                        <Link to="/" size="small" color="primary">
+                          Log
+                        </Link>
+                        <Link to="/" size="small" color="primary">
+                          Task
+                        </Link>
+                        <Link to="/" size="small" color="primary">
+                          Meet
+                        </Link>
                       </CardActions>
-                  </Card>
-                  )))
-              )}
-          </Grid>
+                    </CardActionArea>
+                    <Divider />
 
+                    <CardContent>
+                      <Typography
+                        variant="body2"
+                        color="textSecondary"
+                        component="p"
+                      >
+                        <span>Name:</span>
+                        <span>{first_name}</span>
+                      </Typography>
+                      <Typography
+                        variant="body2"
+                        color="textSecondary"
+                        component="p"
+                      >
+                        <span>Last name:</span>
+                        <span>{last_name}</span>
+                      </Typography>
+                      <Typography
+                        variant="body2"
+                        color="textSecondary"
+                        component="p"
+                      >
+                        <span>email:</span>
+                        <span>{email}</span>
+                      </Typography>
+                      <Typography
+                        variant="body2"
+                        color="textSecondary"
+                        component="p"
+                      >
+                        <span>phone:</span>
+                        <span>{phone}</span>
+                        <Typography
+                          variant="body2"
+                          color="textSecondary"
+                          component="p"
+                        >
+                          <span>mobile:</span>
+                          <span>{mobile}</span>
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          color="textSecondary"
+                          component="p"
+                        >
+                          <span>birthday:</span>
+                          <span>{birthday}</span>
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          color="textSecondary"
+                          component="p"
+                        >
+                          <span>lead_status:</span>
+                          <span>{lead_status}</span>
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          color="textSecondary"
+                          component="p"
+                        >
+                          <span>lead_type:</span>
+                          <span>{lead_type}</span>
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          color="textSecondary"
+                          component="p"
+                        >
+                          <span>lead_date:</span>
+                          <span>{lead_date}</span>
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          color="textSecondary"
+                          component="p"
+                        >
+                          <span>last_activity:</span>
+                          <span>{last_activity}</span>
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          color="textSecondary"
+                          component="p"
+                        >
+                          <span>last_seen:</span>
+                          <span>{last_seen}</span>
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          color="textSecondary"
+                          component="p"
+                        >
+                          <span>first_seen:</span>
+                          <span>{first_seen}</span>
+                        </Typography>
+                      </Typography>
+                    </CardContent>
+                  </Card>
+                )
+              )}
+            </Grid>
+          </Grid>
+          <Grid item md={6}>
+            <Grid
+              item
+              md={10}
+              style={{
+                border: "2px solid blue",
+                margin: "2px"
+              }}
+            >
+              Activity
+            </Grid>
+            <Grid
+              item
+              md={10}
+              style={{
+                border: "2px solid blue",
+                margin: "2px"
+              }}
+            >
+              {data.Contact.map(({ viewed }) =>
+                viewed.map(article => (
+                  <Card key={"card" + article.Article.id}>
+                    <CardHeader
+                      title={"Article read "}
+                      subheader={article.timestamp.formatted}
+                    />
+
+                    <Divider />
+
+                    <CardContent key={"cd" + article.Article.id}>
+                      <Typography key={"tp" + article.Article.id}>
+                        <Link
+                          key={"link" + article.Article.id}
+                          className="edit-link"
+                          to={"/articles/" + article.Article.id}
+                        >
+                          {article.Article.title}
+                        </Link>
+                      </Typography>
+                    </CardContent>
+                    <CardActions className={classes.actions}>
+                      <Button size="small" color="primary" variant="text">
+                        Session Details
+                        <ArrowForwardIcon
+                          className={classes.arrowForwardIcon}
+                        />
+                      </Button>
+                    </CardActions>
+                  </Card>
+                ))
+              )}
+            </Grid>
           </Grid>
 
           <Grid item md={3}>
-              <Grid
-                  item
-                  md={10}
-                  style={{
-                      border: "2px solid blue",
-                      margin: "2px"
-                  }}
-              >
-                  Associations
-              </Grid>
-          <Grid
-          item
-          md={10}
-          style={{
-          border: "2px solid blue",
-          margin: "2px"
-      }}
-          >
-              {data.Contact.map(({companies}) => (
-                  companies.map((company) => (
-                      <Card key={"card"+company.id}>
-                          <CardHeader title="Company" />
-                          <Divider />
-                          <CardContent key={"cd" + company.id}>
-
-                              <Typography key={"tp" + company.id}>
-                                  <Link key={"link" + company.id} className="edit-link" to={"/companies/" + company.id}>
-                                      {company.name}
-                                  </Link>
-                              </Typography>
-
-                          </CardContent>
-                      </Card>
-                  )))
+            <Grid
+              item
+              md={10}
+              style={{
+                border: "2px solid blue",
+                margin: "2px"
+              }}
+            >
+              Associations
+            </Grid>
+            <Grid
+              item
+              md={10}
+              style={{
+                border: "2px solid blue",
+                margin: "2px"
+              }}
+            >
+              {data.Contact.map(({ companies }) =>
+                companies.map(company => (
+                  <Card key={"card" + company.id}>
+                    <CardHeader title="Company" />
+                    <Divider />
+                    <CardContent key={"cd" + company.id}>
+                      <Typography key={"tp" + company.id}>
+                        <Link
+                          key={"link" + company.id}
+                          className="edit-link"
+                          to={"/companies/" + company.id}
+                        >
+                          {company.name}
+                        </Link>
+                      </Typography>
+                    </CardContent>
+                  </Card>
+                ))
               )}
-
-
+            </Grid>
           </Grid>
-
-          </Grid>
-          </Grid>
-
+        </Grid>
       )}
-      </>
-
+    </>
   );
 }
 

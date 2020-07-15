@@ -40,7 +40,6 @@ const driver = neo4j.driver(
     process.env.NEO4J_PASSWORD || "test"
   )
 );
-console.log(process.env.NEO4J_USER, process.env.NEO4J_PASSWORD)
 
 /*
  * Create a new ApolloServer instance, serving the GraphQL schema

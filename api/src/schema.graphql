@@ -30,6 +30,11 @@ type Deal {
 interface Client {
     id: ID!
     name: String
+    email: String
+    lead_status: String
+    phone: String
+    created_at: Date
+    owner:  User @relation(name: "OWNS_PROSPECT", direction: "IN")
 }
 
 type Contact implements Client{
@@ -52,7 +57,7 @@ type Contact implements Client{
   lead_type: String
   lead_date: String
   lifecycle_stage: String
-  created_at: String
+  created_at: Date
   last_modified: String
   last_activity: String
   last_seen: String
@@ -73,8 +78,10 @@ type Contact implements Client{
 
 type Company implements Client{
   id: ID!
+  lead_status: String
   name: String
-  created_at: String
+  email: String
+  created_at: Date
   address:  Address @relation(name: "HAS_ADDRESS", direction: "OUT")
   phone_numbers: [String]
   domain_name: String
@@ -111,7 +118,7 @@ type Company implements Client{
   last_contacted: String
   last_modified: String
   li_bio: String
-  owner: String
+  owner:  User @relation(name: "OWNS_PROSPECT", direction: "IN")
   owner_assigned_at: String
   pageviews_num: String
   phone: String
@@ -144,7 +151,6 @@ type Strategy{
     name: String
 }
 
-#1
 type Article {
     id: ID!
     title: String
@@ -161,7 +167,6 @@ type Article {
     recommendations(first: Int = 300): [Contact] @cypher(statement: "MATCH (address:Address)<-[*]-(contact:Contact) WHERE distance(this.location, Point({latitude:toFloat(address.lat), longitude:toFloat(address.lng)})) < 1000000 RETURN DISTINCT contact")
 }
 
-#2
 type Viewed @relation(name: "VIEWED") {
     from: Contact
     to: Article
@@ -169,7 +174,6 @@ type Viewed @relation(name: "VIEWED") {
     action: Boolean
 }
 
-#10
 type Interest @relation(name: "HAS_INTEREST_IN") {
     from: Contact
     to: Property
@@ -183,20 +187,20 @@ type Interest @relation(name: "HAS_INTEREST_IN") {
     type: String
     value: Int
 }
-#3
+
 type OpenedSource @relation(name: "OPENED_SOURCE") {
     from: Contact
     to: Article
     timestamp: DateTime
 }
-#4
+
 type Shared @relation(name: "SHARED") {
     from: Contact
     to: Article
     timestamp: DateTime
     outlet: String
 }
-#5
+
 type Category {
     id: ID!
     name: String
@@ -204,7 +208,7 @@ type Category {
     posts: [Post] @relation(name: "IN_CATEGORY", direction: "IN")
     companies: [Company] @relation(name: "IN_CATEGORY", direction: "IN")
 }
-#6
+
 type Post {
     id: ID!
     title: String
@@ -218,13 +222,13 @@ type Post {
     shared_post: [SharedPost]
     categories: [Category] @relation(name: "IN_CATEGORY", direction: "OUT")
 }
-#7
+
 type ViewedPost @relation(name: "VIEWED_POST") {
     from: Contact
     to: Post
     timestamp: DateTime
 }
-#8
+
 type SharedPost @relation(name: "SHARED_POST") {
     from: Contact
     to: Post

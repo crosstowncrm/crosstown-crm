@@ -23,7 +23,6 @@ import {
 
 import {
   People as PeopleIcon,
-  Business as BusinessIcon,
   Rowing as RowingIcon,
   EmojiTransportation as EmojiTransportationIcon,
   ListAlt as ListAltIcon
@@ -35,13 +34,16 @@ import NotificationsIcon from "@material-ui/icons/Notifications";
 import MoreIcon from "@material-ui/icons/MoreVert";
 import AccessibilityNewIcon from "@material-ui/icons/AccessibilityNew";
 import CameraRollIcon from "@material-ui/icons/CameraRoll";
-import AcUnitIcon from "@material-ui/icons/AcUnit";
+import BusinessIcon from "@material-ui/icons/Business";
+import HowToRegIcon from "@material-ui/icons/HowToReg";
 
 import Login from "./components/Login";
 import UserList from "./components/users/UserList";
 import UserData from "./components/users/edit-user.component";
+import ContactList from "./components/contacts/ContactList";
 import ContactData from "./components/contacts/edit-contact.component";
 import CompanyList from "./components/companies/CompanyList";
+import ClientList from "./components/clients/ClientList";
 import CompanyData from "./components/companies/edit-company.component";
 import PropertyList from "./components/properties/PropertyList";
 import PropertyData from "./components/properties/edit-property.component";
@@ -153,7 +155,6 @@ const useStyles = makeStyles(theme => ({
 
 export default function App() {
   const classes = useStyles();
-  const [anchorEl, setAnchorEl] = React.useState(null);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
   const [mobilePropertyEl, setMobilePropertyEl] = React.useState(null);
   const [mobileProfileEl, setMobileProfileEl] = React.useState(null);
@@ -192,10 +193,6 @@ export default function App() {
     setMobileSupportEl(event.currentTarget);
   };
 
-  const handlePropertyMenuOpen = event => {
-    setMobilePropertyEl(event.currentTarget);
-  };
-
   const handleMobileMenuClose = () => {
     setMobileMoreAnchorEl(null);
   };
@@ -222,16 +219,6 @@ export default function App() {
     setMobileMoreAnchorEl(event.currentTarget);
   };
 
-  const handlePropertyMenuClose = () => {
-    setMobilePropertyEl(null);
-    handleMobilePropertMenuClose();
-  };
-
-  const handleMenuClose = () => {
-    setAnchorEl(null);
-    handleMobileMenuClose();
-  };
-
   const handleMobilePropertyMenuOpen = event => {
     setMobilePropertyEl(event.currentTarget);
   };
@@ -247,10 +234,26 @@ export default function App() {
       open={isMobileMenuOpen}
       onClose={handleMobileMenuClose}
     >
+      <Link to={"/contacts"}>
+        <MenuItem primary={"Contacts"}>
+          <ListItemIcon>
+            <AccountCircle />
+          </ListItemIcon>
+          <p>Contacts</p>
+        </MenuItem>
+      </Link>
+      <Link to={"/companies"}>
+        <MenuItem primary={"Companies"}>
+          <ListItemIcon>
+            <BusinessIcon />
+          </ListItemIcon>
+          <p>Companies</p>
+        </MenuItem>
+      </Link>
       <Link to={"/clients"}>
         <MenuItem primary={"Clients"}>
           <ListItemIcon>
-            <AccountCircle />
+            <HowToRegIcon />
           </ListItemIcon>
           <p>Clients</p>
         </MenuItem>
@@ -476,7 +479,7 @@ export default function App() {
                   color="inherit"
                 >
                   <PeopleIcon />
-                  Clients
+                  Contacts
                 </IconButton>
 
                 <IconButton
@@ -554,8 +557,10 @@ export default function App() {
               <Route exact path="/login" component={Login} />
               <Route exact path="/users" component={UserList} />
               <Route exact path="/users/:uid" component={UserData} />
+              <Route exact path="/contacts" component={ContactList} />
               <Route exact path="/contacts/:uid" component={ContactData} />
-              <Route exact path="/clients" component={CompanyList} />
+              <Route exact path="/clients" component={ClientList} />
+              <Route exact path="/companies" component={CompanyList} />
               <Route exact path="/companies/:uid" component={CompanyData} />
               <Route exact path="/properties" component={PropertyList} />
               <Route exact path="/properties/:uid" component={PropertyData} />

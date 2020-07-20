@@ -46,22 +46,17 @@ const styles = theme => ({
   }
 });
 
-const GET_COMPANIES = gql`
-  query companiesPaginateQuery(
+const GET_CLIENTS = gql`
+  query clientsPaginateQuery(
     $first: Int
     $offset: Int
-    $orderByMe: String
+    $orderBy: [_ClientOrdering]
     $filter: String
   ) {
-    company(
-      first: $first
-      offset: $offset
-      orderByMe: $orderByMe
-      filter: $filter
-    ) {
+    client(first: $first, offset: $offset, orderBy: $orderBy, filter: $filter) {
       id
       name
-      employees_num
+      email
       lead_status
       phone
       created_at {
@@ -75,44 +70,24 @@ const GET_COMPANIES = gql`
   }
 `;
 
-const GET_COMPANIES_COUNT = gql`
-  query companiesCountQuery {
-    getCompanyCount
+const GET_CLIENTS_COUNT = gql`
+  query clientsCountQuery {
+    getClientCount
   }
 `;
 
 const headCells = [
-  { id: "node.name", numeric: false, disablePadding: false, label: "Name" },
+  { id: "name", numeric: false, disablePadding: false, label: "Name" },
+  { id: "email", numeric: false, disablePadding: false, label: "Email" },
+  { id: "status", numeric: false, disablePadding: false, label: "Lead Status" },
+  { id: "phone", numeric: false, disablePadding: false, label: "Phone Number" },
   {
-    id: "node.employees_num",
-    numeric: false,
-    disablePadding: false,
-    label: "Employees num"
-  },
-  {
-    id: "node.lead_status",
-    numeric: false,
-    disablePadding: false,
-    label: "Lead Status"
-  },
-  {
-    id: "node.phone",
-    numeric: false,
-    disablePadding: false,
-    label: "Phone Number"
-  },
-  {
-    id: "node.created_at",
+    id: "created",
     numeric: false,
     disablePadding: false,
     label: "Create Date"
   },
-  {
-    id: "owner.first_name",
-    numeric: false,
-    disablePadding: false,
-    label: "Contact Owner"
-  }
+  { id: "owner", numeric: false, disablePadding: false, label: "Contact Owner" }
 ];
 
 function CompanyList(props) {
@@ -125,15 +100,14 @@ function CompanyList(props) {
   } = props;
   const [selected, setSelected] = React.useState([]);
   const [order, setOrder] = React.useState("asc");
-  const [orderByMe, setOrderByMe] = React.useState("node.name");
+  const [orderBy, setOrderBy] = React.useState("name");
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
-  const [filterState, setFilterState] = React.useState({ companyFilter: "" });
+  const [filterState, setFilterState] = React.useState({ clientFilter: "" });
 
   const getFilter = () => {
-    console.log("they ask me");
-    return filterState.companyFilter.length > 0
-      ? "*" + filterState.companyFilter + "*"
+    return filterState.clientFilter.length > 0
+      ? "*" + filterState.clientFilter + "*"
       : "*";
   };
 
@@ -146,25 +120,17 @@ function CompanyList(props) {
     setSelected([]);
   };
 
-  let variables = {
-    first: rowsPerPage,
-    offset: rowsPerPage * page,
-    orderByMe: `${orderByMe} ${order}`,
-    filter: getFilter()
-  };
-
-  let { loading, data, error } = useQuery(GET_COMPANIES, {
-    variables: variables
+  const { loading, data, error } = useQuery(GET_CLIENTS, {
+    variables: {
+      first: rowsPerPage,
+      offset: rowsPerPage * page,
+      orderBy: orderBy + "_" + order,
+      filter: getFilter()
+    }
   });
 
   const createSortHandler = property => event => {
-    handleRequestSort(event, property);
-  };
-
-  const handleRequestSort = (event, property) => {
-    const isAsc = orderByMe === property && order === "asc";
-    setOrder(isAsc ? "desc" : "asc");
-    setOrderByMe(property);
+    onRequestSort(event, property);
   };
 
   const handleClick = (event, id) => {
@@ -188,7 +154,7 @@ function CompanyList(props) {
 
   const handleFilterChange = filterName => event => {
     const val = event.target.value;
-    console.log("filter changed");
+
     setFilterState(oldFilterState => ({
       ...oldFilterState,
       [filterName]: val
@@ -205,24 +171,24 @@ function CompanyList(props) {
   };
 
   const {
-    loading: companiesCountQueryLoading,
-    data: companiesCount,
-    error: companiesCountQueryError
-  } = useQuery(GET_COMPANIES_COUNT);
+    loading: clientsCountQueryLoading,
+    data: clientsCount,
+    error: clientsCountQueryError
+  } = useQuery(GET_CLIENTS_COUNT);
 
   const isSelected = name => selected.indexOf(name) !== -1;
 
   return (
     <Paper className={classes.root}>
       <Typography variant="h2" gutterBottom>
-        Company List
+        Client List
       </Typography>
       <TextField
         id="search"
-        label="Company Name Contains"
+        label="Client Name Contains"
         className={classes.textField}
-        value={filterState.companyFilter}
-        onChange={handleFilterChange("companyFilter")}
+        value={filterState.clientFilter}
+        onChange={handleFilterChange("clientFilter")}
         margin="normal"
         variant="outlined"
         type="text"
@@ -243,7 +209,7 @@ function CompanyList(props) {
                   checked={rowCount > 0 && numSelected === rowCount}
                   onChange={handleSelectAllClick}
                   inputProps={{
-                    "aria-label": "select all companies"
+                    "aria-label": "select all clients"
                   }}
                 />
               </TableCell>
@@ -252,15 +218,15 @@ function CompanyList(props) {
                   key={headCell.id}
                   align={headCell.numeric ? "right" : "left"}
                   padding={headCell.disablePadding ? "none" : "default"}
-                  sortDirection={orderByMe === headCell.id ? order : false}
+                  sortDirection={orderBy === headCell.id ? order : false}
                 >
                   <TableSortLabel
-                    active={orderByMe === headCell.id}
-                    direction={orderByMe === headCell.id ? order : "asc"}
-                    onClick={createSortHandler(headCell.id, false)}
+                    active={orderBy === headCell.id}
+                    direction={orderBy === headCell.id ? order : "asc"}
+                    onClick={createSortHandler(headCell.id)}
                   >
                     {headCell.label}
-                    {orderByMe === headCell.id ? (
+                    {orderBy === headCell.id ? (
                       <span className={classes.visuallyHidden}>
                         {order === "desc"
                           ? "sorted descending"
@@ -273,12 +239,12 @@ function CompanyList(props) {
             </TableRow>
           </TableHead>
           <TableBody>
-            {data.company.map(
+            {data.client.map(
               ({
                 __typename,
                 id,
                 name,
-                employees_num,
+                email,
                 lead_status,
                 phone,
                 created_at,
@@ -318,9 +284,7 @@ function CompanyList(props) {
                         </Link>
                       )}
                     </TableCell>
-                    <TableCell>
-                      {employees_num ? employees_num : "no employees_num yet"}
-                    </TableCell>
+                    <TableCell>{email ? email : "no email yet"}</TableCell>
                     <TableCell>
                       {lead_status ? lead_status : "no lead status yet"}
                     </TableCell>
@@ -341,23 +305,19 @@ function CompanyList(props) {
           </TableBody>
         </Table>
       )}
-      {companiesCountQueryLoading && !companiesCountQueryError && (
-        <p>Loading...</p>
-      )}
-      {companiesCountQueryError && !companiesCountQueryLoading && <p>Error</p>}
+      {clientsCountQueryLoading && !clientsCountQueryError && <p>Loading...</p>}
+      {clientsCountQueryError && !clientsCountQueryLoading && <p>Error</p>}
 
-      {companiesCount &&
-        !companiesCountQueryLoading &&
-        !companiesCountQueryError && (
-          <TablePagination
-            component="div"
-            count={companiesCount.getCompanyCount}
-            page={page}
-            onChangePage={handleChangePage}
-            rowsPerPage={rowsPerPage}
-            onChangeRowsPerPage={handleChangeRowsPerPage}
-          />
-        )}
+      {clientsCount && !clientsCountQueryLoading && !clientsCountQueryError && (
+        <TablePagination
+          component="div"
+          count={clientsCount.getClientCount}
+          page={page}
+          onChangePage={handleChangePage}
+          rowsPerPage={rowsPerPage}
+          onChangeRowsPerPage={handleChangeRowsPerPage}
+        />
+      )}
     </Paper>
   );
 }

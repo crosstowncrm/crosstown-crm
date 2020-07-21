@@ -236,9 +236,9 @@ function ContactList(props) {
 
       <TextField
         id="search"
-        label="Company Name Contains"
+        label="Contact Name Contains"
         className={classes.textField}
-        value={filterState.companyFilter}
+        value={filterState.contactFilter}
         onChange={handleFilterChange("contactFilter")}
         margin="normal"
         variant="outlined"
@@ -261,7 +261,7 @@ function ContactList(props) {
                   checked={rowCount > 0 && numSelected === rowCount}
                   onChange={handleSelectAllClick}
                   inputProps={{
-                    "aria-label": "select all companies"
+                    "aria-label": "select all contacts"
                   }}
                 />
               </TableCell>

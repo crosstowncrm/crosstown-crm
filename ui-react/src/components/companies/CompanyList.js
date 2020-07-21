@@ -131,7 +131,6 @@ function CompanyList(props) {
   const [filterState, setFilterState] = React.useState({ companyFilter: "" });
 
   const getFilter = () => {
-    console.log("they ask me");
     return filterState.companyFilter.length > 0
       ? "*" + filterState.companyFilter + "*"
       : "*";
@@ -188,7 +187,6 @@ function CompanyList(props) {
 
   const handleFilterChange = filterName => event => {
     const val = event.target.value;
-    console.log("filter changed");
     setFilterState(oldFilterState => ({
       ...oldFilterState,
       [filterName]: val

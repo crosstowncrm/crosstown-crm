@@ -37,6 +37,38 @@ const resolvers = {
                 }
             )
         },
+        contact:async (_, {filter, orderByMe, first, offset}, ctx)=>{
+            let session = ctx.driver.session();
+            const cypherQuery = `CALL db.index.fulltext.queryNodes('searchingContact', '${filter}') YIELD node 
+            WITH node OPTIONAL MATCH (node)<-[:OWNS_PROSPECT]-(owner:User) RETURN node, owner 
+            ORDER BY ${orderByMe} 
+            SKIP ${offset} 
+            LIMIT ${first};`;
+            return await session.run(cypherQuery).then(
+                result => {
+                    const resData = result.records.map(
+                        record => {
+                            const owner =  record.get('owner') === null?null:record.get('owner').properties;
+                            let {id, first_name, last_name, email, lead_status, phone, created_at} =  record.get('node').properties;
+                            return {
+                                id: id,
+                                first_name: first_name,
+                                last_name: last_name,
+                                email: email,
+                                lead_status: lead_status,
+                                phone: phone,
+                                created_at: {formatted: created_at.toString()},
+                                owner: owner===null? null: {
+                                    first_name: owner.first_name,
+                                    last_name: owner.last_name
+                                }
+                            };
+                        }
+                    );
+                    return resData;
+                }
+            )
+        },
         getClient:async(object, params, ctx, resolveInfo)=>{
             const result = await neo4jgraphql(object, params, ctx, resolveInfo, true);
             return result

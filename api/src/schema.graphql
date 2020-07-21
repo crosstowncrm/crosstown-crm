@@ -333,12 +333,10 @@ type Query {
     @cypher(
         statement: "CALL db.index.fulltext.queryNodes('searchClient', $filter) YIELD node RETURN node"
   )
-  company(filter: String="*", filter: String="*", orderByMe: String="owner.name asc"):[Company]
+  company(filter: String="*", filter: String="*", orderByMe: String="owner.first_name asc"):[Company]
 
-  contact(filter: String="*"): [Contact]
-    @cypher(
-        statement: "CALL db.index.fulltext.queryNodes('searchContact', $filter) YIELD node RETURN node"
-    )
+  contact(filter: String="*", filter: String="*", orderByMe: String="owner.first_name asc"): [Contact]
+
   interest:[Interest!]!
     @cypher(
         statement: "MATCH (contact:Contact)-[hii:HAS_INTEREST_IN]-(:Property) WHERE hii.id IS NOT NULL RETURN hii"

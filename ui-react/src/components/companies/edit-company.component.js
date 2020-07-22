@@ -42,7 +42,9 @@ const GET_COMPANY = gql`
     Company(id: $id) {
       id
       name
-      created_at
+      created_at {
+        formatted
+      }
       domain_name
       owner_assigned_date
       address {
@@ -94,7 +96,10 @@ const GET_COMPANY = gql`
       last_activity
       last_modified
       li_bio
-      owner
+      owner {
+        first_name
+        last_name
+      }
       owner_assigned_at
       pageviews_num
       phone
@@ -233,7 +238,7 @@ function CompanyEdit(props) {
                         component="p"
                       >
                         <span>created at:</span>
-                        <span>{created_at}</span>
+                        <span>{created_at.formatted}</span>
                       </Typography>
                       <Typography
                         variant="body2"
@@ -305,7 +310,11 @@ function CompanyEdit(props) {
                           component="p"
                         >
                           <span>owner:</span>
-                          <span>{owner}</span>
+                          <span>
+                            {owner
+                              ? `${owner.first_name} ${owner.last_name}`
+                              : ""}
+                          </span>
                         </Typography>
                         <Typography
                           variant="body2"

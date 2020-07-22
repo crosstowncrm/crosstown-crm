@@ -44,7 +44,9 @@ const GET_CONTACT = gql`
       email
       lead_status
       lifecycle_stage
-      created_at
+      created_at {
+        formatted
+      }
       phone
       suffix
       birthday
@@ -100,7 +102,6 @@ const GET_CONTACT = gql`
 `;
 
 function ContactEdit(props) {
-  console.log("hehehe");
   const { classes } = props;
   const params = props.match.params;
   const [showContent, setShowContent] = React.useState(false);

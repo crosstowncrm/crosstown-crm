@@ -90,7 +90,7 @@ const headCells = [
   { id: "owner", numeric: false, disablePadding: false, label: "Contact Owner" }
 ];
 
-function CompanyList(props) {
+function ClientList(props) {
   const {
     classes,
     onSelectAllClick,
@@ -322,4 +322,4 @@ function CompanyList(props) {
   );
 }
 
-export default withStyles(styles)(CompanyList);
+export default withStyles(styles)(ClientList);

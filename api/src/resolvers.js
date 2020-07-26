@@ -69,6 +69,9 @@ const resolvers = {
                 }
             )
         },
+
+
+
         getClient:async(object, params, ctx, resolveInfo)=>{
             const result = await neo4jgraphql(object, params, ctx, resolveInfo, true);
             return result
@@ -99,6 +102,18 @@ const resolvers = {
             return result
         }
 
+    },
+    Mutation: {
+        updateContact:async (_, {field, value, contactId}, ctx)=>{
+            let session = ctx.driver.session();
+            const cypherQuery = `MATCH (contact:Contact {id: "${contactId}"}) SET ` + field + `= "${value}" RETURN contact LIMIT 1`;
+            return await session.run(cypherQuery).then(
+                result => {
+                    const resData = result.records[0].get('contact').properties;
+                    return resData;
+                }
+            )
+        },
     }
 };
 

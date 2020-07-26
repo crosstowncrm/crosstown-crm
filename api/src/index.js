@@ -5,8 +5,7 @@ import express from "express";
 import { v1 as neo4j } from "neo4j-driver";
 import { makeAugmentedSchema } from "neo4j-graphql-js";
 import dotenv from "dotenv";
-
-
+import { IsAuthenticatedDirective, HasRoleDirective, HasScopeDirective } from "graphql-auth-directives";
 
 // set environment variables from ../.env
 dotenv.config();
@@ -23,6 +22,10 @@ const app = express();
 
 const schema = makeAugmentedSchema({
   typeDefs,
+    schemaDirectives: {
+        isAuthenticated: IsAuthenticatedDirective,
+        hasScope: HasScopeDirective
+    },
   resolvers,
     printErrors: true, // optional
     allowUndefinedInResolve: true
@@ -48,10 +51,16 @@ const driver = neo4j.driver(
  * generated resolvers to connect to the database.
  */
 const server = new ApolloServer({
-  context: { driver },
+  context: ({ req }) => {
+        return {
+          driver,
+          req
+        };
+  },
   schema: schema,
   introspection: true,
-  playground: true
+  playground: true,
+
 });
 
 // Specify port and path for GraphQL endpoint

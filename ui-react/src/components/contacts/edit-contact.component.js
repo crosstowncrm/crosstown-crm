@@ -131,9 +131,9 @@ function ContactEdit(props) {
   const [editLSMode, setEditLSMode] = React.useState(false);
   const [field, setField] = React.useState(false);
   const [fieldValue, setFieldValue] = React.useState(false);
+  const [engaged, setEngaged] = React.useState(false);
 
-
-    const setAllFalse = () => {
+  const setAllFalse = () => {
         setField(false);
         setFieldValue(false);
         setEditLNMode(false);
@@ -142,7 +142,8 @@ function ContactEdit(props) {
         setEditMailMode(false);
         setEditFNMode(false);
         setEditLSMode(false);
-    };
+        setEngaged(false);
+   };
 
   const { loading, data, error } = useQuery(GET_CONTACT, {
     variables: {
@@ -290,7 +291,7 @@ function ContactEdit(props) {
                               <button onClick={handleCancel}>Cancel</button>
                           </form>
                           :
-                            <span onDoubleClick={event=>{event.preventDefault(); setEditFNMode(!editFNMode);}}>First name: {first_name}</span>
+                            <span onDoubleClick={event=>{event.preventDefault(); if(!engaged){setEditFNMode(!editFNMode); setEngaged(true);} else setEditFNMode(editFNMode);}}>First name: {first_name}</span>
                         }
                       </Typography>
                       <Typography
@@ -307,7 +308,7 @@ function ContactEdit(props) {
                                   <button onClick={handleCancel}>Cancel</button>
                               </form>
                               :
-                              <span onDoubleClick={event=>{event.preventDefault(); setEditLNMode(!editFNMode);}}>Last name: {last_name}</span>
+                              <span onDoubleClick={event=>{event.preventDefault(); if(!engaged){setEditLNMode(!editLNMode); setEngaged(true);} else setEditLNMode(editLNMode);}}>Last name: {last_name}</span>
                           }
 
                       </Typography>
@@ -325,7 +326,7 @@ function ContactEdit(props) {
                                   <button onClick={handleCancel}>Cancel</button>
                               </form>
                               :
-                              <span onDoubleClick={event=>{event.preventDefault(); setEditMailMode(!editMailMode);}}>Email: {email}</span>
+                              <span onDoubleClick={event=>{event.preventDefault(); if(!engaged){setEditMailMode(!editMailMode); setEngaged(true);} else setEditMailMode(editMailMode);}}>Email: {email}</span>
                           }
                       </Typography>
                       <Typography
@@ -342,7 +343,7 @@ function ContactEdit(props) {
                                   <button onClick={handleCancel}>Cancel</button>
                               </form>
                               :
-                              <span onDoubleClick={event=>{event.preventDefault(); setEditPhoneMode(!PhoneMode);}}>phone: {phone}</span>
+                              <span onDoubleClick={event=>{event.preventDefault(); if(!engaged){setEditPhoneMode(!PhoneMode); setEngaged(true);} else setEditPhoneMode(PhoneMode);}}>phone: {phone}</span>
                           }
                       </Typography>
 
@@ -360,7 +361,7 @@ function ContactEdit(props) {
                                   <button onClick={handleCancel}>Cancel</button>
                               </form>
                               :
-                              <span onDoubleClick={event=>{event.preventDefault(); setEditMobileMode(!editMobileMode);}}>mobile: {mobile}</span>
+                              <span onDoubleClick={event=>{event.preventDefault(); if(!engaged){setEditMobileMode(!editMobileMode); setEngaged(true);} else setEditMobileMode(editMobileMode);}}>mobile: {mobile}</span>
                           }
 
                       </Typography>
@@ -379,7 +380,7 @@ function ContactEdit(props) {
                                   <button onClick={handleCancel}>Cancel</button>
                               </form>
                               :
-                              <span onDoubleClick={event=>{event.preventDefault(); setEditLSMode(!editLSMode);}}>lead status: {lead_status}</span>
+                              <span onDoubleClick={event=>{event.preventDefault(); if(!engaged){setEditLSMode(!editLSMode); setEngaged(true);} else setEditLSMode(editLSMode);}}>lead status: {lead_status}</span>
                           }
 
                       </Typography>

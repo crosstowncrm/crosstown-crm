@@ -3,7 +3,6 @@ import { makeStyles } from "@material-ui/core/styles";
 import Badge from "@material-ui/core/Badge";
 import MenuItem from "@material-ui/core/MenuItem";
 import Menu from "@material-ui/core/Menu";
-
 import {
   BrowserRouter as Router,
   Switch,
@@ -55,15 +54,10 @@ import ArticleData from "./components/articles/edit-article.component";
 import PostData from "./components/posts/edit-post.component";
 import DealsList from "./components/deals/DealsList";
 import DealData from "./components/deals/edit-deal.component";
+import auth from "./auth/auth";
+import { ProtectedRoute } from "./auth/protected.route";
 
 const drawerWidth = 240;
-
-function isAuthenticated() {
-  // Check whether the current time is past the
-  // access token's expiry time
-  let userId = localStorage.getItem("userId");
-  return userId !== null;
-}
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -167,6 +161,9 @@ export default function App() {
     setMobileOpen(!mobileOpen);
   };
 
+  const logout = () => {
+      auth.logout()
+  }
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
   const isMobilePropertyOpen = Boolean(mobilePropertyEl);
   const isMobileProfileOpen = Boolean(mobileProfileEl);
@@ -321,14 +318,26 @@ export default function App() {
         </MenuItem>
       </Link>
 
-      <Link to={"/login"}>
-        <MenuItem primary={"Login"}>
-          <ListItemIcon>
-            <ListAltIcon />
-          </ListItemIcon>
-          <p>Login</p>
-        </MenuItem>
-      </Link>
+        {auth.isAuth()?
+            <Link to={"/login"}>
+                <MenuItem primary={"Logout"} onClick={logout}>
+                    <ListItemIcon>
+                        <ListAltIcon />
+                    </ListItemIcon>
+                    <p>Logout</p>
+                </MenuItem>
+            </Link>
+            :
+            <Link to={"/login"}>
+                <MenuItem primary={"Login"}>
+                    <ListItemIcon>
+                        <ListAltIcon />
+                    </ListItemIcon>
+                    <p>Login</p>
+                </MenuItem>
+            </Link>}
+
+
     </Menu>
   );
   const mobileSalesMenuId = "primary-search-account-sales-menu-mobile";
@@ -554,24 +563,25 @@ export default function App() {
           {renderMobileSupportMenu}
           <main className={classes.content}>
             <Switch>
-              <Route exact path="/login" component={Login} />
-              <Route exact path="/users" component={UserList} />
-              <Route exact path="/users/:uid" component={UserData} />
-              <Route exact path="/contacts" component={ContactList} />
-              <Route exact path="/contacts/:uid" component={ContactData} />
-              <Route exact path="/clients" component={ClientList} />
-              <Route exact path="/companies" component={CompanyList} />
-              <Route exact path="/companies/:uid" component={CompanyData} />
-              <Route exact path="/properties" component={PropertyList} />
-              <Route exact path="/properties/:uid" component={PropertyData} />
-              <Route exact path="/listings" component={ListingList} />
-              <Route exact path="/listings/:uid" component={ListingData} />
-              <Route exact path="/articles" component={ArticleList} />
-              <Route exact path="/articles/:uid" component={ArticleData} />
-              <Route exact path="/posts" component={PostList} />
-              <Route exact path="/posts/:uid" component={PostData} />
-              <Route exact path="/deals" component={DealsList} />
-              <Route exact path="/deals/:uid" component={DealData} />
+                <ProtectedRoute exact path="/" component={PropertyList} />
+                <ProtectedRoute exact path="/users" component={UserList} />
+                <ProtectedRoute exact path="/users/:uid" component={UserData} />
+                <ProtectedRoute exact path="/contacts" component={ContactList} />
+                <ProtectedRoute exact path="/contacts/:uid" component={ContactData} />
+                <ProtectedRoute exact path="/clients" component={ClientList} />
+                <ProtectedRoute exact path="/companies" component={CompanyList} />
+                <ProtectedRoute exact path="/companies/:uid" component={CompanyData} />
+                <ProtectedRoute exact path="/properties" component={PropertyList} />
+                <ProtectedRoute exact path="/properties/:uid" component={PropertyData} />
+                <ProtectedRoute exact path="/listings" component={ListingList} />
+                <ProtectedRoute exact path="/listings/:uid" component={ListingData} />
+                <ProtectedRoute exact path="/articles" component={ArticleList} />
+                <ProtectedRoute exact path="/articles/:uid" component={ArticleData} />
+                <ProtectedRoute exact path="/posts" component={PostList} />
+                <ProtectedRoute exact path="/posts/:uid" component={PostData} />
+                <ProtectedRoute exact path="/deals" component={DealsList} />
+                <ProtectedRoute exact path="/deals/:uid" component={DealData} />
+                <Route exact path="/login" component={Login} />
             </Switch>
           </main>
         </div>

@@ -4,21 +4,20 @@ import gql from "graphql-tag";
 import "../../UserList.css";
 import { withStyles } from "@material-ui/core/styles";
 import { Link } from "react-router-dom";
+
 import {
   Table,
   TableBody,
   TableCell,
   TableHead,
   TableRow,
-  Tooltip,
   Paper,
   TableSortLabel,
   Typography,
   TextField
 } from "@material-ui/core";
-import Checkbox from "@material-ui/core/Checkbox";
-import { useMutation } from "@apollo/react-hooks/lib/index";
 
+import { useMutation } from "@apollo/react-hooks/lib/index";
 import TablePagination from "@material-ui/core/TablePagination";
 
 const styles = theme => ({
@@ -46,7 +45,14 @@ const styles = theme => ({
     position: "absolute",
     top: 20,
     width: 1
+  },
+  input: {
+    maxWidth: 100
+  },
+  inputCell: {
+      maxWidth: '100%'
   }
+
 });
 
 const GET_CONTACTS = gql`
@@ -78,7 +84,21 @@ const GET_CONTACTS = gql`
     }
   }
 `;
-
+const UPDATE_CONTACT = gql`
+    mutation updateContact(
+    $field: String,
+    $value: String,
+    $contactId: String
+    ) {
+        updateContact(
+            field: $field,
+            value: $value,
+            contactId: $contactId
+        ) {
+            id
+        }
+    }
+`;
 const READ_ARTICLE = gql`
   mutation readArticle($reader_id: String, $article_id: String) {
     readArticle(reader_id: $reader_id, article_id: $article_id)
@@ -130,27 +150,21 @@ const headCells = [
 ];
 
 function ContactList(props) {
-  const { classes, numSelected, rowCount } = props;
+  const { classes } = props;
   const [order, setOrder] = React.useState("asc");
-  const [selected, setSelected] = React.useState([]);
   const [orderByMe, setOrderByMe] = React.useState("node.first_name");
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
   const [filterState, setFilterState] = React.useState({ contactFilter: "" });
+  const [isEditMode, setIsEditMode] = React.useState({});
+  const [field, setField] = React.useState(false);
+  const [fieldValue, setFieldValue] = React.useState(false);
+  const [engaged, setEngaged] = React.useState(false);
 
   const getFilter = () => {
     return filterState.contactFilter.length > 0
       ? "*" + filterState.contactFilter + "*"
       : "*";
-  };
-
-  const handleSelectAllClick = event => {
-    if (event.target.checked) {
-      // const newSelecteds = rows.map((n) => n.name);
-      // setSelected(newSelecteds);
-      return;
-    }
-    setSelected([]);
   };
 
   const { loading, data, error } = useQuery(GET_CONTACTS, {
@@ -161,6 +175,20 @@ function ContactList(props) {
       filter: getFilter()
     }
   });
+
+    const contactUpdate = (id, index) => {
+        if(!!field && fieldValue!==data.contact[index][field]) {
+            updateContact({
+                variables: {
+                    field: "contact." + field,
+                    value: fieldValue,
+                    contactId: id
+                }
+            });
+        }
+        setIsEditMode({});
+        setEngaged(false);
+     };
 
   const createSortHandler = property => event => {
     handleRequestSort(event, property);
@@ -181,6 +209,7 @@ function ContactList(props) {
     }));
   };
 
+
   // const [readArticle, { loading2, error2 }] = useMutation(READ_ARTICLE);
 
   // const handleClick = event => {
@@ -192,24 +221,20 @@ function ContactList(props) {
   //     });
   // };
 
-  const handleClick = (event, id) => {
-    const selectedIndex = selected.indexOf(id);
-    let newSelected = [];
-
-    if (selectedIndex === -1) {
-      newSelected = newSelected.concat(selected, id);
-    } else if (selectedIndex === 0) {
-      newSelected = newSelected.concat(selected.slice(1));
-    } else if (selectedIndex === selected.length - 1) {
-      newSelected = newSelected.concat(selected.slice(0, -1));
-    } else if (selectedIndex > 0) {
-      newSelected = newSelected.concat(
-        selected.slice(0, selectedIndex),
-        selected.slice(selectedIndex + 1)
-      );
-    }
-    setSelected(newSelected);
+  const handleChange = (event) => {
+      event.preventDefault();
+      setField(event.target.id);
+      setFieldValue(event.target.value);
   };
+
+  const handleCancel = (event) => {
+      event.preventDefault();
+      setEngaged(false);
+      setIsEditMode({});
+  };
+
+
+
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -226,7 +251,19 @@ function ContactList(props) {
     error: contactsCountQueryError
   } = useQuery(GET_CONTACTS_COUNT);
 
-  const isSelected = name => selected.indexOf(name) !== -1;
+  const [
+    updateContact,
+    { loading: cndMutationLoading, error: cndQMutationError }
+  ] = useMutation(UPDATE_CONTACT, {
+    update: (proxy, { data: { updateContact } }) => {
+        const number = data.contact.findIndex(x => x.id === updateContact.id);
+        data.contact[number][field]=fieldValue;
+        proxy.writeQuery({
+            query: GET_CONTACTS,
+            data: { data: data }
+        });
+    }
+  });
 
   return (
     <Paper className={classes.root}>
@@ -244,7 +281,7 @@ function ContactList(props) {
         variant="outlined"
         type="text"
         InputProps={{
-          className: classes.input
+          className: classes.inputCell
         }}
       />
 
@@ -255,16 +292,7 @@ function ContactList(props) {
         <Table className={classes.table}>
           <TableHead>
             <TableRow>
-              <TableCell padding="checkbox">
-                <Checkbox
-                  indeterminate={numSelected > 0 && numSelected < rowCount}
-                  checked={rowCount > 0 && numSelected === rowCount}
-                  onChange={handleSelectAllClick}
-                  inputProps={{
-                    "aria-label": "select all contacts"
-                  }}
-                />
-              </TableCell>
+
               {headCells.map(headCell => (
                 <TableCell
                   key={headCell.id}
@@ -302,45 +330,89 @@ function ContactList(props) {
                 phone,
                 created_at,
                 owner
-              }) => {
-                const isItemSelected = isSelected(id);
-                const labelId = `enhanced-table-checkbox-${id}`;
+              }, index) => {
                 return (
                   <TableRow
                     key={__typename + "-" + id}
                     hover
-                    onClick={event => handleClick(event, id)}
                     role="checkbox"
-                    aria-checked={isItemSelected}
                     tabIndex={-1}
-                    selected={isItemSelected}
                   >
-                    <TableCell padding="checkbox">
-                      <Checkbox
-                        checked={isItemSelected}
-                        inputProps={{ "aria-labelledby": labelId }}
-                      />
-                    </TableCell>
-                    <TableCell>
-                      <Link className="edit-link" to={"/contacts/" + id}>
-                        {first_name} {last_name}
-                      </Link>
-                    </TableCell>
-                    <TableCell>
-                      {email ? email : "no employees_num yet"}
-                    </TableCell>
-                    <TableCell>
-                      {lead_status ? lead_status : "no lead status yet"}
-                    </TableCell>
-                    <TableCell>{phone ? phone : "no phone yet"}</TableCell>
-                    <TableCell>
-                      {created_at ? created_at.formatted : "no date yet"}
-                    </TableCell>
-                    <TableCell>
-                      {owner
-                        ? `${owner.first_name} ${owner.last_name}`
-                        : "no owner yet"}
-                    </TableCell>
+
+                            <TableCell align="left" className={classes.tableCell}>
+                                {isEditMode["first_name"] ?
+                                  <>
+                                    <TextField label="First Name" onChange={handleChange} id="first_name" defaultValue={first_name} size="small" />
+                                    <TextField label="Last Name" onChange={handleChange} id="last_name" defaultValue={last_name} size="small" />
+                                    <button type="submit">Update</button>
+                                    <button onClick={handleCancel}>Cancel</button>
+                                  </>:
+                                  <>
+                                    <Link className="edit-link" to={"/contacts/" + id}>
+                                        {first_name} {last_name}
+                                    </Link>
+                                </>}
+                            </TableCell>
+
+                                <TableCell align="left" className={classes.tableCell}>
+                                    {isEditMode["email"] && isEditMode["email"]['id']===id ?
+                                        <>
+                                            <TextField label="email" onChange={handleChange} id="email" defaultValue={email} size="small" />
+                                            <button onClick={()=>contactUpdate(id, index)}>Update</button>
+                                            <button onClick={handleCancel}>Cancel</button>
+                                        </>:
+                                        <span id={index} onDoubleClick={(event)=>{
+                                            event.preventDefault();
+                                            if(!engaged){
+                                                setIsEditMode({"email":{id:id}});
+                                                setEngaged(true);
+                                            } else return;
+                                        }}>{email}</span>
+                                    }
+                                </TableCell>
+                                <TableCell align="left" className={classes.tableCell}>
+                                    {isEditMode["lead_status"] && isEditMode["lead_status"]['id']===id ?
+                                        <>
+                                            <TextField label="lead status" onChange={handleChange} id="lead_status" defaultValue={lead_status} size="small" />
+                                            <button onClick={()=>contactUpdate(id, index)}>Update</button>
+                                            <button onClick={handleCancel}>Cancel</button>
+                                        </>:
+                                        <span id={index} onDoubleClick={(event)=>{
+                                            event.preventDefault();
+                                            if(!engaged){
+                                                setIsEditMode({"lead_status":{id:id}});
+                                                setEngaged(true);
+                                            } else return;
+                                        }}>{lead_status}</span>
+                                    }
+                                </TableCell>
+                                <TableCell align="left" className={classes.tableCell}>
+                                    {isEditMode["phone"] && isEditMode["phone"]['id']===id ?
+                                        <>
+                                        <TextField label="phone" onChange={handleChange} id="phone" defaultValue={phone} size="small" />
+                                            <button onClick={()=>contactUpdate(id, index)}>Update</button>
+                                            <button onClick={handleCancel}>Cancel</button>
+                                        </>:
+                                        <span id={index} onDoubleClick={(event)=>{
+                                            event.preventDefault();
+                                            if(!engaged){
+                                                setIsEditMode({"phone":{id:id}});
+                                                setEngaged(true);
+                                            } else return;
+                                        }}>{phone?phone:"no phone"}</span>
+                                    }
+                                </TableCell>
+
+
+                      <TableCell>
+                          {created_at ? created_at.formatted : "no date yet"}
+                      </TableCell>
+                      <TableCell>
+                          {owner
+                              ? `${owner.first_name} ${owner.last_name}`
+                              : "no owner yet"}
+                      </TableCell>
+
                   </TableRow>
                 );
               }

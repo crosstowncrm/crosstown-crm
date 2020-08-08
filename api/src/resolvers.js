@@ -57,7 +57,7 @@ const resolvers = {
                                 email: email,
                                 lead_status: lead_status,
                                 phone: phone,
-                                created_at: {formatted: created_at.toString()},
+                                created_at: {formatted: created_at?created_at.toString():""},
                                 owner: owner===null? null: {
                                     first_name: owner.first_name,
                                     last_name: owner.last_name
@@ -111,6 +111,24 @@ const resolvers = {
                 result => {
                     const resData = result.records[0].get('contact').properties;
                     return resData;
+                }
+            )
+        },
+        createContact:async (_, params, ctx)=>{
+
+            const {address} = params;
+            delete params.address;
+            let session = ctx.driver.session();
+            let set = [];
+            for (const [key, value] of Object.entries(params)) {
+                set.push(`contact.${key} = "${value}"`);
+            }
+            set.push(`contact.id = toString(id(contact))`);
+
+            const cypherQuery = `MATCH (user:User{id:"1"}) MERGE (address:Address{postal_code: "${address.postal_code}", street_address1: "${address.street_address1}"}) ON CREATE SET address.street_address2 = "${address.street_address2}", address.lat = "${address.lat}", address.lng = "${address.lng}" CREATE (contact:Contact) SET ` + set.toString() + ` MERGE (user)-[:OWNS_PROSPECT]->(contact) MERGE (contact)-[:HAS_ADDRESS]->(address) RETURN contact LIMIT 1`;
+            return await session.run(cypherQuery).then(
+                result => {
+                    return result.records[0].get('contact').properties;
                 }
             )
         },

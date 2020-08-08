@@ -50,9 +50,8 @@ const styles = theme => ({
     maxWidth: 100
   },
   inputCell: {
-      maxWidth: '100%'
+    maxWidth: "100%"
   }
-
 });
 
 const GET_CONTACTS = gql`
@@ -85,19 +84,11 @@ const GET_CONTACTS = gql`
   }
 `;
 const UPDATE_CONTACT = gql`
-    mutation updateContact(
-    $field: String,
-    $value: String,
-    $contactId: String
-    ) {
-        updateContact(
-            field: $field,
-            value: $value,
-            contactId: $contactId
-        ) {
-            id
-        }
+  mutation updateContact($field: String, $value: String, $contactId: String) {
+    updateContact(field: $field, value: $value, contactId: $contactId) {
+      id
     }
+  }
 `;
 const READ_ARTICLE = gql`
   mutation readArticle($reader_id: String, $article_id: String) {
@@ -110,6 +101,7 @@ const GET_CONTACTS_COUNT = gql`
     getContactCount
   }
 `;
+
 const headCells = [
   {
     id: "node.first_name",
@@ -176,19 +168,19 @@ function ContactList(props) {
     }
   });
 
-    const contactUpdate = (id, index) => {
-        if(!!field && fieldValue!==data.contact[index][field]) {
-            updateContact({
-                variables: {
-                    field: "contact." + field,
-                    value: fieldValue,
-                    contactId: id
-                }
-            });
+  const contactUpdate = (id, index) => {
+    if (!!field && fieldValue !== data.contact[index][field]) {
+      updateContact({
+        variables: {
+          field: "contact." + field,
+          value: fieldValue,
+          contactId: id
         }
-        setIsEditMode({});
-        setEngaged(false);
-     };
+      });
+    }
+    setIsEditMode({});
+    setEngaged(false);
+  };
 
   const createSortHandler = property => event => {
     handleRequestSort(event, property);
@@ -209,7 +201,6 @@ function ContactList(props) {
     }));
   };
 
-
   // const [readArticle, { loading2, error2 }] = useMutation(READ_ARTICLE);
 
   // const handleClick = event => {
@@ -221,20 +212,17 @@ function ContactList(props) {
   //     });
   // };
 
-  const handleChange = (event) => {
-      event.preventDefault();
-      setField(event.target.id);
-      setFieldValue(event.target.value);
+  const handleChange = event => {
+    event.preventDefault();
+    setField(event.target.id);
+    setFieldValue(event.target.value);
   };
 
-  const handleCancel = (event) => {
-      event.preventDefault();
-      setEngaged(false);
-      setIsEditMode({});
+  const handleCancel = event => {
+    event.preventDefault();
+    setEngaged(false);
+    setIsEditMode({});
   };
-
-
-
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -256,12 +244,12 @@ function ContactList(props) {
     { loading: cndMutationLoading, error: cndQMutationError }
   ] = useMutation(UPDATE_CONTACT, {
     update: (proxy, { data: { updateContact } }) => {
-        const number = data.contact.findIndex(x => x.id === updateContact.id);
-        data.contact[number][field]=fieldValue;
-        proxy.writeQuery({
-            query: GET_CONTACTS,
-            data: { data: data }
-        });
+      const number = data.contact.findIndex(x => x.id === updateContact.id);
+      data.contact[number][field] = fieldValue;
+      proxy.writeQuery({
+        query: GET_CONTACTS,
+        data: { data: data }
+      });
     }
   });
 
@@ -284,7 +272,9 @@ function ContactList(props) {
           className: classes.inputCell
         }}
       />
-
+      <Link variant="outlined" color="primary" to="/contact/create">
+        New Contact
+      </Link>
       {loading && !error && <p>Loading...</p>}
       {error && !loading && <p>Error</p>}
 
@@ -292,7 +282,6 @@ function ContactList(props) {
         <Table className={classes.table}>
           <TableHead>
             <TableRow>
-
               {headCells.map(headCell => (
                 <TableCell
                   key={headCell.id}
@@ -320,17 +309,20 @@ function ContactList(props) {
           </TableHead>
           <TableBody>
             {data.contact.map(
-              ({
-                __typename,
-                id,
-                first_name,
-                last_name,
-                email,
-                lead_status,
-                phone,
-                created_at,
-                owner
-              }, index) => {
+              (
+                {
+                  __typename,
+                  id,
+                  first_name,
+                  last_name,
+                  email,
+                  lead_status,
+                  phone,
+                  created_at,
+                  owner
+                },
+                index
+              ) => {
                 return (
                   <TableRow
                     key={__typename + "-" + id}
@@ -338,81 +330,137 @@ function ContactList(props) {
                     role="checkbox"
                     tabIndex={-1}
                   >
+                    <TableCell align="left" className={classes.tableCell}>
+                      {isEditMode["first_name"] ? (
+                        <>
+                          <TextField
+                            label="First Name"
+                            onChange={handleChange}
+                            id="first_name"
+                            defaultValue={first_name}
+                            size="small"
+                          />
+                          <TextField
+                            label="Last Name"
+                            onChange={handleChange}
+                            id="last_name"
+                            defaultValue={last_name}
+                            size="small"
+                          />
+                          <button type="submit">Update</button>
+                          <button onClick={handleCancel}>Cancel</button>
+                        </>
+                      ) : (
+                        <>
+                          <Link className="edit-link" to={"/contacts/" + id}>
+                            {first_name} {last_name}
+                          </Link>
+                        </>
+                      )}
+                    </TableCell>
 
-                            <TableCell align="left" className={classes.tableCell}>
-                                {isEditMode["first_name"] ?
-                                  <>
-                                    <TextField label="First Name" onChange={handleChange} id="first_name" defaultValue={first_name} size="small" />
-                                    <TextField label="Last Name" onChange={handleChange} id="last_name" defaultValue={last_name} size="small" />
-                                    <button type="submit">Update</button>
-                                    <button onClick={handleCancel}>Cancel</button>
-                                  </>:
-                                  <>
-                                    <Link className="edit-link" to={"/contacts/" + id}>
-                                        {first_name} {last_name}
-                                    </Link>
-                                </>}
-                            </TableCell>
+                    <TableCell align="left" className={classes.tableCell}>
+                      {isEditMode["email"] &&
+                      isEditMode["email"]["id"] === id ? (
+                        <>
+                          <TextField
+                            label="email"
+                            onChange={handleChange}
+                            id="email"
+                            defaultValue={email}
+                            size="small"
+                          />
+                          <button onClick={() => contactUpdate(id, index)}>
+                            Update
+                          </button>
+                          <button onClick={handleCancel}>Cancel</button>
+                        </>
+                      ) : (
+                        <span
+                          id={index}
+                          onDoubleClick={event => {
+                            event.preventDefault();
+                            if (!engaged) {
+                              setIsEditMode({ email: { id: id } });
+                              setEngaged(true);
+                            } else return;
+                          }}
+                        >
+                          {email}
+                        </span>
+                      )}
+                    </TableCell>
+                    <TableCell align="left" className={classes.tableCell}>
+                      {isEditMode["lead_status"] &&
+                      isEditMode["lead_status"]["id"] === id ? (
+                        <>
+                          <TextField
+                            label="lead status"
+                            onChange={handleChange}
+                            id="lead_status"
+                            defaultValue={lead_status}
+                            size="small"
+                          />
+                          <button onClick={() => contactUpdate(id, index)}>
+                            Update
+                          </button>
+                          <button onClick={handleCancel}>Cancel</button>
+                        </>
+                      ) : (
+                        <span
+                          id={index}
+                          onDoubleClick={event => {
+                            event.preventDefault();
+                            if (!engaged) {
+                              setIsEditMode({ lead_status: { id: id } });
+                              setEngaged(true);
+                            } else return;
+                          }}
+                        >
+                          {lead_status}
+                        </span>
+                      )}
+                    </TableCell>
+                    <TableCell align="left" className={classes.tableCell}>
+                      {isEditMode["phone"] &&
+                      isEditMode["phone"]["id"] === id ? (
+                        <>
+                          <TextField
+                            label="phone"
+                            onChange={handleChange}
+                            id="phone"
+                            defaultValue={phone}
+                            size="small"
+                          />
+                          <button onClick={() => contactUpdate(id, index)}>
+                            Update
+                          </button>
+                          <button onClick={handleCancel}>Cancel</button>
+                        </>
+                      ) : (
+                        <span
+                          id={index}
+                          onDoubleClick={event => {
+                            event.preventDefault();
+                            if (!engaged) {
+                              setIsEditMode({ phone: { id: id } });
+                              setEngaged(true);
+                            } else return;
+                          }}
+                        >
+                          {phone ? phone : "no phone"}
+                        </span>
+                      )}
+                    </TableCell>
 
-                                <TableCell align="left" className={classes.tableCell}>
-                                    {isEditMode["email"] && isEditMode["email"]['id']===id ?
-                                        <>
-                                            <TextField label="email" onChange={handleChange} id="email" defaultValue={email} size="small" />
-                                            <button onClick={()=>contactUpdate(id, index)}>Update</button>
-                                            <button onClick={handleCancel}>Cancel</button>
-                                        </>:
-                                        <span id={index} onDoubleClick={(event)=>{
-                                            event.preventDefault();
-                                            if(!engaged){
-                                                setIsEditMode({"email":{id:id}});
-                                                setEngaged(true);
-                                            } else return;
-                                        }}>{email}</span>
-                                    }
-                                </TableCell>
-                                <TableCell align="left" className={classes.tableCell}>
-                                    {isEditMode["lead_status"] && isEditMode["lead_status"]['id']===id ?
-                                        <>
-                                            <TextField label="lead status" onChange={handleChange} id="lead_status" defaultValue={lead_status} size="small" />
-                                            <button onClick={()=>contactUpdate(id, index)}>Update</button>
-                                            <button onClick={handleCancel}>Cancel</button>
-                                        </>:
-                                        <span id={index} onDoubleClick={(event)=>{
-                                            event.preventDefault();
-                                            if(!engaged){
-                                                setIsEditMode({"lead_status":{id:id}});
-                                                setEngaged(true);
-                                            } else return;
-                                        }}>{lead_status}</span>
-                                    }
-                                </TableCell>
-                                <TableCell align="left" className={classes.tableCell}>
-                                    {isEditMode["phone"] && isEditMode["phone"]['id']===id ?
-                                        <>
-                                        <TextField label="phone" onChange={handleChange} id="phone" defaultValue={phone} size="small" />
-                                            <button onClick={()=>contactUpdate(id, index)}>Update</button>
-                                            <button onClick={handleCancel}>Cancel</button>
-                                        </>:
-                                        <span id={index} onDoubleClick={(event)=>{
-                                            event.preventDefault();
-                                            if(!engaged){
-                                                setIsEditMode({"phone":{id:id}});
-                                                setEngaged(true);
-                                            } else return;
-                                        }}>{phone?phone:"no phone"}</span>
-                                    }
-                                </TableCell>
-
-
-                      <TableCell>
-                          {created_at ? created_at.formatted : "no date yet"}
-                      </TableCell>
-                      <TableCell>
-                          {owner
-                              ? `${owner.first_name} ${owner.last_name}`
-                              : "no owner yet"}
-                      </TableCell>
-
+                    <TableCell>
+                      {created_at ? created_at.formatted : "no date yet"}
+                    </TableCell>
+                    <TableCell>
+                      {owner
+                        ? `${owner.first_name} ${owner.last_name}`
+                        : "no owner yet"}
+                    </TableCell>
                   </TableRow>
                 );
               }

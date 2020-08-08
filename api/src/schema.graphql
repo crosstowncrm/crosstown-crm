@@ -319,6 +319,14 @@ type Address {
 #  house: Int
 }
 
+input Addressik {
+    postal_code:String
+    street_address1:String
+    street_address2:String
+    lat: String
+    lng: String
+}
+
 type Team {
   id: ID!
   name: String
@@ -395,6 +403,11 @@ type Mutation {
     @cypher(statement: "MATCH (client:Client {id: $client_id }) MATCH (property:Property{id:$property_id}) MATCH (strategy:Strategy {id: $living }) MATCH (type:Type {id: $action }) CREATE (deal:Deal{stage: 'start', action: $action, amount: $amount, start_time: datetime(), est_date: datetime($est_date), living: $living}) MERGE (client)-[:HAS_INTEREST_IN]->(deal)-[:HAS_INTEREST_IN]->(property) MERGE (type)<-[:HAS_TYPE]-(deal)-[:HAS_STRATEGY]->(strategy) SET deal.id = toString(id(deal)) RETURN deal")
 
   updateContact(field: String, value: String, contactId: String): Contact
+
+  createContact(address: Addressik, first_name: String, last_name: String, suffix: String, birthday: String, email: String, phone: String, mobile: String, linkedin_url: String,
+        facebook_url: String, instagram_url: String, twitter_url: String, lead_status: String, lead_type: String, lead_date: String, lifecycle_stage: String,
+        created_at: _Neo4jDateInput, last_modified: String, email_domain: String, marital_status: String): Contact
+
 
 }
 

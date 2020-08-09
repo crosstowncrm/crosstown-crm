@@ -3,7 +3,7 @@ import { useQuery } from "@apollo/react-hooks";
 import gql from "graphql-tag";
 import "../../UserList.css";
 import { withStyles } from "@material-ui/core/styles";
-import Link from "@material-ui/core/Link";
+import { Link } from "react-router-dom";
 import Button from "@material-ui/core/Button";
 
 import {
@@ -276,8 +276,10 @@ function ContactList(props) {
           className: classes.inputCell
         }}
       />
-      <Link variant="body2" color="primary" href="/contact/create">
-        New Contact
+      <Link variant="body2" color="primary" to="/contact/create">
+        <Button color="primary" type="button">
+          New Contact
+        </Button>
       </Link>
       {loading && !error && <p>Loading...</p>}
       {error && !loading && <p>Error</p>}

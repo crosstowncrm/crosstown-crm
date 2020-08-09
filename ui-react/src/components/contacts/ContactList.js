@@ -3,7 +3,8 @@ import { useQuery } from "@apollo/react-hooks";
 import gql from "graphql-tag";
 import "../../UserList.css";
 import { withStyles } from "@material-ui/core/styles";
-import { Link } from "react-router-dom";
+import Link from "@material-ui/core/Link";
+import Button from "@material-ui/core/Button";
 
 import {
   Table,
@@ -50,6 +51,9 @@ const styles = theme => ({
     maxWidth: 100
   },
   inputCell: {
+    maxWidth: "100%"
+  },
+  tableCell: {
     maxWidth: "100%"
   }
 });
@@ -272,7 +276,7 @@ function ContactList(props) {
           className: classes.inputCell
         }}
       />
-      <Link variant="outlined" color="primary" to="/contact/create">
+      <Link variant="body2" color="primary" href="/contact/create">
         New Contact
       </Link>
       {loading && !error && <p>Loading...</p>}
@@ -338,17 +342,20 @@ function ContactList(props) {
                             onChange={handleChange}
                             id="first_name"
                             defaultValue={first_name}
-                            size="small"
                           />
                           <TextField
                             label="Last Name"
                             onChange={handleChange}
                             id="last_name"
                             defaultValue={last_name}
-                            size="small"
                           />
-                          <button type="submit">Update</button>
-                          <button onClick={handleCancel}>Cancel</button>
+                          <br />
+                          <Button color="primary" type="submit">
+                            Update
+                          </Button>
+                          <Button color="secondary" onClick={handleCancel}>
+                            Cancel
+                          </Button>
                         </>
                       ) : (
                         <>
@@ -364,16 +371,22 @@ function ContactList(props) {
                       isEditMode["email"]["id"] === id ? (
                         <>
                           <TextField
+                            className={classes.inputCell}
                             label="email"
                             onChange={handleChange}
                             id="email"
                             defaultValue={email}
-                            size="small"
                           />
-                          <button onClick={() => contactUpdate(id, index)}>
+                          <br />
+                          <Button
+                            color="primary"
+                            onClick={() => contactUpdate(id, index)}
+                          >
                             Update
-                          </button>
-                          <button onClick={handleCancel}>Cancel</button>
+                          </Button>
+                          <Button color="secondary" onClick={handleCancel}>
+                            Cancel
+                          </Button>
                         </>
                       ) : (
                         <span
@@ -399,12 +412,17 @@ function ContactList(props) {
                             onChange={handleChange}
                             id="lead_status"
                             defaultValue={lead_status}
-                            size="small"
                           />
-                          <button onClick={() => contactUpdate(id, index)}>
+                          <br />
+                          <Button
+                            color="primary"
+                            onClick={() => contactUpdate(id, index)}
+                          >
                             Update
-                          </button>
-                          <button onClick={handleCancel}>Cancel</button>
+                          </Button>
+                          <Button color="secondary" onClick={handleCancel}>
+                            Cancel
+                          </Button>
                         </>
                       ) : (
                         <span
@@ -430,12 +448,17 @@ function ContactList(props) {
                             onChange={handleChange}
                             id="phone"
                             defaultValue={phone}
-                            size="small"
                           />
-                          <button onClick={() => contactUpdate(id, index)}>
+                          <br />
+                          <Button
+                            color="primary"
+                            onClick={() => contactUpdate(id, index)}
+                          >
                             Update
-                          </button>
-                          <button onClick={handleCancel}>Cancel</button>
+                          </Button>
+                          <Button color="secondary" onClick={handleCancel}>
+                            Cancel
+                          </Button>
                         </>
                       ) : (
                         <span

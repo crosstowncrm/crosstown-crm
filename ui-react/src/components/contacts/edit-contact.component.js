@@ -13,15 +13,14 @@ import Button from "@material-ui/core/Button";
 import Typography from "@material-ui/core/Typography";
 import Avatar from "@material-ui/core/Avatar";
 import ArrowForwardIcon from "@material-ui/icons/ArrowForward";
-import TextField from '@material-ui/core/TextField';
-
+import TextField from "@material-ui/core/TextField";
 
 import { CardHeader, Divider } from "@material-ui/core";
-import {useMutation} from "@apollo/react-hooks/lib/index";
+import { useMutation } from "@apollo/react-hooks/lib/index";
 
 const styles = theme => ({
   root: {
-    maxWidth: 700,
+    maxWidth: "100%",
     marginTop: theme.spacing(3),
     overflowX: "auto",
     margin: "auto"
@@ -102,22 +101,12 @@ const GET_CONTACT = gql`
   }
 `;
 
-
-
 const UPDATE_CONTACT = gql`
-    mutation updateContact(
-        $field: String,
-        $value: String,
-        $contactId: String
-    ) {
-        updateContact(
-            field: $field,
-            value: $value,
-            contactId: $contactId
-        ) {
-            id
-        }
+  mutation updateContact($field: String, $value: String, $contactId: String) {
+    updateContact(field: $field, value: $value, contactId: $contactId) {
+      id
     }
+  }
 `;
 
 function ContactEdit(props) {
@@ -134,16 +123,16 @@ function ContactEdit(props) {
   const [engaged, setEngaged] = React.useState(false);
 
   const setAllFalse = () => {
-        setField(false);
-        setFieldValue(false);
-        setEditLNMode(false);
-        setEditPhoneMode(false);
-        setEditMobileMode(false);
-        setEditMailMode(false);
-        setEditFNMode(false);
-        setEditLSMode(false);
-        setEngaged(false);
-   };
+    setField(false);
+    setFieldValue(false);
+    setEditLNMode(false);
+    setEditPhoneMode(false);
+    setEditMobileMode(false);
+    setEditMailMode(false);
+    setEditFNMode(false);
+    setEditLSMode(false);
+    setEngaged(false);
+  };
 
   const { loading, data, error } = useQuery(GET_CONTACT, {
     variables: {
@@ -151,46 +140,42 @@ function ContactEdit(props) {
     }
   });
 
-
-  const handleSubmit = (event) => {
-      event.preventDefault();
-      if(!!field && fieldValue!==data.Contact[0][field]) {
-          updateContact({
-              variables: {
-                  field: "contact." + field,
-                  value: fieldValue,
-                  contactId: params["uid"]
-              }
-          });
-      }
-      setAllFalse();
+  const handleSubmit = event => {
+    event.preventDefault();
+    if (!!field && fieldValue !== data.Contact[0][field]) {
+      updateContact({
+        variables: {
+          field: "contact." + field,
+          value: fieldValue,
+          contactId: params["uid"]
+        }
+      });
+    }
+    setAllFalse();
   };
 
-
-
-  const handleChange = (event) => {
-      event.preventDefault();
-      setField(event.target.id);
-      setFieldValue(event.target.value);
+  const handleChange = event => {
+    event.preventDefault();
+    setField(event.target.id);
+    setFieldValue(event.target.value);
   };
 
-  const handleCancel = (event) => {
-        event.preventDefault();
-        setAllFalse();
+  const handleCancel = event => {
+    event.preventDefault();
+    setAllFalse();
   };
 
   const [
-        updateContact,
-        { loading: cndMutationLoading, error: cndQMutationError }
+    updateContact,
+    { loading: cndMutationLoading, error: cndQMutationError }
   ] = useMutation(UPDATE_CONTACT, {
-        update: (proxy, { data: { updateContact } }) => {
-
-            data.Contact[0][field]=fieldValue;
-            proxy.writeQuery({
-                query: GET_CONTACT,
-                data: { data: data }
-            });
-        }
+    update: (proxy, { data: { updateContact } }) => {
+      data.Contact[0][field] = fieldValue;
+      proxy.writeQuery({
+        query: GET_CONTACT,
+        data: { data: data }
+      });
+    }
   });
 
   return (
@@ -201,16 +186,17 @@ function ContactEdit(props) {
       {data && !loading && !error && (
         <Grid
           container
-          spacing={3}
+          spacing={2}
           style={{
             border: "3px solid blue",
-            margin: "12px"
+            margin: "12px",
+            width: "98%"
           }}
         >
           <Grid item md={3}>
             <Grid
               item
-              md={10}
+              md={12}
               style={{
                 border: "2px solid blue",
                 margin: "2px"
@@ -220,7 +206,7 @@ function ContactEdit(props) {
             </Grid>
             <Grid
               item
-              md={10}
+              md={12}
               style={{
                 border: "2px solid blue",
                 margin: "2px"
@@ -272,160 +258,272 @@ function ContactEdit(props) {
                         <Link to="/" size="small" color="primary">
                           Meet
                         </Link>
-
                       </CardActions>
                     </CardActionArea>
                     <Divider />
                     <CardContent>
-
                       <Typography
                         variant="body2"
                         color="textSecondary"
                         component="div"
-                      > {editFNMode ?
-                          <form
-                              onSubmit={handleSubmit}
-                          >
-                              <TextField label="First Name" onClick={handleChange} onChange={handleChange} id="first_name" defaultValue={first_name} size="small" />
-                              <button type="submit">Update</button>
-                              <button onClick={handleCancel}>Cancel</button>
+                      >
+                        {" "}
+                        {editFNMode ? (
+                          <form onSubmit={handleSubmit}>
+                            <TextField
+                              label="First Name"
+                              onClick={handleChange}
+                              onChange={handleChange}
+                              id="first_name"
+                              defaultValue={first_name}
+                              size="small"
+                            />
+                            <br />
+                            <Button color="primary" type="submit">
+                              Update
+                            </Button>
+                            <Button color="secondary" onClick={handleCancel}>
+                              Cancel
+                            </Button>
                           </form>
-                          :
-                            <span onDoubleClick={event=>{event.preventDefault(); if(!engaged){setEditFNMode(!editFNMode); setEngaged(true);} else setEditFNMode(editFNMode);}}>First name: {first_name}</span>
-                        }
+                        ) : (
+                          <span
+                            onDoubleClick={event => {
+                              event.preventDefault();
+                              if (!engaged) {
+                                setEditFNMode(!editFNMode);
+                                setEngaged(true);
+                              } else setEditFNMode(editFNMode);
+                            }}
+                          >
+                            First name: {first_name}
+                          </span>
+                        )}
                       </Typography>
                       <Typography
                         variant="body2"
                         color="textSecondary"
                         component="div"
                       >
-                          {editLNMode ?
-                              <form
-                                  onSubmit={handleSubmit}
-                              >
-                                  <TextField label="Last Name" onChange={handleChange} id="last_name" defaultValue={last_name} size="small" />                              :
-                                  <button type="submit">Update</button>
-                                  <button onClick={handleCancel}>Cancel</button>
-                              </form>
-                              :
-                              <span onDoubleClick={event=>{event.preventDefault(); if(!engaged){setEditLNMode(!editLNMode); setEngaged(true);} else setEditLNMode(editLNMode);}}>Last name: {last_name}</span>
-                          }
-
+                        {editLNMode ? (
+                          <form onSubmit={handleSubmit}>
+                            <TextField
+                              label="Last Name"
+                              onChange={handleChange}
+                              id="last_name"
+                              defaultValue={last_name}
+                              size="small"
+                            />{" "}
+                            :
+                            <br />
+                            <Button color="primary" type="submit">
+                              Update
+                            </Button>
+                            <Button color="secondary" onClick={handleCancel}>
+                              Cancel
+                            </Button>
+                          </form>
+                        ) : (
+                          <span
+                            onDoubleClick={event => {
+                              event.preventDefault();
+                              if (!engaged) {
+                                setEditLNMode(!editLNMode);
+                                setEngaged(true);
+                              } else setEditLNMode(editLNMode);
+                            }}
+                          >
+                            Last name: {last_name}
+                          </span>
+                        )}
                       </Typography>
                       <Typography
                         variant="body2"
                         color="textSecondary"
                         component="div"
                       >
-                          {editMailMode ?
-                              <form
-                                  onSubmit={handleSubmit}
-                              >
-                                  <TextField label="email" onChange={handleChange} id="email" defaultValue={email} size="small" />
-                                  <button type="submit">Update</button>
-                                  <button onClick={handleCancel}>Cancel</button>
-                              </form>
-                              :
-                              <span onDoubleClick={event=>{event.preventDefault(); if(!engaged){setEditMailMode(!editMailMode); setEngaged(true);} else setEditMailMode(editMailMode);}}>Email: {email}</span>
-                          }
+                        {editMailMode ? (
+                          <form onSubmit={handleSubmit}>
+                            <TextField
+                              label="email"
+                              onChange={handleChange}
+                              id="email"
+                              defaultValue={email}
+                              size="small"
+                            />
+                            <br />
+                            <Button color="primary" type="submit">
+                              Update
+                            </Button>
+                            <Button color="secondary" onClick={handleCancel}>
+                              Cancel
+                            </Button>
+                          </form>
+                        ) : (
+                          <span
+                            onDoubleClick={event => {
+                              event.preventDefault();
+                              if (!engaged) {
+                                setEditMailMode(!editMailMode);
+                                setEngaged(true);
+                              } else setEditMailMode(editMailMode);
+                            }}
+                          >
+                            Email: {email}
+                          </span>
+                        )}
                       </Typography>
                       <Typography
                         variant="body2"
                         color="textSecondary"
                         component="div"
                       >
-                          {PhoneMode ?
-                              <form
-                                  onSubmit={handleSubmit}
-                              >
-                                  <TextField label="phone" onChange={handleChange} id="phone" defaultValue={phone} size="small" />                              :
-                                  <button type="submit">Update</button>
-                                  <button onClick={handleCancel}>Cancel</button>
-                              </form>
-                              :
-                              <span onDoubleClick={event=>{event.preventDefault(); if(!engaged){setEditPhoneMode(!PhoneMode); setEngaged(true);} else setEditPhoneMode(PhoneMode);}}>phone: {phone}</span>
-                          }
+                        {PhoneMode ? (
+                          <form onSubmit={handleSubmit}>
+                            <TextField
+                              label="phone"
+                              onChange={handleChange}
+                              id="phone"
+                              defaultValue={phone}
+                              size="small"
+                            />
+                            <br />
+                            <Button color="primary" type="submit">
+                              Update
+                            </Button>
+                            <Button color="secondary" onClick={handleCancel}>
+                              Cancel
+                            </Button>
+                          </form>
+                        ) : (
+                          <span
+                            onDoubleClick={event => {
+                              event.preventDefault();
+                              if (!engaged) {
+                                setEditPhoneMode(!PhoneMode);
+                                setEngaged(true);
+                              } else setEditPhoneMode(PhoneMode);
+                            }}
+                          >
+                            phone: {phone}
+                          </span>
+                        )}
                       </Typography>
 
                       <Typography
-                          variant="body2"
-                          color="textSecondary"
-                          component="div"
-                        >
-                          {editMobileMode ?
-                              <form
-                                  onSubmit={handleSubmit}
-                              >
-                                  <TextField label="mobile" onChange={handleChange} id="mobile" defaultValue={mobile} size="small" />
-                                  <button type="submit">Update</button>
-                                  <button onClick={handleCancel}>Cancel</button>
-                              </form>
-                              :
-                              <span onDoubleClick={event=>{event.preventDefault(); if(!engaged){setEditMobileMode(!editMobileMode); setEngaged(true);} else setEditMobileMode(editMobileMode);}}>mobile: {mobile}</span>
-                          }
-
-                      </Typography>
-
-                      <Typography
-                          variant="body2"
-                          color="textSecondary"
-                          component="div"
+                        variant="body2"
+                        color="textSecondary"
+                        component="div"
                       >
-                          {editLSMode ?
-                              <form
-                                  onSubmit={handleSubmit}
-                              >
-                                  <TextField label="lead status" onChange={handleChange} id="lead_status" defaultValue={lead_status} size="small" />
-                                  <button type="submit">Update</button>
-                                  <button onClick={handleCancel}>Cancel</button>
-                              </form>
-                              :
-                              <span onDoubleClick={event=>{event.preventDefault(); if(!engaged){setEditLSMode(!editLSMode); setEngaged(true);} else setEditLSMode(editLSMode);}}>lead status: {lead_status}</span>
-                          }
-
+                        {editMobileMode ? (
+                          <form onSubmit={handleSubmit}>
+                            <TextField
+                              label="mobile"
+                              onChange={handleChange}
+                              id="mobile"
+                              defaultValue={mobile}
+                              size="small"
+                            />
+                            <br />
+                            <Button color="primary" type="submit">
+                              Update
+                            </Button>
+                            <Button color="secondary" onClick={handleCancel}>
+                              Cancel
+                            </Button>
+                          </form>
+                        ) : (
+                          <span
+                            onDoubleClick={event => {
+                              event.preventDefault();
+                              if (!engaged) {
+                                setEditMobileMode(!editMobileMode);
+                                setEngaged(true);
+                              } else setEditMobileMode(editMobileMode);
+                            }}
+                          >
+                            mobile: {mobile}
+                          </span>
+                        )}
                       </Typography>
 
+                      <Typography
+                        variant="body2"
+                        color="textSecondary"
+                        component="div"
+                      >
+                        {editLSMode ? (
+                          <form onSubmit={handleSubmit}>
+                            <TextField
+                              label="lead status"
+                              onChange={handleChange}
+                              id="lead_status"
+                              defaultValue={lead_status}
+                              size="small"
+                            />
+                            <br />
+                            <Button color="primary" type="submit">
+                              Update
+                            </Button>
+                            <Button color="secondary" onClick={handleCancel}>
+                              Cancel
+                            </Button>
+                          </form>
+                        ) : (
+                          <span
+                            onDoubleClick={event => {
+                              event.preventDefault();
+                              if (!engaged) {
+                                setEditLSMode(!editLSMode);
+                                setEngaged(true);
+                              } else setEditLSMode(editLSMode);
+                            }}
+                          >
+                            lead status: {lead_status}
+                          </span>
+                        )}
+                      </Typography>
 
-                        <Typography
-                          variant="body2"
-                          color="textSecondary"
-                          component="p"
-                        >
-                          <span>lead_type:</span>
-                          <span>{lead_type}</span>
-                        </Typography>
-                        <Typography
-                          variant="body2"
-                          color="textSecondary"
-                          component="p"
-                        >
-                          <span>lead_date:</span>
-                          <span>{lead_date}</span>
-                        </Typography>
-                        <Typography
-                          variant="body2"
-                          color="textSecondary"
-                          component="p"
-                        >
-                          <span>last_activity:</span>
-                          <span>{last_activity}</span>
-                        </Typography>
-                        <Typography
-                          variant="body2"
-                          color="textSecondary"
-                          component="p"
-                        >
-                          <span>last_seen:</span>
-                          <span>{last_seen}</span>
-                        </Typography>
-                        <Typography
-                          variant="body2"
-                          color="textSecondary"
-                          component="p"
-                        >
-                          <span>first_seen:</span>
-                          <span>{first_seen}</span>
-                        </Typography>
+                      <Typography
+                        variant="body2"
+                        color="textSecondary"
+                        component="p"
+                      >
+                        <span>lead_type:</span>
+                        <span>{lead_type}</span>
+                      </Typography>
+                      <Typography
+                        variant="body2"
+                        color="textSecondary"
+                        component="p"
+                      >
+                        <span>lead_date:</span>
+                        <span>{lead_date}</span>
+                      </Typography>
+                      <Typography
+                        variant="body2"
+                        color="textSecondary"
+                        component="p"
+                      >
+                        <span>last_activity:</span>
+                        <span>{last_activity}</span>
+                      </Typography>
+                      <Typography
+                        variant="body2"
+                        color="textSecondary"
+                        component="p"
+                      >
+                        <span>last_seen:</span>
+                        <span>{last_seen}</span>
+                      </Typography>
+                      <Typography
+                        variant="body2"
+                        color="textSecondary"
+                        component="p"
+                      >
+                        <span>first_seen:</span>
+                        <span>{first_seen}</span>
+                      </Typography>
                     </CardContent>
                   </Card>
                 )
@@ -435,7 +533,7 @@ function ContactEdit(props) {
           <Grid item md={6}>
             <Grid
               item
-              md={10}
+              md={12}
               style={{
                 border: "2px solid blue",
                 margin: "2px"
@@ -445,7 +543,7 @@ function ContactEdit(props) {
             </Grid>
             <Grid
               item
-              md={10}
+              md={12}
               style={{
                 border: "2px solid blue",
                 margin: "2px"
@@ -489,7 +587,7 @@ function ContactEdit(props) {
           <Grid item md={3}>
             <Grid
               item
-              md={10}
+              md={12}
               style={{
                 border: "2px solid blue",
                 margin: "2px"
@@ -499,7 +597,7 @@ function ContactEdit(props) {
             </Grid>
             <Grid
               item
-              md={10}
+              md={12}
               style={{
                 border: "2px solid blue",
                 margin: "2px"

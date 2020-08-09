@@ -233,7 +233,7 @@ export default function App() {
       open={isMobileMenuOpen}
       onClose={handleMobileMenuClose}
     >
-      <Link to={"/contacts"}>
+      <Link to={"/contacts"} onClick={handleMobileMenuClose}>
         <MenuItem primary={"Contacts"}>
           <ListItemIcon>
             <AccountCircle />
@@ -241,7 +241,7 @@ export default function App() {
           <p>Contacts</p>
         </MenuItem>
       </Link>
-      <Link to={"/companies"}>
+      <Link to={"/companies"} onClick={handleMobileMenuClose}>
         <MenuItem primary={"Companies"}>
           <ListItemIcon>
             <BusinessIcon />
@@ -249,7 +249,7 @@ export default function App() {
           <p>Companies</p>
         </MenuItem>
       </Link>
-      <Link to={"/clients"}>
+      <Link to={"/clients"} onClick={handleMobileMenuClose}>
         <MenuItem primary={"Clients"}>
           <ListItemIcon>
             <HowToRegIcon />
@@ -279,7 +279,7 @@ export default function App() {
       open={isMobilePropertyOpen}
       onClose={handleMobilePropertMenuClose}
     >
-      <Link to={"/properties"}>
+      <Link to={"/properties"} onClick={handleMobilePropertMenuClose}>
         <MenuItem primary={"Properties"}>
           <ListItemIcon>
             <EmojiTransportationIcon />
@@ -288,7 +288,7 @@ export default function App() {
         </MenuItem>
       </Link>
 
-      <Link to={"/listings"}>
+      <Link to={"/listings"} onClick={handleMobilePropertMenuClose}>
         <MenuItem primary={"Listings"}>
           <ListItemIcon>
             <Badge badgeContent={4} color="secondary">
@@ -311,7 +311,7 @@ export default function App() {
       open={isMobileProfileOpen}
       onClose={handleMobileProfileMenuClose}
     >
-      <Link to={"/users/1"}>
+      <Link to={"/users/1"} onClick={handleMobileProfileMenuClose}>
         <MenuItem primary={"Profile"}>
           <ListItemIcon>
             <AccountCircle />
@@ -321,7 +321,7 @@ export default function App() {
       </Link>
 
       {auth.isAuth() ? (
-        <Link to={"/login"}>
+        <Link to={"/login"} onClick={handleMobileProfileMenuClose}>
           <MenuItem primary={"Logout"} onClick={logout}>
             <ListItemIcon>
               <ListAltIcon />
@@ -330,7 +330,7 @@ export default function App() {
           </MenuItem>
         </Link>
       ) : (
-        <Link to={"/login"}>
+        <Link to={"/login"} onClick={handleMobileProfileMenuClose}>
           <MenuItem primary={"Login"}>
             <ListItemIcon>
               <ListAltIcon />
@@ -352,7 +352,7 @@ export default function App() {
       open={isMobileSalesOpen}
       onClose={handleMobileSalesMenuClose}
     >
-      <Link to={"/deals"}>
+      <Link to={"/deals"} onClick={handleMobileSalesMenuClose}>
         <MenuItem primary={"Deals"}>
           <ListItemIcon>
             <AccountCircle />
@@ -361,7 +361,7 @@ export default function App() {
         </MenuItem>
       </Link>
 
-      <Link to={"/"}>
+      <Link to={"/"} onClick={handleMobileSalesMenuClose}>
         <MenuItem primary={"Tasks"}>
           <ListItemIcon>
             <ListAltIcon />
@@ -371,7 +371,7 @@ export default function App() {
       </Link>
 
       <Link to={"/"}>
-        <MenuItem primary={"Documents"}>
+        <MenuItem primary={"Documents"} onClick={handleMobileSalesMenuClose}>
           <ListItemIcon>
             <ListAltIcon />
           </ListItemIcon>
@@ -380,7 +380,7 @@ export default function App() {
       </Link>
 
       <Link to={"/"}>
-        <MenuItem primary={"Workflows"}>
+        <MenuItem primary={"Workflows"} onClick={handleMobileSalesMenuClose}>
           <ListItemIcon>
             <ListAltIcon />
           </ListItemIcon>
@@ -400,7 +400,7 @@ export default function App() {
       open={isMobileMarketingOpen}
       onClose={handleMobileMarketingMenuClose}
     >
-      <Link to={"/"}>
+      <Link to={"/"} onClick={handleMobileMarketingMenuClose}>
         <MenuItem primary={"Email"}>
           <ListItemIcon>
             <AccountCircle />
@@ -409,7 +409,7 @@ export default function App() {
         </MenuItem>
       </Link>
 
-      <Link to={"/"}>
+      <Link to={"/"} onClick={handleMobileMarketingMenuClose}>
         <MenuItem primary={"Social"}>
           <ListItemIcon>
             <ListAltIcon />
@@ -418,7 +418,7 @@ export default function App() {
         </MenuItem>
       </Link>
 
-      <Link to={"/"}>
+      <Link to={"/"} onClick={handleMobileMarketingMenuClose}>
         <MenuItem primary={"Content"}>
           <ListItemIcon>
             <ListAltIcon />
@@ -427,7 +427,7 @@ export default function App() {
         </MenuItem>
       </Link>
 
-      <Link to={"/"}>
+      <Link to={"/"} onClick={handleMobileMarketingMenuClose}>
         <MenuItem primary={"Ads"}>
           <ListItemIcon>
             <ListAltIcon />
@@ -449,7 +449,7 @@ export default function App() {
       open={isMobileSupportOpen}
       onClose={handleMobileSupportMenuClose}
     >
-      <Link to={"/"}>
+      <Link to={"/"} onClick={handleMobileSupportMenuClose}>
         <MenuItem primary={"Tickets"}>
           <ListItemIcon>
             <AccountCircle />

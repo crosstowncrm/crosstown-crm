@@ -1,6 +1,6 @@
 import React from "react";
 import { withStyles } from "@material-ui/core/styles/index";
-import multiStep from "../../multiStep/multiStep";
+import multiStep from "../../../multiStep/multiStep";
 import { useMutation } from "@apollo/react-hooks/lib/index";
 import { Link } from "react-router-dom";
 import gql from "graphql-tag";
@@ -66,9 +66,8 @@ function StepSubmit(props) {
       #        $first_seen: String,
       $email_domain: String
       $marital_status: String
-      $address: Addressik
-    ) #        name: String
-    #        owner:  User @relation(name: "OWNS_PROSPECT", direction: "IN")
+      $address: Addressik #        name: String
+    ) #        owner:  User @relation(name: "OWNS_PROSPECT", direction: "IN")
     #        address:  Address @relation(name: "HAS_ADDRESS", direction: "OUT")
     #        companies:  [Company] @relation(name: "ASSOCIATED_WITH", direction: "OUT")
     #        properties:  [Interest]
@@ -99,9 +98,8 @@ function StepSubmit(props) {
         #        $last_seen: String,
         #        $first_seen: String,
         email_domain: $email_domain
-        marital_status: $marital_status
-      ) #        name: String
-      #        owner:  User @relation(name: "OWNS_PROSPECT", direction: "IN")
+        marital_status: $marital_status #        name: String
+      ) #        owner:  User @relation(name: "OWNS_PROSPECT", direction: "IN")
       #        address:  Address @relation(name: "HAS_ADDRESS", direction: "OUT")
       #        companies:  [Company] @relation(name: "ASSOCIATED_WITH", direction: "OUT")
       #        properties:  [Interest]

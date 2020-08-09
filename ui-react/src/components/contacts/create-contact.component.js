@@ -6,6 +6,10 @@ import ContactDetails from "./steps/step-contact-details";
 import ContactAddress from "./steps/step-contact-address";
 import StepSubmit from "./steps/step-submit";
 
+import Grid from "@material-ui/core/Grid";
+import ResponsiveCard from "../../responsive/ResponsiveCard.js";
+import ResponsiveContainerGrid from "../../responsive/ResponsiveContainerGrid.js";
+
 import { withStyles } from "@material-ui/core/styles/index";
 const styles = theme => ({
   root: {
@@ -51,8 +55,14 @@ const steps = [
 function ContactCreate() {
   return (
     <div className="App">
-      <h1>Create Contact multi step</h1>
-      <MultiStep steps={steps} />
+      <ResponsiveContainerGrid>
+        <Grid item xs={10} sm={8}>
+          <ResponsiveCard>
+            <h1>Create Contact multi step</h1>
+            <MultiStep steps={steps} />
+          </ResponsiveCard>
+        </Grid>
+      </ResponsiveContainerGrid>
     </div>
   );
 }

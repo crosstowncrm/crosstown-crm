@@ -1,6 +1,7 @@
 class MultiStep {
   constructor() {
     this.data = {};
+    console.log("constructor: data = {}");
   }
 
   clear() {

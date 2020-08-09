@@ -8,10 +8,10 @@ const styleSheet = createStyles(theme => ({
   root: {
     [theme.breakpoints.down(ResponsiveConstants.mobileBreakpoint)]: {
       boxShadow: "0px 0px 0px 0px"
-    },
-    [theme.breakpoints.up(ResponsiveConstants.mobileBreakpoint)]: {
-      "max-width": 500
     }
+    // [theme.breakpoints.up(ResponsiveConstants.mobileBreakpoint)]: {
+    //   "max-width": 500
+    // }
   }
 }));
 

@@ -1,7 +1,6 @@
 import React from "react";
 import Button from "@material-ui/core/Button";
 import Grid from "@material-ui/core/Grid";
-import Card from "@material-ui/core/Card";
 import CardHeader from "@material-ui/core/CardHeader";
 import CardContent from "@material-ui/core/CardContent";
 import CardActions from "@material-ui/core/CardActions";
@@ -11,8 +10,8 @@ import { useLazyQuery } from "@apollo/react-hooks";
 import { Redirect } from "react-router-dom";
 import gql from "graphql-tag";
 
-import ResponsiveCard from "./responsive/ResponsiveCard.js";
-import ResponsiveContainerGrid from "./responsive/ResponsiveContainerGrid.js";
+import ResponsiveCard from "../responsive/ResponsiveCard.js";
+import ResponsiveContainerGrid from "../responsive/ResponsiveContainerGrid.js";
 
 import "../UserList.css";
 import { withStyles } from "@material-ui/core/styles";

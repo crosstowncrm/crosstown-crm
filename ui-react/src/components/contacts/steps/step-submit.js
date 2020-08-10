@@ -4,7 +4,7 @@ import multiStep from "../../../multiStep/multiStep";
 import { useMutation } from "@apollo/react-hooks/lib/index";
 import { Link } from "react-router-dom";
 import gql from "graphql-tag";
-
+import Button from "@material-ui/core/Button";
 const styles = theme => ({
   root: {
     maxWidth: "100%",
@@ -66,9 +66,8 @@ function StepSubmit(props) {
       #        $first_seen: String,
       $email_domain: String
       $marital_status: String
-      $address: Addressik #        name: String
-    ) #        owner:  User @relation(name: "OWNS_PROSPECT", direction: "IN")
-    #        address:  Address @relation(name: "HAS_ADDRESS", direction: "OUT")
+      $address: Addressik #        name: String #        owner:  User @relation(name: "OWNS_PROSPECT", direction: "IN")
+    ) #        address:  Address @relation(name: "HAS_ADDRESS", direction: "OUT")
     #        companies:  [Company] @relation(name: "ASSOCIATED_WITH", direction: "OUT")
     #        properties:  [Interest]
     #        listings:  [Listing] @relation(name: "LISTS", direction: "OUT")
@@ -98,9 +97,8 @@ function StepSubmit(props) {
         #        $last_seen: String,
         #        $first_seen: String,
         email_domain: $email_domain
-        marital_status: $marital_status #        name: String
-      ) #        owner:  User @relation(name: "OWNS_PROSPECT", direction: "IN")
-      #        address:  Address @relation(name: "HAS_ADDRESS", direction: "OUT")
+        marital_status: $marital_status #        name: String #        owner:  User @relation(name: "OWNS_PROSPECT", direction: "IN")
+      ) #        address:  Address @relation(name: "HAS_ADDRESS", direction: "OUT")
       #        companies:  [Company] @relation(name: "ASSOCIATED_WITH", direction: "OUT")
       #        properties:  [Interest]
       #        listings:  [Listing] @relation(name: "LISTS", direction: "OUT")
@@ -188,7 +186,6 @@ function StepSubmit(props) {
       });
       // clear form
       multiStep.clear();
-      //redirect to ContactList
     }
   };
 
@@ -204,25 +201,21 @@ function StepSubmit(props) {
     <div>
       <div className="row">
         <div className="ten columns terms">
-          <span>By clicking "Accept" I agree that:</span>
+          <span>Create contact with current data:</span>
           <ul className="docs-terms">
-            <li>
-              I have read and accepted the <a href="#">User Agreement</a>
-            </li>
+            <li>{JSON.stringify(multiStep.getData())}</li>
           </ul>
-          <label>
-            <input
-              type="checkbox"
-              checked={formData.checked}
-              onChange={handleCheckedChanged}
-              autoFocus
-            />
-            <span> Accept </span>{" "}
-          </label>
         </div>
       </div>
-      <Link to="/contacts" onClick={createContact}>
-        Create
+      <Link
+        variant="body2"
+        color="primary"
+        to="/contacts"
+        onClick={createContact}
+      >
+        <Button color="primary" type="button">
+          Create
+        </Button>
       </Link>
     </div>
   );

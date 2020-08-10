@@ -1,38 +1,29 @@
 import React from "react";
 import { withStyles } from "@material-ui/core/styles/index";
 import TextField from "@material-ui/core/TextField";
+import { Link } from "react-router-dom";
+import Button from "@material-ui/core/Button";
 import multiStep from "../../../multiStep/multiStep";
 const styles = theme => ({
-  root: {
-    maxWidth: "100%",
-    marginTop: theme.spacing(3),
-    overflowX: "auto",
-    margin: "auto"
-  },
-  table: {
-    minWidth: 700
-  },
-  textField: {
-    marginLeft: theme.spacing(1),
-    marginRight: theme.spacing(1),
-    minWidth: 300
-  },
-  visuallyHidden: {
-    border: 0,
-    clip: "rect(0 0 0 0)",
-    height: 1,
-    margin: -1,
-    overflow: "hidden",
-    padding: 0,
-    position: "absolute",
-    top: 20,
-    width: 1
-  },
-  input: {
-    maxWidth: 100
-  },
-  inputCell: {
-    maxWidth: "100%"
+  button: {
+    margin: theme.spacing(1),
+    display: "inline-block",
+    height: "38px",
+    padding: "0 30px",
+    color: "#555",
+    textAlign: "center",
+    fontSize: 11,
+    fontWeight: 600,
+    lineHeight: 38,
+    letterSpacing: "0.1rem",
+    textTransform: "uppercase",
+    textDecoration: "none",
+    whiteSpace: "nowrap",
+    backgroundColor: "transparent",
+    borderRadius: "4px",
+    border: "1px solid #bbb",
+    cursor: "pointer",
+    boxSizing: "border-box"
   }
 });
 
@@ -119,6 +110,11 @@ function ContactData() {
           />
         </div>
       </div>
+      <Link variant="body2" color="primary" to="/contacts">
+        <Button color="primary" type="button">
+          Back
+        </Button>
+      </Link>
     </div>
   );
 }

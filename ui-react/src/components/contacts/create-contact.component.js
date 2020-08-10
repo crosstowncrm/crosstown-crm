@@ -10,40 +10,8 @@ import Grid from "@material-ui/core/Grid";
 import ResponsiveCard from "../../responsive/ResponsiveCard.js";
 import ResponsiveContainerGrid from "../../responsive/ResponsiveContainerGrid.js";
 
-import { withStyles } from "@material-ui/core/styles/index";
-const styles = theme => ({
-  root: {
-    maxWidth: "100%",
-    marginTop: theme.spacing(3),
-    overflowX: "auto",
-    margin: "auto"
-  },
-  table: {
-    minWidth: 700
-  },
-  textField: {
-    marginLeft: theme.spacing(1),
-    marginRight: theme.spacing(1),
-    minWidth: 300
-  },
-  visuallyHidden: {
-    border: 0,
-    clip: "rect(0 0 0 0)",
-    height: 1,
-    margin: -1,
-    overflow: "hidden",
-    padding: 0,
-    position: "absolute",
-    top: 20,
-    width: 1
-  },
-  input: {
-    maxWidth: 100
-  },
-  inputCell: {
-    maxWidth: "100%"
-  }
-});
+import "./css/styles.css";
+
 const steps = [
   { name: "Contact Data", component: <ContactData /> },
   { name: "Social Networks", component: <SocialNetworks /> },
@@ -67,4 +35,4 @@ function ContactCreate() {
   );
 }
 
-export default withStyles(styles)(ContactCreate);
+export default ContactCreate;

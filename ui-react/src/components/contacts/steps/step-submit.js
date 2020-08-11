@@ -1,45 +1,22 @@
 import React from "react";
 import { withStyles } from "@material-ui/core/styles/index";
-import multiStep from "../../../multiStep/multiStep";
 import { useMutation } from "@apollo/react-hooks/lib/index";
-import { Link } from "react-router-dom";
+
 import gql from "graphql-tag";
+import { Link } from "react-router-dom";
 import Button from "@material-ui/core/Button";
+
+import multiStep from "../../../multiStep/multiStep";
+
 const styles = theme => ({
   root: {
-    maxWidth: "100%",
-    marginTop: theme.spacing(3),
-    overflowX: "auto",
-    margin: "auto"
-  },
-  table: {
-    minWidth: 700
-  },
-  textField: {
-    marginLeft: theme.spacing(1),
-    marginRight: theme.spacing(1),
-    minWidth: 300
-  },
-  visuallyHidden: {
-    border: 0,
-    clip: "rect(0 0 0 0)",
-    height: 1,
-    margin: -1,
-    overflow: "hidden",
-    padding: 0,
-    position: "absolute",
-    top: 20,
-    width: 1
-  },
-  input: {
-    maxWidth: 100
-  },
-  inputCell: {
     maxWidth: "100%"
   }
 });
 
 function StepSubmit(props) {
+  const [errors, setErrors] = React.useState(multiStep.getErrors());
+
   const CREATE_NEW_CONTACT = gql`
     mutation createContact(
       $first_name: String
@@ -66,9 +43,8 @@ function StepSubmit(props) {
       #        $first_seen: String,
       $email_domain: String
       $marital_status: String
-      $address: Addressik #        name: String #        owner:  User @relation(name: "OWNS_PROSPECT", direction: "IN")
-    ) #        address:  Address @relation(name: "HAS_ADDRESS", direction: "OUT")
-    #        companies:  [Company] @relation(name: "ASSOCIATED_WITH", direction: "OUT")
+      $address: Addressik #        name: String #        owner:  User @relation(name: "OWNS_PROSPECT", direction: "IN") #        address:  Address @relation(name: "HAS_ADDRESS", direction: "OUT")
+    ) #        companies:  [Company] @relation(name: "ASSOCIATED_WITH", direction: "OUT")
     #        properties:  [Interest]
     #        listings:  [Listing] @relation(name: "LISTS", direction: "OUT")
     {
@@ -97,9 +73,8 @@ function StepSubmit(props) {
         #        $last_seen: String,
         #        $first_seen: String,
         email_domain: $email_domain
-        marital_status: $marital_status #        name: String #        owner:  User @relation(name: "OWNS_PROSPECT", direction: "IN")
-      ) #        address:  Address @relation(name: "HAS_ADDRESS", direction: "OUT")
-      #        companies:  [Company] @relation(name: "ASSOCIATED_WITH", direction: "OUT")
+        marital_status: $marital_status #        name: String #        owner:  User @relation(name: "OWNS_PROSPECT", direction: "IN") #        address:  Address @relation(name: "HAS_ADDRESS", direction: "OUT")
+      ) #        companies:  [Company] @relation(name: "ASSOCIATED_WITH", direction: "OUT")
       #        properties:  [Interest]
       #        listings:  [Listing] @relation(name: "LISTS", direction: "OUT")
       {
@@ -130,71 +105,17 @@ function StepSubmit(props) {
     // }
   });
 
-  const validate = values => {
-    // let clientError = "";
-    // let actionError = "";
-    // let propertyError = "";
-    // let amountError = "";
-    // let livingError = "";
-    // let est_dateError = "";
-    //
-    // if (!values.client) {
-    //     clientError = "Required";
-    // }
-    // if (!values.action) {
-    //     actionError = "Required";
-    // }
-    // if (!values.property) {
-    //     propertyError = "Required";
-    // }
-    // if (!values.amount) {
-    //     amountError = "Required";
-    // }
-    // if (!values.living) {
-    //     livingError = "Required";
-    // }
-    // if (!values.est_date) {
-    //     est_dateError = "Required";
-    // }
-    // if (
-    //     clientError ||
-    //     actionError ||
-    //     propertyError ||
-    //     amountError ||
-    //     livingError ||
-    //     est_dateError
-    // ) {
-    //     setErrors({
-    //         clientError,
-    //         actionError,
-    //         propertyError,
-    //         amountError,
-    //         livingError,
-    //         est_dateError
-    //     });
-    //     return false;
-    // }
-
-    return true;
-  };
-  const createContact = () => {
-    const multiData = multiStep.getData();
-    const isValid = validate(multiData);
-    if (isValid) {
+  const createContact = event => {
+    if (multiStep.isValid() === true) {
       createNewContact({
-        variables: multiData
+        variables: multiStep.getData()
       });
       // clear form
       multiStep.clear();
+    } else {
+      event.preventDefault();
+      setErrors(multiStep.getErrors());
     }
-  };
-
-  const [formData, updateFormData] = React.useState({
-    checked: ""
-  });
-
-  const handleCheckedChanged = event => {
-    updateFormData({ checked: event.target.checked });
   };
 
   return (
@@ -204,6 +125,14 @@ function StepSubmit(props) {
           <span>Create contact with current data:</span>
           <ul className="docs-terms">
             <li>{JSON.stringify(multiStep.getData())}</li>
+          </ul>
+        </div>
+      </div>
+      <div className="row">
+        <div className="ten columns terms">
+          <span>current errors:</span>
+          <ul className="docs-terms">
+            <li>{JSON.stringify(errors)}</li>
           </ul>
         </div>
       </div>

@@ -1,7 +1,7 @@
 class MultiStep {
   constructor() {
     this.data = {};
-    console.log("constructor: data = {}");
+    this.errors = {};
   }
 
   clear() {
@@ -21,6 +21,45 @@ class MultiStep {
   getData() {
     return this.data;
   }
+
+  getErrors = () => {
+    return this.errors;
+  };
+
+  validate = () => {
+    let clientFirstNameError = "";
+    let clientStreetAddressError = "";
+
+    if (!this.data.first_name) {
+      clientFirstNameError = "Required";
+      this.errors = { ...this.errors, ["first_name"]: clientFirstNameError };
+    }
+
+    if (!this.data.address || !this.data.address.street_address1) {
+      clientStreetAddressError = "Required";
+      this.errors.address = {
+        ...this.errors.address,
+        ["street_address1"]: clientStreetAddressError
+      };
+    }
+
+    if (clientFirstNameError || clientStreetAddressError) {
+      return false;
+    }
+    this.errors = {};
+    return true;
+  };
+
+  isValid = () => {
+    return this.validate();
+  };
+
+  errorRemove = field => {
+    console.log("delete error");
+    console.log(this.errors);
+    delete this.errors[field];
+    console.log(this.errors);
+  };
 }
 
 export default new MultiStep();

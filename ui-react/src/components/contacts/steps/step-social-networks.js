@@ -37,7 +37,6 @@ const styles = theme => ({
   }
 });
 function SocialNetworks(props) {
-  console.log(props);
   const handleChange = event => {
     multiStep.saveData({
       name: event.target.name,

@@ -28,11 +28,14 @@ const styles = theme => ({
 });
 
 function ContactData() {
+  const [errors, setErrors] = React.useState(multiStep.getErrors());
   const handleChange = event => {
     multiStep.saveData({
       name: event.target.name,
       value: event.target.value
     });
+    multiStep.errorRemove(event.target.name);
+    setErrors({ ...errors, [event.target.name]: "" });
   };
   const {
     first_name,
@@ -42,6 +45,7 @@ function ContactData() {
     mobile,
     email_domain
   } = multiStep.getData();
+
   return (
     <div>
       <div className="row">
@@ -53,6 +57,9 @@ function ContactData() {
             size="small"
             defaultValue={first_name}
           />
+          <div style={{ fontSize: 12, color: "red" }}>
+            {errors["first_name"] ? errors["first_name"] : ""}
+          </div>
         </div>
       </div>
       <div className="row">

@@ -5,39 +5,11 @@ import multiStep from "../../../multiStep/multiStep";
 
 const styles = theme => ({
   root: {
-    maxWidth: "100%",
-    marginTop: theme.spacing(3),
-    overflowX: "auto",
-    margin: "auto"
-  },
-  table: {
-    minWidth: 700
-  },
-  textField: {
-    marginLeft: theme.spacing(1),
-    marginRight: theme.spacing(1),
-    minWidth: 300
-  },
-  visuallyHidden: {
-    border: 0,
-    clip: "rect(0 0 0 0)",
-    height: 1,
-    margin: -1,
-    overflow: "hidden",
-    padding: 0,
-    position: "absolute",
-    top: 20,
-    width: 1
-  },
-  input: {
-    maxWidth: 100
-  },
-  inputCell: {
     maxWidth: "100%"
   }
 });
+
 function ContactDetails(props) {
-  console.log(props);
   const handleChange = event => {
     multiStep.saveData({
       name: event.target.name,

@@ -132,16 +132,16 @@ const headCells = [
     label: "Phone Number"
   },
   {
-    id: "node.created_at",
-    numeric: false,
-    disablePadding: false,
-    label: "Create Date"
-  },
-  {
     id: "owner.first_name",
     numeric: false,
     disablePadding: false,
     label: "Contact Owner"
+  },
+  {
+    id: "node.created_at",
+    numeric: false,
+    disablePadding: false,
+    label: "Create Date"
   }
 ];
 
@@ -401,7 +401,7 @@ function ContactList(props) {
                             } else return;
                           }}
                         >
-                          {email}
+                          {email ? email : "no email yet"}
                         </span>
                       )}
                     </TableCell>
@@ -437,7 +437,7 @@ function ContactList(props) {
                             } else return;
                           }}
                         >
-                          {lead_status}
+                          {lead_status ? lead_status : "no lead status yet"}
                         </span>
                       )}
                     </TableCell>
@@ -477,14 +477,15 @@ function ContactList(props) {
                         </span>
                       )}
                     </TableCell>
-
-                    <TableCell>
-                      {created_at ? created_at.formatted : "no date yet"}
-                    </TableCell>
                     <TableCell>
                       {owner
                         ? `${owner.first_name} ${owner.last_name}`
                         : "no owner yet"}
+                    </TableCell>
+                    <TableCell>
+                      {created_at && created_at.formatted
+                        ? created_at.formatted.slice(0, -11)
+                        : "no date yet"}
                     </TableCell>
                   </TableRow>
                 );

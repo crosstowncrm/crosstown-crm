@@ -20,18 +20,7 @@ import { useMutation } from "@apollo/react-hooks/lib/index";
 
 const styles = theme => ({
   root: {
-    maxWidth: "100%",
-    marginTop: theme.spacing(3),
-    overflowX: "auto",
-    margin: "auto"
-  },
-  table: {
-    minWidth: 700
-  },
-  textField: {
-    marginLeft: theme.spacing(1),
-    marginRight: theme.spacing(1),
-    minWidth: 300
+    maxWidth: "100%"
   }
 });
 
@@ -118,6 +107,16 @@ function ContactEdit(props) {
   const [PhoneMode, setEditPhoneMode] = React.useState(false);
   const [editMobileMode, setEditMobileMode] = React.useState(false);
   const [editLSMode, setEditLSMode] = React.useState(false);
+  const [editLTMode, setEditLTMode] = React.useState(false);
+  const [editLDMode, setEditLDMode] = React.useState(false);
+  const [editLiMode, setEditLiMode] = React.useState(false);
+  const [editLCSMode, setEditLCSMode] = React.useState(false);
+  const [editFBMode, setEditFBMode] = React.useState(false);
+  const [editInstMode, setEditInstMode] = React.useState(false);
+  const [editTwitMode, setEditTwitMode] = React.useState(false);
+  const [editBirthdayMode, setEditBirthdayMode] = React.useState(false);
+  const [editMSMode, setEditMSMode] = React.useState(false);
+
   const [field, setField] = React.useState(false);
   const [fieldValue, setFieldValue] = React.useState(false);
   const [engaged, setEngaged] = React.useState(false);
@@ -131,6 +130,16 @@ function ContactEdit(props) {
     setEditMailMode(false);
     setEditFNMode(false);
     setEditLSMode(false);
+    setEditBirthdayMode(false);
+    setEditLiMode(false);
+    setEditLTMode(false);
+    setEditLDMode(false);
+    setEditFBMode(false);
+    setEditInstMode(false);
+    setEditTwitMode(false);
+    setEditLCSMode(false);
+    setEditMSMode(false);
+
     setEngaged(false);
   };
 
@@ -228,7 +237,13 @@ function ContactEdit(props) {
                   lead_date,
                   last_activity,
                   last_seen,
-                  first_seen
+                  first_seen,
+                  linkedin_url,
+                  facebook_url,
+                  instagram_url,
+                  twitter_url,
+                  lifecycle_stage,
+                  marital_status
                 }) => (
                   <Card key="{card-$id}">
                     <CardContent>
@@ -483,23 +498,331 @@ function ContactEdit(props) {
                           </span>
                         )}
                       </Typography>
+                      <Typography
+                        variant="body2"
+                        color="textSecondary"
+                        component="div"
+                      >
+                        {editBirthdayMode ? (
+                          <form onSubmit={handleSubmit}>
+                            <TextField
+                              label="birthday"
+                              onChange={handleChange}
+                              id="birthday"
+                              defaultValue={birthday}
+                              size="small"
+                            />
+                            <br />
+                            <Button color="primary" type="submit">
+                              Update
+                            </Button>
+                            <Button color="secondary" onClick={handleCancel}>
+                              Cancel
+                            </Button>
+                          </form>
+                        ) : (
+                          <span
+                            onDoubleClick={event => {
+                              event.preventDefault();
+                              if (!engaged) {
+                                setEditBirthdayMode(!editBirthdayMode);
+                                setEngaged(true);
+                              } else setEditBirthdayMode(editBirthdayMode);
+                            }}
+                          >
+                            birthday: {birthday}
+                          </span>
+                        )}
+                      </Typography>
+                      <Typography
+                        variant="body2"
+                        color="textSecondary"
+                        component="div"
+                      >
+                        {editLiMode ? (
+                          <form onSubmit={handleSubmit}>
+                            <TextField
+                              label="linkedin url"
+                              onChange={handleChange}
+                              id="linkedin_url"
+                              defaultValue={birthday}
+                              size="small"
+                            />
+                            <br />
+                            <Button color="primary" type="submit">
+                              Update
+                            </Button>
+                            <Button color="secondary" onClick={handleCancel}>
+                              Cancel
+                            </Button>
+                          </form>
+                        ) : (
+                          <span
+                            onDoubleClick={event => {
+                              event.preventDefault();
+                              if (!engaged) {
+                                setEditLiMode(!editLiMode);
+                                setEngaged(true);
+                              } else setEditLiMode(editLiMode);
+                            }}
+                          >
+                            linkedin url: {linkedin_url}
+                          </span>
+                        )}
+                      </Typography>
+                      <Typography
+                        variant="body2"
+                        color="textSecondary"
+                        component="div"
+                      >
+                        {editFBMode ? (
+                          <form onSubmit={handleSubmit}>
+                            <TextField
+                              label="facebook_url"
+                              onChange={handleChange}
+                              id="facebook_url"
+                              defaultValue={facebook_url}
+                              size="small"
+                            />
+                            <br />
+                            <Button color="primary" type="submit">
+                              Update
+                            </Button>
+                            <Button color="secondary" onClick={handleCancel}>
+                              Cancel
+                            </Button>
+                          </form>
+                        ) : (
+                          <span
+                            onDoubleClick={event => {
+                              event.preventDefault();
+                              if (!engaged) {
+                                setEditFBMode(!editFBMode);
+                                setEngaged(true);
+                              } else setEditFBMode(editFBMode);
+                            }}
+                          >
+                            facebook url: {facebook_url}
+                          </span>
+                        )}
+                      </Typography>
+                      <Typography
+                        variant="body2"
+                        color="textSecondary"
+                        component="div"
+                      >
+                        {editInstMode ? (
+                          <form onSubmit={handleSubmit}>
+                            <TextField
+                              label="instagram_url"
+                              onChange={handleChange}
+                              id="instagram_url"
+                              defaultValue={instagram_url}
+                              size="small"
+                            />
+                            <br />
+                            <Button color="primary" type="submit">
+                              Update
+                            </Button>
+                            <Button color="secondary" onClick={handleCancel}>
+                              Cancel
+                            </Button>
+                          </form>
+                        ) : (
+                          <span
+                            onDoubleClick={event => {
+                              event.preventDefault();
+                              if (!engaged) {
+                                setEditInstMode(!editInstMode);
+                                setEngaged(true);
+                              } else setEditInstMode(editInstMode);
+                            }}
+                          >
+                            instagram url: {instagram_url}
+                          </span>
+                        )}
+                      </Typography>
+                      <Typography
+                        variant="body2"
+                        color="textSecondary"
+                        component="div"
+                      >
+                        {editTwitMode ? (
+                          <form onSubmit={handleSubmit}>
+                            <TextField
+                              label="twitter_url"
+                              onChange={handleChange}
+                              id="twitter_url"
+                              defaultValue={twitter_url}
+                              size="small"
+                            />
+                            <br />
+                            <Button color="primary" type="submit">
+                              Update
+                            </Button>
+                            <Button color="secondary" onClick={handleCancel}>
+                              Cancel
+                            </Button>
+                          </form>
+                        ) : (
+                          <span
+                            onDoubleClick={event => {
+                              event.preventDefault();
+                              if (!engaged) {
+                                setEditTwitMode(!editTwitMode);
+                                setEngaged(true);
+                              } else setEditTwitMode(editTwitMode);
+                            }}
+                          >
+                            twitter url: {twitter_url}
+                          </span>
+                        )}
+                      </Typography>
+                      <Typography
+                        variant="body2"
+                        color="textSecondary"
+                        component="div"
+                      >
+                        {editLTMode ? (
+                          <form onSubmit={handleSubmit}>
+                            <TextField
+                              label="lead_type"
+                              onChange={handleChange}
+                              id="lead_type"
+                              defaultValue={lead_type}
+                              size="small"
+                            />
+                            <br />
+                            <Button color="primary" type="submit">
+                              Update
+                            </Button>
+                            <Button color="secondary" onClick={handleCancel}>
+                              Cancel
+                            </Button>
+                          </form>
+                        ) : (
+                          <span
+                            onDoubleClick={event => {
+                              event.preventDefault();
+                              if (!engaged) {
+                                setEditLTMode(!editLTMode);
+                                setEngaged(true);
+                              } else setEditLTMode(editLTMode);
+                            }}
+                          >
+                            lead type: {lead_type}
+                          </span>
+                        )}
+                      </Typography>
+                      <Typography
+                        variant="body2"
+                        color="textSecondary"
+                        component="div"
+                      >
+                        {editLDMode ? (
+                          <form onSubmit={handleSubmit}>
+                            <TextField
+                              label="lead_date"
+                              onChange={handleChange}
+                              id="lead_date"
+                              defaultValue={lead_date}
+                              size="small"
+                            />
+                            <br />
+                            <Button color="primary" type="submit">
+                              Update
+                            </Button>
+                            <Button color="secondary" onClick={handleCancel}>
+                              Cancel
+                            </Button>
+                          </form>
+                        ) : (
+                          <span
+                            onDoubleClick={event => {
+                              event.preventDefault();
+                              if (!engaged) {
+                                setEditLDMode(!editLDMode);
+                                setEngaged(true);
+                              } else setEditLDMode(editLDMode);
+                            }}
+                          >
+                            lead date: {lead_date}
+                          </span>
+                        )}
+                      </Typography>
+                      <Typography
+                        variant="body2"
+                        color="textSecondary"
+                        component="div"
+                      >
+                        {editLCSMode ? (
+                          <form onSubmit={handleSubmit}>
+                            <TextField
+                              label="lifecycle_stage"
+                              onChange={handleChange}
+                              id="lifecycle_stage"
+                              defaultValue={lifecycle_stage}
+                              size="small"
+                            />
+                            <br />
+                            <Button color="primary" type="submit">
+                              Update
+                            </Button>
+                            <Button color="secondary" onClick={handleCancel}>
+                              Cancel
+                            </Button>
+                          </form>
+                        ) : (
+                          <span
+                            onDoubleClick={event => {
+                              event.preventDefault();
+                              if (!engaged) {
+                                setEditLCSMode(!editLCSMode);
+                                setEngaged(true);
+                              } else setEditLCSMode(editLCSMode);
+                            }}
+                          >
+                            lifecycle stage: {lifecycle_stage}
+                          </span>
+                        )}
+                      </Typography>
+                      <Typography
+                        variant="body2"
+                        color="textSecondary"
+                        component="div"
+                      >
+                        {editMSMode ? (
+                          <form onSubmit={handleSubmit}>
+                            <TextField
+                              label="marital_status"
+                              onChange={handleChange}
+                              id="marital_status"
+                              defaultValue={marital_status}
+                              size="small"
+                            />
+                            <br />
+                            <Button color="primary" type="submit">
+                              Update
+                            </Button>
+                            <Button color="secondary" onClick={handleCancel}>
+                              Cancel
+                            </Button>
+                          </form>
+                        ) : (
+                          <span
+                            onDoubleClick={event => {
+                              event.preventDefault();
+                              if (!engaged) {
+                                setEditMSMode(!editMSMode);
+                                setEngaged(true);
+                              } else setEditMSMode(editMSMode);
+                            }}
+                          >
+                            marital status: {marital_status}
+                          </span>
+                        )}
+                      </Typography>
 
-                      <Typography
-                        variant="body2"
-                        color="textSecondary"
-                        component="p"
-                      >
-                        <span>lead_type:</span>
-                        <span>{lead_type}</span>
-                      </Typography>
-                      <Typography
-                        variant="body2"
-                        color="textSecondary"
-                        component="p"
-                      >
-                        <span>lead_date:</span>
-                        <span>{lead_date}</span>
-                      </Typography>
                       <Typography
                         variant="body2"
                         color="textSecondary"

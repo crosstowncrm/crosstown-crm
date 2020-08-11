@@ -55,10 +55,7 @@ class MultiStep {
   };
 
   errorRemove = field => {
-    console.log("delete error");
-    console.log(this.errors);
     delete this.errors[field];
-    console.log(this.errors);
   };
 }
 

@@ -4,6 +4,7 @@ import gql from "graphql-tag";
 import "../../UserList.css";
 import { withStyles } from "@material-ui/core/styles";
 import { Link } from "react-router-dom";
+import TablePagination from "@material-ui/core/TablePagination";
 import {
   Table,
   TableBody,
@@ -49,6 +50,12 @@ const GET_USERS = gql`
   }
 `;
 
+const GET_USERS_COUNT = gql`
+  query usersCountQuery {
+    getUserCount
+  }
+`;
+
 function UserList(props) {
   const { classes } = props;
   const [order, setOrder] = React.useState("asc");
@@ -59,16 +66,16 @@ function UserList(props) {
 
   const getFilter = () => {
     return filterState.userFilter.length > 0
-       ? { first_name_contains: filterState.userFilter }
-       : {};
+      ? { first_name_contains: filterState.userFilter }
+      : {};
   };
 
   const { loading, data, error } = useQuery(GET_USERS, {
     variables: {
-        first: rowsPerPage,
-        offset: rowsPerPage * page,
-        orderBy: orderBy + "_" + order,
-        filter: getFilter()
+      first: rowsPerPage,
+      offset: rowsPerPage * page,
+      orderBy: orderBy + "_" + order,
+      filter: getFilter()
     }
   });
 
@@ -85,12 +92,27 @@ function UserList(props) {
   };
 
   const handleFilterChange = filterName => event => {
-        const val = event.target.value;
-        setFilterState(oldFilterState => ({
-            ...oldFilterState,
-            [filterName]: val
-        }));
+    const val = event.target.value;
+    setFilterState(oldFilterState => ({
+      ...oldFilterState,
+      [filterName]: val
+    }));
   };
+
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = event => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
+
+  const {
+    loading: usersCountQueryLoading,
+    data: usersCount,
+    error: usersCountQueryError
+  } = useQuery(GET_USERS_COUNT);
 
   return (
     <Paper className={classes.root}>
@@ -98,17 +120,17 @@ function UserList(props) {
         User List
       </Typography>
       <TextField
-            id="search"
-            label="User's Name Contains"
-            className={classes.textField}
-            value={filterState.userFilter}
-            onChange={handleFilterChange("userFilter")}
-            margin="normal"
-            variant="outlined"
-            type="text"
-            InputProps={{
-                className: classes.input
-            }}
+        id="search"
+        label="User's Name Contains"
+        className={classes.textField}
+        value={filterState.userFilter}
+        onChange={handleFilterChange("userFilter")}
+        margin="normal"
+        variant="outlined"
+        type="text"
+        InputProps={{
+          className: classes.input
+        }}
       />
       {loading && !error && <p>Loading...</p>}
       {error && !loading && <p>Error</p>}
@@ -127,7 +149,7 @@ function UserList(props) {
                     direction={order}
                     onClick={() => handleSortRequest("first_name")}
                   >
-                      first name
+                    first name
                   </TableSortLabel>
                 </Tooltip>
               </TableCell>
@@ -146,6 +168,19 @@ function UserList(props) {
               );
             })}
           </TableBody>
+          {usersCountQueryLoading && !usersCountQueryError && <p>Loading...</p>}
+          {usersCountQueryError && !usersCountQueryLoading && <p>Error</p>}
+
+          {usersCount && !usersCountQueryLoading && !usersCountQueryError && (
+            <TablePagination
+              component="div"
+              count={usersCount.getUserCount}
+              page={page}
+              onChangePage={handleChangePage}
+              rowsPerPage={rowsPerPage}
+              onChangeRowsPerPage={handleChangeRowsPerPage}
+            />
+          )}
         </Table>
       )}
     </Paper>

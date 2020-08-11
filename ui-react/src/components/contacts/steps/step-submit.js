@@ -14,6 +14,36 @@ const styles = theme => ({
   }
 });
 
+const GET_CONTACTS = gql`
+  query contactsPaginateQuery(
+    $first: Int
+    $offset: Int
+    $orderByMe: String
+    $filter: String
+  ) {
+    contact(
+      first: $first
+      offset: $offset
+      orderByMe: $orderByMe
+      filter: $filter
+    ) {
+      id
+      first_name
+      last_name
+      email
+      lead_status
+      phone
+      created_at {
+        formatted
+      }
+      owner {
+        first_name
+        last_name
+      }
+    }
+  }
+`;
+
 function StepSubmit(props) {
   const [errors, setErrors] = React.useState(multiStep.getErrors());
 
@@ -43,9 +73,8 @@ function StepSubmit(props) {
       #        $first_seen: String,
       $email_domain: String
       $marital_status: String
-      $address: Addressik #        name: String #        owner:  User @relation(name: "OWNS_PROSPECT", direction: "IN") #        address:  Address @relation(name: "HAS_ADDRESS", direction: "OUT")
-    ) #        companies:  [Company] @relation(name: "ASSOCIATED_WITH", direction: "OUT")
-    #        properties:  [Interest]
+      $address: Addressik #        name: String #        owner:  User @relation(name: "OWNS_PROSPECT", direction: "IN") #        address:  Address @relation(name: "HAS_ADDRESS", direction: "OUT") #        companies:  [Company] @relation(name: "ASSOCIATED_WITH", direction: "OUT")
+    ) #        properties:  [Interest]
     #        listings:  [Listing] @relation(name: "LISTS", direction: "OUT")
     {
       createContact(
@@ -73,9 +102,8 @@ function StepSubmit(props) {
         #        $last_seen: String,
         #        $first_seen: String,
         email_domain: $email_domain
-        marital_status: $marital_status #        name: String #        owner:  User @relation(name: "OWNS_PROSPECT", direction: "IN") #        address:  Address @relation(name: "HAS_ADDRESS", direction: "OUT")
-      ) #        companies:  [Company] @relation(name: "ASSOCIATED_WITH", direction: "OUT")
-      #        properties:  [Interest]
+        marital_status: $marital_status #        name: String #        owner:  User @relation(name: "OWNS_PROSPECT", direction: "IN") #        address:  Address @relation(name: "HAS_ADDRESS", direction: "OUT") #        companies:  [Company] @relation(name: "ASSOCIATED_WITH", direction: "OUT")
+      ) #        properties:  [Interest]
       #        listings:  [Listing] @relation(name: "LISTS", direction: "OUT")
       {
         id
@@ -87,7 +115,7 @@ function StepSubmit(props) {
     createNewContact,
     { loading: cncMutationLoading, error: cncQMutationError }
   ] = useMutation(CREATE_NEW_CONTACT, {
-    // update: (proxy, { data: { createDeal } }) => {
+    // update: (proxy, { data: { createContact } }) => {
     //     const data = proxy.readQuery({
     //         query: GET_CONTACTS,
     //         variables: {
@@ -97,7 +125,7 @@ function StepSubmit(props) {
     //         }
     //     });
     //
-    //     data.Deal.push(createDeal);
+    //     data.Contact.push(createDeal);
     //     proxy.writeQuery({
     //         query: GET_DEALS,
     //         data: { data: data.Deal.concat(createDeal) }
@@ -108,7 +136,18 @@ function StepSubmit(props) {
   const createContact = event => {
     if (multiStep.isValid() === true) {
       createNewContact({
-        variables: multiStep.getData()
+        variables: multiStep.getData(),
+        refetchQueries: [
+          {
+            query: GET_CONTACTS,
+            variables: {
+              first: 10,
+              offset: 0,
+              orderByMe: `node.first_name asc`,
+              filter: "*"
+            }
+          }
+        ]
       });
       // clear form
       multiStep.clear();

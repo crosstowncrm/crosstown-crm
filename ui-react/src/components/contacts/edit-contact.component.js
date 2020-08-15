@@ -59,7 +59,6 @@ const GET_CONTACT = gql`
         street_address1
       }
       properties {
-        id
         Property {
           id
           name
@@ -916,36 +915,108 @@ function ContactEdit(props) {
                 margin: "2px"
               }}
             >
-              Associations
+              Associations, Interests, Listings
             </Grid>
-            <Grid
-              item
-              md={12}
-              style={{
-                border: "2px solid blue",
-                margin: "2px"
-              }}
-            >
-              {data.Contact.map(({ companies }) =>
-                companies.map(company => (
-                  <Card key={"card" + company.id}>
-                    <CardHeader title="Company" />
+
+            {data.Contact.map(({ companies, properties, listings }) => (
+              <>
+                <Grid
+                  item
+                  md={12}
+                  style={{
+                    border: "2px solid blue",
+                    margin: "2px"
+                  }}
+                >
+                  <Card key={"company"}>
+                    <CardActions>
+                      <CardHeader title="Company" />
+                      <Button size="small" color="primary">
+                        Add
+                      </Button>
+                    </CardActions>
                     <Divider />
-                    <CardContent key={"cc_" + company.id}>
-                      <Typography key={"tp_" + company.id}>
-                        <Link
-                          key={"link_" + company.id}
-                          className="edit-link"
-                          to={"/companies/" + company.id}
-                        >
-                          {company.name}
-                        </Link>
-                      </Typography>
+                    {companies.map(company => (
+                      <CardContent key={"cc_" + company.id}>
+                        <Typography key={"tp_" + company.id}>
+                          <Link
+                            key={"link_" + company.id}
+                            className="edit-link"
+                            to={"/companies/" + company.id}
+                          >
+                            {company.name}
+                          </Link>
+                        </Typography>
+                      </CardContent>
+                    ))}
+                  </Card>
+                </Grid>
+                <Grid
+                  item
+                  md={12}
+                  style={{
+                    border: "2px solid blue",
+                    margin: "2px"
+                  }}
+                >
+                  <Card key={"property"}>
+                    <CardActions>
+                      <CardHeader title="Has Interest In" />
+                      <Button size="small" color="primary">
+                        Add
+                      </Button>
+                    </CardActions>
+                    <Divider />
+                    <CardContent>
+                      {properties.map(property => (
+                        <Typography key={"tp_" + property.Property.id}>
+                          <Link
+                            key={"link_" + property.Property.id}
+                            className="edit-link"
+                            to={"/properties/" + property.Property.id}
+                          >
+                            {property.Property.name}
+                          </Link>
+                        </Typography>
+                      ))}
                     </CardContent>
                   </Card>
-                ))
-              )}
-            </Grid>
+                </Grid>
+
+                <Grid
+                  item
+                  md={12}
+                  style={{
+                    border: "2px solid blue",
+                    margin: "2px"
+                  }}
+                >
+                  <Card key={"listing"}>
+                    <CardActions>
+                      <CardHeader title="Listings" />
+                      <Button size="small" color="primary">
+                        Add
+                      </Button>
+                    </CardActions>
+
+                    <Divider />
+                    {listings.map(listing => (
+                      <CardContent key={"cc_" + listing.id}>
+                        <Typography key={"tp_" + listing.id}>
+                          <Link
+                            key={"link_" + listing.id}
+                            className="edit-link"
+                            to={"/listings/" + listing.id}
+                          >
+                            {listing.name}
+                          </Link>
+                        </Typography>
+                      </CardContent>
+                    ))}
+                  </Card>
+                </Grid>
+              </>
+            ))}
           </Grid>
         </Grid>
       )}

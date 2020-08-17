@@ -14,6 +14,7 @@ import Typography from "@material-ui/core/Typography";
 import Avatar from "@material-ui/core/Avatar";
 import ArrowForwardIcon from "@material-ui/icons/ArrowForward";
 import TextField from "@material-ui/core/TextField";
+import AddCompanyDialog from "./dialogs/add-company-dialog";
 
 import { CardHeader, Divider } from "@material-ui/core";
 import { useMutation } from "@apollo/react-hooks/lib/index";
@@ -116,6 +117,16 @@ function ContactEdit(props) {
   const [editBirthdayMode, setEditBirthdayMode] = React.useState(false);
   const [editMSMode, setEditMSMode] = React.useState(false);
 
+  const [openDialogComponent, setOpenDialogComponent] = React.useState(false);
+
+  const callDialog = () => {
+    setOpenDialogComponent(true);
+  };
+
+  const handleCloseDialogComponent = () => {
+    setOpenDialogComponent(false);
+  };
+
   const [field, setField] = React.useState(false);
   const [fieldValue, setFieldValue] = React.useState(false);
   const [engaged, setEngaged] = React.useState(false);
@@ -142,7 +153,7 @@ function ContactEdit(props) {
     setEngaged(false);
   };
 
-  const { loading, data, error } = useQuery(GET_CONTACT, {
+  const { loading, data, error, refetch } = useQuery(GET_CONTACT, {
     variables: {
       id: params["uid"]
     }
@@ -244,7 +255,7 @@ function ContactEdit(props) {
                   lifecycle_stage,
                   marital_status
                 }) => (
-                  <Card key="{card-$id}">
+                  <Card key={`card-${id}`}>
                     <CardContent>
                       <Avatar>***</Avatar>
                       <Typography gutterBottom variant="h5" component="h2">
@@ -871,11 +882,11 @@ function ContactEdit(props) {
                 margin: "2px"
               }}
             >
-              {data.Contact.map(({ viewed }) =>
-                viewed.map(article => (
-                  <Card key={"card" + article.Article.id}>
+              {data.Contact.map(({ viewed }, j) =>
+                viewed.map((article, i) => (
+                  <Card key={"card_" + j}>
                     <CardHeader
-                      title={"Article read "}
+                      title={"Article read " + j}
                       subheader={article.timestamp.formatted}
                     />
 
@@ -921,6 +932,7 @@ function ContactEdit(props) {
             {data.Contact.map(({ companies, properties, listings }) => (
               <>
                 <Grid
+                  key="company"
                   item
                   md={12}
                   style={{
@@ -931,13 +943,13 @@ function ContactEdit(props) {
                   <Card key={"company"}>
                     <CardActions>
                       <CardHeader title="Company" />
-                      <Button size="small" color="primary">
+                      <Button onClick={callDialog} size="small" color="primary">
                         Add
                       </Button>
                     </CardActions>
                     <Divider />
-                    {companies.map(company => (
-                      <CardContent key={"cc_" + company.id}>
+                    <CardContent key={"cccccc"}>
+                      {companies.map(company => (
                         <Typography key={"tp_" + company.id}>
                           <Link
                             key={"link_" + company.id}
@@ -947,11 +959,12 @@ function ContactEdit(props) {
                             {company.name}
                           </Link>
                         </Typography>
-                      </CardContent>
-                    ))}
+                      ))}
+                    </CardContent>
                   </Card>
                 </Grid>
                 <Grid
+                  key={"property"}
                   item
                   md={12}
                   style={{
@@ -984,6 +997,7 @@ function ContactEdit(props) {
                 </Grid>
 
                 <Grid
+                  key={"listing"}
                   item
                   md={12}
                   style={{
@@ -1001,7 +1015,7 @@ function ContactEdit(props) {
 
                     <Divider />
                     {listings.map(listing => (
-                      <CardContent key={"cc_" + listing.id}>
+                      <CardContent key={"ls_" + listing.id}>
                         <Typography key={"tp_" + listing.id}>
                           <Link
                             key={"link_" + listing.id}
@@ -1015,6 +1029,15 @@ function ContactEdit(props) {
                     ))}
                   </Card>
                 </Grid>
+                <AddCompanyDialog
+                  key={"addCompany"}
+                  isOpen={openDialogComponent}
+                  handleClose={handleCloseDialogComponent}
+                  contactId={params["uid"]}
+                  title="add Company"
+                  refetch={refetch}
+                  companies2={companies}
+                ></AddCompanyDialog>
               </>
             ))}
           </Grid>

@@ -1,93 +1,158 @@
 import React from "react";
-
-import { withStyles } from "@material-ui/core/styles/index";
+import Button from "@material-ui/core/Button";
 import TextField from "@material-ui/core/TextField";
-import multiStep from "../../../multiStep/multiStep";
-const styles = theme => ({
-  root: {
-    maxWidth: "100%"
-  }
-});
+import Dialog from "@material-ui/core/Dialog";
+import DialogActions from "@material-ui/core/DialogActions";
+import DialogContent from "@material-ui/core/DialogContent";
+import DialogContentText from "@material-ui/core/DialogContentText";
+import DialogTitle from "@material-ui/core/DialogTitle";
+import FormControl from "@material-ui/core/FormControl";
+import Autocomplete from "@material-ui/lab/Autocomplete";
+import { useMutation, useQuery } from "@apollo/react-hooks/lib/index";
+import gql from "graphql-tag";
 
-function ContactAddress() {
-  const [errors, setErrors] = React.useState(multiStep.getErrors()["address"]);
-  const handleChange = event => {
-    multiStep.saveData({
-      name: "address",
-      value: { [event.target.name]: event.target.value }
+const GET_COMPANIES = gql`
+  query companiesPaginateQuery(
+    $first: Int
+    $offset: Int
+    $orderBy: [_CompanyOrdering]
+  ) #    $filter: _CompanyFilter
+  {
+    Company(
+      first: $first
+      offset: $offset
+      orderBy: $orderBy
+    ) #            filter: $filter
+    {
+      id
+      name
+    }
+  }
+`;
+
+const ASSOCIATION_ADD = gql`
+  mutation associationAdd($from: ID!, $to: ID!) {
+    MergeContactCompanies(from: { id: $from }, to: { id: $to }) {
+      from {
+        id
+      }
+      to {
+        id
+      }
+    }
+  }
+`;
+
+export default function AddCompanyDialog({
+  isOpen,
+  handleClose,
+  contactId,
+  refetch
+}) {
+  const [formData, updateFormData] = React.useState({ from: contactId });
+  const [errors, setErrors] = React.useState({});
+
+  const {
+    loading: companiesQueryLoading,
+    data: companies,
+    error: companiesQueryError
+  } = useQuery(GET_COMPANIES, {
+    variables: {
+      orderBy: "name_asc"
+    }
+  });
+
+  const handleChange = (e, value) => {
+    console.log(value);
+    updateFormData({
+      ...formData,
+      ["to"]: value.id
     });
-    multiStep.errorRemove("address");
-    setErrors({ ...errors, [event.target.name]: "" });
   };
 
-  const { address } = multiStep.getData();
+  const validate = values => {
+    let companyError = "";
+    if (!values.to) {
+      companyError = "Required";
+    }
+    if (companyError) {
+      setErrors({
+        companyError
+      });
+      return false;
+    }
+    return true;
+  };
+
+  const handleSubmit = e => {
+    e.preventDefault();
+    const isValid = validate(formData);
+
+    if (isValid) {
+      console.log(formData);
+      associationAdd({
+        variables: formData
+      });
+
+      //clear form
+      updateFormData({ from: contactId });
+      handleClose();
+    }
+  };
+
+  const [
+    associationAdd,
+    { loading: aaMutationLoading, error: aaMutationError }
+  ] = useMutation(ASSOCIATION_ADD, {
+    update: refetch
+  });
+
   return (
     <div>
-      <div className="row">
-        <div className="six columns">
-          <TextField
-            label="Postal Code"
-            onChange={handleChange}
-            name="postal_code"
-            size="small"
-            defaultValue={
-              address && address.postal_code ? address.postal_code : ""
-            }
-          />
-        </div>
-      </div>
-      <div className="row">
-        <div className="six columns">
-          <TextField
-            label="Street Address 1"
-            onChange={handleChange}
-            name="street_address1"
-            size="small"
-            defaultValue={
-              address && address.street_address1 ? address.street_address1 : ""
-            }
-          />
-          <div style={{ fontSize: 12, color: "red" }}>
-            {errors && errors.street_address1 ? errors.street_address1 : ""}
-          </div>
-        </div>
-      </div>
-      <div className="row">
-        <div className="six columns">
-          <TextField
-            label="Street Address 2"
-            onChange={handleChange}
-            name="street_address2"
-            size="small"
-            defaultValue={
-              address && address.street_address2 ? address.street_address2 : ""
-            }
-          />
-        </div>
-      </div>
-      <div className="row">
-        <div className="six columns">
-          <TextField
-            label="lat"
-            onChange={handleChange}
-            name="lat"
-            size="small"
-            defaultValue={address && address.lat ? address.lat : ""}
-          />
-        </div>
-      </div>
-      <div className="row">
-        <div className="six columns">
-          <TextField
-            label="lng"
-            onChange={handleChange}
-            name="lng"
-            size="small"
-            defaultValue={address && address.lng ? address.lng : ""}
-          />
-        </div>
-      </div>
+      <Dialog
+        open={isOpen}
+        onClose={handleClose}
+        aria-labelledby="edit-apartment"
+      >
+        <DialogTitle id="edit-apartment">Association</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Choose the Company for Association
+          </DialogContentText>
+          {companies && !companiesQueryLoading && !companiesQueryError && (
+            <FormControl>
+              <Autocomplete
+                id="company"
+                name="company"
+                options={companies.Company}
+                getOptionLabel={option => option.name}
+                style={{ width: 300 }}
+                onChange={handleChange}
+                renderInput={params => (
+                  <TextField
+                    {...params}
+                    label="Company"
+                    variant="outlined"
+                    data-validators="isRequired"
+                    required={true}
+                  />
+                )}
+              />
+              <div style={{ fontSize: 12, color: "red" }}>
+                {errors.clientError}
+              </div>
+            </FormControl>
+          )}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose} color="secondary">
+            Cancel
+          </Button>
+          <Button onClick={handleSubmit} color="primary">
+            Submit
+          </Button>
+        </DialogActions>
+      </Dialog>
     </div>
   );
 }
-export default withStyles(styles)(ContactAddress);

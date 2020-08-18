@@ -15,6 +15,7 @@ import Avatar from "@material-ui/core/Avatar";
 import ArrowForwardIcon from "@material-ui/icons/ArrowForward";
 import TextField from "@material-ui/core/TextField";
 import AddCompanyDialog from "./dialogs/add-company-dialog";
+import AddInterestDialog from "./dialogs/add-interest-dialog";
 
 import { CardHeader, Divider } from "@material-ui/core";
 import { useMutation } from "@apollo/react-hooks/lib/index";
@@ -118,13 +119,26 @@ function ContactEdit(props) {
   const [editMSMode, setEditMSMode] = React.useState(false);
 
   const [openDialogComponent, setOpenDialogComponent] = React.useState(false);
+  const [
+    openDialogInterestComponent,
+    setOpenInterestDialogComponent
+  ] = React.useState(false);
 
   const callDialog = () => {
+    console.log("start");
     setOpenDialogComponent(true);
+  };
+
+  const callInterestDialog = () => {
+    setOpenInterestDialogComponent(true);
   };
 
   const handleCloseDialogComponent = () => {
     setOpenDialogComponent(false);
+  };
+
+  const handleCloseInterestDialogComponent = () => {
+    setOpenInterestDialogComponent(false);
   };
 
   const [field, setField] = React.useState(false);
@@ -948,7 +962,7 @@ function ContactEdit(props) {
                       </Button>
                     </CardActions>
                     <Divider />
-                    <CardContent key={"cccccc"}>
+                    <CardContent key={"key"}>
                       {companies.map(company => (
                         <Typography key={"tp_" + company.id}>
                           <Link
@@ -975,7 +989,11 @@ function ContactEdit(props) {
                   <Card key={"property"}>
                     <CardActions>
                       <CardHeader title="Has Interest In" />
-                      <Button size="small" color="primary">
+                      <Button
+                        onClick={callInterestDialog}
+                        size="small"
+                        color="primary"
+                      >
                         Add
                       </Button>
                     </CardActions>
@@ -1034,10 +1052,17 @@ function ContactEdit(props) {
                   isOpen={openDialogComponent}
                   handleClose={handleCloseDialogComponent}
                   contactId={params["uid"]}
-                  title="add Company"
+                  title="Associations"
                   refetch={refetch}
-                  companies2={companies}
                 ></AddCompanyDialog>
+                <AddInterestDialog
+                  key={"AddInterest"}
+                  isOpen={openDialogInterestComponent}
+                  handleClose={handleCloseInterestDialogComponent}
+                  contactId={params["uid"]}
+                  title="Interest"
+                  refetch={refetch}
+                ></AddInterestDialog>
               </>
             ))}
           </Grid>

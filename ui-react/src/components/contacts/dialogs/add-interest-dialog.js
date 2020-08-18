@@ -11,53 +11,48 @@ import Autocomplete from "@material-ui/lab/Autocomplete";
 import { useMutation, useQuery } from "@apollo/react-hooks/lib/index";
 import gql from "graphql-tag";
 
-const GET_COMPANIES = gql`
-  query companiesPaginateQuery(
+const GET_PROPERTIES = gql`
+  query propertiesPaginateQuery(
     $first: Int
     $offset: Int
-    $orderBy: [_CompanyOrdering]
+    $orderBy: [_PropertyOrdering]
   ) {
-    Company(first: $first, offset: $offset, orderBy: $orderBy) {
+    Property(first: $first, offset: $offset, orderBy: $orderBy) {
       id
       name
     }
   }
 `;
 
-const ASSOCIATION_ADD = gql`
-  mutation associationAdd($from: ID!, $to: ID!) {
-    MergeContactCompanies(from: { id: $from }, to: { id: $to }) {
-      from {
-        id
-      }
-      to {
-        id
-      }
+const INTEREST_ADD = gql`
+  mutation interestAdd($from: String!, $to: String!) {
+    mergeContactInterest(from: $from, to: $to) {
+      id
     }
   }
 `;
 
-export default function AddCompanyDialog({
+export default function AddInterestDialog({
   isOpen,
   handleClose,
   contactId,
-  refetch
+  refetch,
+  title
 }) {
   const [formData, updateFormData] = React.useState({ from: contactId });
   const [errors, setErrors] = React.useState({});
 
   const {
-    loading: companiesQueryLoading,
-    data: companies,
-    error: companiesQueryError
-  } = useQuery(GET_COMPANIES, {
+    loading: propertiesQueryLoading,
+    data: properties,
+    error: propertiesQueryError
+  } = useQuery(GET_PROPERTIES, {
     variables: {
       orderBy: "name_asc"
     }
   });
 
   const handleChange = (e, value) => {
-    console.log(value);
     updateFormData({
       ...formData,
       ["to"]: value.id
@@ -65,13 +60,13 @@ export default function AddCompanyDialog({
   };
 
   const validate = values => {
-    let companyError = "";
+    let propertyError = "";
     if (!values.to) {
-      companyError = "Required";
+      propertyError = "Required";
     }
-    if (companyError) {
+    if (propertyError) {
       setErrors({
-        companyError
+        propertyError
       });
       return false;
     }
@@ -84,20 +79,18 @@ export default function AddCompanyDialog({
 
     if (isValid) {
       console.log(formData);
-      associationAdd({
+      interestAdd({
         variables: formData
       });
-
-      //clear form
       updateFormData({ from: contactId });
       handleClose();
     }
   };
 
   const [
-    associationAdd,
-    { loading: aaMutationLoading, error: aaMutationError }
-  ] = useMutation(ASSOCIATION_ADD, {
+    interestAdd,
+    { loading: iaMutationLoading, error: iaMutationError }
+  ] = useMutation(INTEREST_ADD, {
     update: refetch
   });
 
@@ -108,17 +101,15 @@ export default function AddCompanyDialog({
         onClose={handleClose}
         aria-labelledby="edit-apartment"
       >
-        <DialogTitle id="edit-apartment">Association</DialogTitle>
+        <DialogTitle id="edit-apartment">{title}</DialogTitle>
         <DialogContent>
-          <DialogContentText>
-            Choose the Company for Association
-          </DialogContentText>
-          {companies && !companiesQueryLoading && !companiesQueryError && (
+          <DialogContentText>Choose the Company for {title}</DialogContentText>
+          {properties && !propertiesQueryLoading && !propertiesQueryError && (
             <FormControl>
               <Autocomplete
-                id="company"
-                name="company"
-                options={companies.Company}
+                id="property"
+                name="property"
+                options={properties.Property}
                 getOptionLabel={option => option.name}
                 style={{ width: 300 }}
                 onChange={handleChange}

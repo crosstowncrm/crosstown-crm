@@ -404,11 +404,12 @@ type Mutation {
 
   updateContact(field: String, value: String, contactId: String): Contact
 
+  mergeContactInterest(from: String, to: String): Interest
+    @cypher(statement: "MATCH (contact:Contact{id: $from}) MATCH (property:Property{id: $to}) MERGE (contact)-[hii:HAS_INTEREST_IN]->(property) RETURN hii")
+
   createContact(address: Addressik, first_name: String, last_name: String, suffix: String, birthday: String, email: String, phone: String, mobile: String, linkedin_url: String,
         facebook_url: String, instagram_url: String, twitter_url: String, lead_status: String, lead_type: String, lead_date: String, lifecycle_stage: String,
         created_at: _Neo4jDateInput, last_modified: String, email_domain: String, marital_status: String): Contact
-
-
 }
 
 

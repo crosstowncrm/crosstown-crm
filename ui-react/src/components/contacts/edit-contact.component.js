@@ -16,6 +16,7 @@ import ArrowForwardIcon from "@material-ui/icons/ArrowForward";
 import TextField from "@material-ui/core/TextField";
 import AddCompanyDialog from "./dialogs/add-company-dialog";
 import AddInterestDialog from "./dialogs/add-interest-dialog";
+import AddListingDialog from "./dialogs/add-listing-dialog";
 
 import { CardHeader, Divider } from "@material-ui/core";
 import { useMutation } from "@apollo/react-hooks/lib/index";
@@ -123,6 +124,10 @@ function ContactEdit(props) {
     openDialogInterestComponent,
     setOpenInterestDialogComponent
   ] = React.useState(false);
+  const [
+    openDialogListingComponent,
+    setOpenListingDialogComponent
+  ] = React.useState(false);
 
   const callDialog = () => {
     console.log("start");
@@ -133,12 +138,20 @@ function ContactEdit(props) {
     setOpenInterestDialogComponent(true);
   };
 
+  const callListingDialog = () => {
+    setOpenListingDialogComponent(true);
+  };
+
   const handleCloseDialogComponent = () => {
     setOpenDialogComponent(false);
   };
 
   const handleCloseInterestDialogComponent = () => {
     setOpenInterestDialogComponent(false);
+  };
+
+  const handleCloseListingDialogComponent = () => {
+    setOpenListingDialogComponent(false);
   };
 
   const [field, setField] = React.useState(false);
@@ -1026,7 +1039,11 @@ function ContactEdit(props) {
                   <Card key={"listing"}>
                     <CardActions>
                       <CardHeader title="Listings" />
-                      <Button size="small" color="primary">
+                      <Button
+                        onClick={callListingDialog}
+                        size="small"
+                        color="primary"
+                      >
                         Add
                       </Button>
                     </CardActions>
@@ -1063,6 +1080,14 @@ function ContactEdit(props) {
                   title="Interest"
                   refetch={refetch}
                 ></AddInterestDialog>
+                <AddListingDialog
+                  key={"AddListing"}
+                  isOpen={openDialogListingComponent}
+                  handleClose={handleCloseListingDialogComponent}
+                  contactId={params["uid"]}
+                  title="Listing"
+                  refetch={refetch}
+                ></AddListingDialog>
               </>
             ))}
           </Grid>

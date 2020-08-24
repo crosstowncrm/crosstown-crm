@@ -53,7 +53,11 @@ const GET_CONTACT = gql`
       twitter_url
       lead_type
       lead_date
-      last_modified
+      last_modified {
+        year
+        month
+        day
+      }
       last_activity
       last_seen
       first_seen

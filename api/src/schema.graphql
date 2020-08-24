@@ -58,7 +58,7 @@ type Contact implements Client{
   lead_date: String
   lifecycle_stage: String
   created_at: Date
-  last_modified: String
+  last_modified: DateTime
   last_activity: String
   last_seen: String
   first_seen: String

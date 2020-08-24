@@ -948,7 +948,7 @@ function ContactEdit(props) {
                               onChange={handleChange}
                               id="postal_code"
                               defaultValue={
-                                address
+                                address !== null
                                   ? address.postal_code +
                                     " " +
                                     address.street_address1
@@ -975,7 +975,7 @@ function ContactEdit(props) {
                             }}
                           >
                             address:
-                            {address
+                            {address !== null
                               ? address.postal_code +
                                 " " +
                                 address.street_address1

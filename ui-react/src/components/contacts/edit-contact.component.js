@@ -948,9 +948,11 @@ function ContactEdit(props) {
                               onChange={handleChange}
                               id="postal_code"
                               defaultValue={
-                                address.postal_code +
-                                " " +
-                                address.street_address1
+                                address
+                                  ? address.postal_code +
+                                    " " +
+                                    address.street_address1
+                                  : "no address yet"
                               }
                               size="small"
                             />
@@ -972,10 +974,12 @@ function ContactEdit(props) {
                               } else setEditAddressMode(editAddressMode);
                             }}
                           >
-                            address:{" "}
-                            {address.postal_code +
-                              " " +
-                              address.street_address1}
+                            address:
+                            {address
+                              ? address.postal_code +
+                                " " +
+                                address.street_address1
+                              : "no address yet"}
                           </span>
                         )}
                       </Typography>

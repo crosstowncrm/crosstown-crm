@@ -69,7 +69,38 @@ const resolvers = {
                 }
             )
         },
-
+        contact:async (_, {filter, orderByMe, first, offset}, ctx)=>{
+            let session = ctx.driver.session();
+            const cypherQuery = `CALL db.index.fulltext.queryNodes('searchingContact', '${filter}') YIELD node 
+            WITH node OPTIONAL MATCH (node)<-[:OWNS_PROSPECT]-(owner:User) RETURN node, owner 
+            ORDER BY ${orderByMe} 
+            SKIP ${offset} 
+            LIMIT ${first};`;
+            return await session.run(cypherQuery).then(
+                result => {
+                    const resData = result.records.map(
+                        record => {
+                            const owner =  record.get('owner') === null?null:record.get('owner').properties;
+                            let {id, first_name, last_name, email, lead_status, phone, created_at} =  record.get('node').properties;
+                            return {
+                                id: id,
+                                first_name: first_name,
+                                last_name: last_name,
+                                email: email,
+                                lead_status: lead_status,
+                                phone: phone,
+                                created_at: {formatted: created_at?created_at.toString():""},
+                                owner: owner===null? null: {
+                                    first_name: owner.first_name,
+                                    last_name: owner.last_name
+                                }
+                            };
+                        }
+                    );
+                    return resData;
+                }
+            )
+        },
 
 
         getClient:async(object, params, ctx, resolveInfo)=>{
@@ -114,8 +145,18 @@ const resolvers = {
                 }
             )
         },
+        updateData:async (_, {nodeLabel, nodeId, contactId}, ctx)=>{
+            const digest = {"User":"OWNS_PROSPECT"};
+            let session = ctx.driver.session();
+            const cypherQuery = `MATCH (:${nodeLabel})-[r]-(contact:Contact {id: "${contactId}"}) DELETE r WITH contact MATCH (node:${nodeLabel} {id: "${nodeId}"}) MERGE (contact)<-[rel:${digest[nodeLabel]}]-(node) RETURN id(rel) as rel_id LIMIT 1`;
+            return await session.run(cypherQuery).then(
+                result => {
+                    const resData = result.records[0].get('rel_id').properties;
+                    return resData;
+                }
+            )
+        },
         createContact:async (_, params, ctx)=>{
-
             const {address} = params;
             delete params.address;
             let session = ctx.driver.session();

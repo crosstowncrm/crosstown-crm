@@ -17,6 +17,8 @@ import TextField from "@material-ui/core/TextField";
 import AddCompanyDialog from "./dialogs/add-company-dialog";
 import AddInterestDialog from "./dialogs/add-interest-dialog";
 import AddListingDialog from "./dialogs/add-listing-dialog";
+import Autocomplete from "@material-ui/lab/Autocomplete";
+import FormControl from "@material-ui/core/FormControl";
 
 import { CardHeader, Divider } from "@material-ui/core";
 import { useMutation } from "@apollo/react-hooks/lib/index";
@@ -60,6 +62,7 @@ const GET_CONTACT = gql`
       address {
         id
         street_address1
+        postal_code
       }
       properties {
         Property {
@@ -78,6 +81,7 @@ const GET_CONTACT = gql`
       owner {
         id
         first_name
+        last_name
       }
       viewed(filter: { action: true }) {
         timestamp {
@@ -100,6 +104,22 @@ const UPDATE_CONTACT = gql`
   }
 `;
 
+const UPDATE_DATA = gql`
+  mutation updateData($nodeLabel: String, $nodeId: String, $contactId: String) {
+    updateData(nodeLabel: $nodeLabel, nodeId: $nodeId, contactId: $contactId)
+  }
+`;
+
+const GET_USERS = gql`
+  query User {
+    User {
+      id
+      first_name
+      last_name
+    }
+  }
+`;
+
 function ContactEdit(props) {
   const { classes } = props;
   const params = props.match.params;
@@ -118,6 +138,8 @@ function ContactEdit(props) {
   const [editTwitMode, setEditTwitMode] = React.useState(false);
   const [editBirthdayMode, setEditBirthdayMode] = React.useState(false);
   const [editMSMode, setEditMSMode] = React.useState(false);
+  const [editAddressMode, setEditAddressMode] = React.useState(false);
+  const [editOwnerMode, setEditOwnerMode] = React.useState(false);
 
   const [openDialogComponent, setOpenDialogComponent] = React.useState(false);
   const [
@@ -130,7 +152,6 @@ function ContactEdit(props) {
   ] = React.useState(false);
 
   const callDialog = () => {
-    console.log("start");
     setOpenDialogComponent(true);
   };
 
@@ -176,6 +197,8 @@ function ContactEdit(props) {
     setEditTwitMode(false);
     setEditLCSMode(false);
     setEditMSMode(false);
+    setEditAddressMode(false);
+    setEditOwnerMode(false);
 
     setEngaged(false);
   };
@@ -183,6 +206,16 @@ function ContactEdit(props) {
   const { loading, data, error, refetch } = useQuery(GET_CONTACT, {
     variables: {
       id: params["uid"]
+    }
+  });
+
+  const {
+    loading: usersQueryLoading,
+    data: users,
+    error: usersQueryError
+  } = useQuery(GET_USERS, {
+    variables: {
+      orderBy: "first_name_asc"
     }
   });
 
@@ -200,10 +233,29 @@ function ContactEdit(props) {
     setAllFalse();
   };
 
+  const handleAcSubmit = event => {
+    event.preventDefault();
+    updateData({
+      variables: {
+        nodeLabel: event.target.name,
+        nodeId: fieldValue,
+        contactId: params["uid"]
+      },
+      update: refetch
+    });
+    setAllFalse();
+  };
+
   const handleChange = event => {
     event.preventDefault();
     setField(event.target.id);
     setFieldValue(event.target.value);
+  };
+
+  const handleAcChange = (event, value) => {
+    event.preventDefault();
+    setField("id");
+    setFieldValue(value.id);
   };
 
   const handleCancel = event => {
@@ -222,6 +274,19 @@ function ContactEdit(props) {
         data: { data: data }
       });
     }
+  });
+
+  const [
+    updateData,
+    { loading: undMutationLoading, error: undQMutationError }
+  ] = useMutation(UPDATE_DATA, {
+    // update: (proxy, { data: { updateData } }) => {
+    //     data.Contact[0][field] = fieldValue;
+    //     proxy.writeQuery({
+    //         query: GET_CONTACT,
+    //         data: { data: data }
+    //     });
+    // }
   });
 
   return (
@@ -280,7 +345,9 @@ function ContactEdit(props) {
                   instagram_url,
                   twitter_url,
                   lifecycle_stage,
-                  marital_status
+                  marital_status,
+                  address,
+                  owner
                 }) => (
                   <Card key={`card-${id}`}>
                     <CardContent>
@@ -868,6 +935,111 @@ function ContactEdit(props) {
                         <span>last_activity:</span>
                         <span>{last_activity}</span>
                       </Typography>
+
+                      <Typography
+                        variant="body2"
+                        color="textSecondary"
+                        component="div"
+                      >
+                        {editAddressMode ? (
+                          <form onSubmit={handleSubmit}>
+                            <TextField
+                              label="postal_code"
+                              onChange={handleChange}
+                              id="postal_code"
+                              defaultValue={
+                                address.postal_code +
+                                " " +
+                                address.street_address1
+                              }
+                              size="small"
+                            />
+                            <br />
+                            <Button color="primary" type="submit">
+                              Update
+                            </Button>
+                            <Button color="secondary" onClick={handleCancel}>
+                              Cancel
+                            </Button>
+                          </form>
+                        ) : (
+                          <span
+                            onDoubleClick={event => {
+                              event.preventDefault();
+                              if (!engaged) {
+                                setEditAddressMode(!editAddressMode);
+                                setEngaged(true);
+                              } else setEditAddressMode(editAddressMode);
+                            }}
+                          >
+                            address:{" "}
+                            {address.postal_code +
+                              " " +
+                              address.street_address1}
+                          </span>
+                        )}
+                      </Typography>
+
+                      <Typography
+                        variant="body2"
+                        color="textSecondary"
+                        component="div"
+                      >
+                        {editOwnerMode ? (
+                          <form name="User" onSubmit={handleAcSubmit}>
+                            {users && !usersQueryLoading && !usersQueryError && (
+                              <FormControl>
+                                <Autocomplete
+                                  id="user"
+                                  name="user"
+                                  options={users.User}
+                                  getOptionLabel={option => option.first_name}
+                                  style={{ width: 250 }}
+                                  onChange={handleAcChange}
+                                  renderInput={params => (
+                                    <TextField
+                                      {...params}
+                                      label="User"
+                                      variant="outlined"
+                                      data-validators="isRequired"
+                                      required={true}
+                                    />
+                                  )}
+                                />
+                                <div style={{ fontSize: 12, color: "red" }}>
+                                  {/*{errors.clientError}*/}
+                                </div>
+                                <br />
+                                <Button color="primary" type="submit">
+                                  Update
+                                </Button>
+                                <Button
+                                  color="secondary"
+                                  onClick={handleCancel}
+                                >
+                                  Cancel
+                                </Button>
+                              </FormControl>
+                            )}
+                          </form>
+                        ) : (
+                          <span
+                            onDoubleClick={event => {
+                              event.preventDefault();
+                              if (!engaged) {
+                                setEditOwnerMode(!editOwnerMode);
+                                setEngaged(true);
+                              } else setEditOwnerMode(editOwnerMode);
+                            }}
+                          >
+                            owner:{" "}
+                            {owner && owner.first_name
+                              ? owner.first_name + " " + owner.last_name
+                              : "no owner"}
+                          </span>
+                        )}
+                      </Typography>
+
                       <Typography
                         variant="body2"
                         color="textSecondary"
@@ -1041,6 +1213,7 @@ function ContactEdit(props) {
                       <CardHeader title="Listings" />
                       <Button
                         onClick={callListingDialog}
+                        size="small"
                         size="small"
                         color="primary"
                       >

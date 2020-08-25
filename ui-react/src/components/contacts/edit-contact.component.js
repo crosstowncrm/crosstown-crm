@@ -15,6 +15,7 @@ import Avatar from "@material-ui/core/Avatar";
 import ArrowForwardIcon from "@material-ui/icons/ArrowForward";
 import TextField from "@material-ui/core/TextField";
 import AddCompanyDialog from "./dialogs/add-company-dialog";
+import ChangeAddressDialog from "./dialogs/change-address-dialog";
 import AddInterestDialog from "./dialogs/add-interest-dialog";
 import AddListingDialog from "./dialogs/add-listing-dialog";
 import Autocomplete from "@material-ui/lab/Autocomplete";
@@ -142,6 +143,10 @@ function ContactEdit(props) {
 
   const [openDialogComponent, setOpenDialogComponent] = React.useState(false);
   const [
+    openAddressDialogComponent,
+    setOpenAddressDialogComponent
+  ] = React.useState(false);
+  const [
     openDialogInterestComponent,
     setOpenInterestDialogComponent
   ] = React.useState(false);
@@ -154,6 +159,10 @@ function ContactEdit(props) {
     setOpenDialogComponent(true);
   };
 
+  const callAddressDialog = () => {
+    setOpenAddressDialogComponent(true);
+  };
+
   const callInterestDialog = () => {
     setOpenInterestDialogComponent(true);
   };
@@ -164,6 +173,10 @@ function ContactEdit(props) {
 
   const handleCloseDialogComponent = () => {
     setOpenDialogComponent(false);
+  };
+
+  const handleCloseAddressDialogComponent = () => {
+    setOpenAddressDialogComponent(false);
   };
 
   const handleCloseInterestDialogComponent = () => {
@@ -940,47 +953,14 @@ function ContactEdit(props) {
                         color="textSecondary"
                         component="div"
                       >
-                        {editAddressMode ? (
-                          <form onSubmit={handleSubmit}>
-                            <TextField
-                              label="postal_code"
-                              onChange={handleChange}
-                              id="postal_code"
-                              defaultValue={
-                                address !== null
-                                  ? address.postal_code +
-                                    " " +
-                                    address.street_address1
-                                  : "no address yet"
-                              }
-                              size="small"
-                            />
-                            <br />
-                            <Button color="primary" type="submit">
-                              Update
-                            </Button>
-                            <Button color="secondary" onClick={handleCancel}>
-                              Cancel
-                            </Button>
-                          </form>
-                        ) : (
-                          <span
-                            onDoubleClick={event => {
-                              event.preventDefault();
-                              if (!engaged) {
-                                setEditAddressMode(!editAddressMode);
-                                setEngaged(true);
-                              } else setEditAddressMode(editAddressMode);
-                            }}
-                          >
-                            address:
-                            {address !== null
-                              ? address.postal_code +
-                                " " +
-                                address.street_address1
-                              : "no address yet"}
-                          </span>
-                        )}
+                        <span onDoubleClick={callAddressDialog}>
+                          address:
+                          {address !== null
+                            ? address.postal_code +
+                              " " +
+                              address.street_address1
+                            : "no address yet"}
+                        </span>
                       </Typography>
 
                       <Typography
@@ -996,7 +976,9 @@ function ContactEdit(props) {
                                   id="user"
                                   name="user"
                                   options={users.User}
-                                  getOptionLabel={option => option.first_name}
+                                  getOptionLabel={option =>
+                                    option.first_name + " " + option.last_name
+                                  }
                                   style={{ width: 250 }}
                                   onChange={handleAcChange}
                                   renderInput={params => (
@@ -1240,6 +1222,14 @@ function ContactEdit(props) {
                     ))}
                   </Card>
                 </Grid>
+                <ChangeAddressDialog
+                  key={"changeAddress"}
+                  isOpen={openAddressDialogComponent}
+                  handleClose={handleCloseAddressDialogComponent}
+                  contactId={params["uid"]}
+                  title="Associations"
+                  refetch={refetch}
+                ></ChangeAddressDialog>
                 <AddCompanyDialog
                   key={"addCompany"}
                   isOpen={openDialogComponent}

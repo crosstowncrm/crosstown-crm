@@ -156,6 +156,17 @@ const resolvers = {
                 }
             )
         },
+        addressChange:async (_, {from, postal_code, street_address1, street_address2, lat, lng}, ctx)=>{
+
+            let session = ctx.driver.session();
+            const cypherQuery = `MATCH (:Address)-[r]-(contact:Contact {id: "${from}"}) DELETE r WITH contact MERGE (address:Address{postal_code: "${postal_code}", street_address1: "${street_address1}"}) ON CREATE SET address.street_address2 = "${street_address2}", address.lat = "${lat}", address.lng = "${lng}"  MERGE (contact)-[rel:HAS_ADDRESS]-(address) SET address.id=toString(id(address)) RETURN id(rel) as rel_id LIMIT 1`;
+            return await session.run(cypherQuery).then(
+                result => {
+                    const resData = result.records[0].get('rel_id').properties;
+                    return resData;
+                }
+            )
+        },
         createContact:async (_, params, ctx)=>{
             const {address} = params;
             delete params.address;

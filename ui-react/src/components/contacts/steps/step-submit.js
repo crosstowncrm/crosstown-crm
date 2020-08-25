@@ -45,8 +45,8 @@ const GET_CONTACTS = gql`
 `;
 
 function StepSubmit(props) {
+  multiStep.validate();
   const [errors, setErrors] = React.useState(multiStep.getErrors());
-
   const CREATE_NEW_CONTACT = gql`
     mutation createContact(
       $first_name: String
@@ -73,9 +73,8 @@ function StepSubmit(props) {
       #        $first_seen: String,
       $email_domain: String
       $marital_status: String
-      $address: Addressik #        name: String #        owner:  User @relation(name: "OWNS_PROSPECT", direction: "IN") #        address:  Address @relation(name: "HAS_ADDRESS", direction: "OUT") #        companies:  [Company] @relation(name: "ASSOCIATED_WITH", direction: "OUT")
-    ) #        properties:  [Interest]
-    #        listings:  [Listing] @relation(name: "LISTS", direction: "OUT")
+      $address: Addressik #        name: String #        owner:  User @relation(name: "OWNS_PROSPECT", direction: "IN") #        address:  Address @relation(name: "HAS_ADDRESS", direction: "OUT") #        companies:  [Company] @relation(name: "ASSOCIATED_WITH", direction: "OUT") #        properties:  [Interest]
+    ) #        listings:  [Listing] @relation(name: "LISTS", direction: "OUT")
     {
       createContact(
         address: $address
@@ -102,9 +101,8 @@ function StepSubmit(props) {
         #        $last_seen: String,
         #        $first_seen: String,
         email_domain: $email_domain
-        marital_status: $marital_status #        name: String #        owner:  User @relation(name: "OWNS_PROSPECT", direction: "IN") #        address:  Address @relation(name: "HAS_ADDRESS", direction: "OUT") #        companies:  [Company] @relation(name: "ASSOCIATED_WITH", direction: "OUT")
-      ) #        properties:  [Interest]
-      #        listings:  [Listing] @relation(name: "LISTS", direction: "OUT")
+        marital_status: $marital_status #        name: String #        owner:  User @relation(name: "OWNS_PROSPECT", direction: "IN") #        address:  Address @relation(name: "HAS_ADDRESS", direction: "OUT") #        companies:  [Company] @relation(name: "ASSOCIATED_WITH", direction: "OUT") #        properties:  [Interest]
+      ) #        listings:  [Listing] @relation(name: "LISTS", direction: "OUT")
       {
         id
       }
@@ -163,28 +161,45 @@ function StepSubmit(props) {
         <div className="ten columns terms">
           <span>Create contact with current data:</span>
           <ul className="docs-terms">
-            <li>{JSON.stringify(multiStep.getData())}</li>
+            {Object.entries(multiStep.getData()).map(([key, value]) => {
+              return typeof value === "string" ? (
+                <li key={key + "-" + value}>
+                  {key}: {value}
+                </li>
+              ) : (
+                Object.entries(value).map(([valKey, valValue]) => {
+                  return (
+                    <li key={key + "-" + valKey + "-" + valValue}>
+                      {key}: {valKey} {valValue}
+                    </li>
+                  );
+                })
+              );
+            })}
           </ul>
         </div>
       </div>
-      <div className="row">
-        <div className="ten columns terms">
-          <span>current errors:</span>
-          <ul className="docs-terms">
-            <li>{JSON.stringify(errors)}</li>
-          </ul>
+      {Object.keys(errors).length > 0 ? (
+        <div className="row">
+          <div className="ten columns terms">
+            <span>current errors:</span>
+            <ul className="docs-terms">
+              <li>{JSON.stringify(errors)}</li>
+            </ul>
+          </div>
         </div>
-      </div>
-      <Link
-        variant="body2"
-        color="primary"
-        to="/contacts"
-        onClick={createContact}
-      >
-        <Button color="primary" type="button">
-          Create
-        </Button>
-      </Link>
+      ) : (
+        <Link
+          variant="body2"
+          color="primary"
+          to="/contacts"
+          onClick={createContact}
+        >
+          <Button color="primary" type="button">
+            Create
+          </Button>
+        </Link>
+      )}
     </div>
   );
 }

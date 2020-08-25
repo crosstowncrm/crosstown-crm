@@ -36,10 +36,7 @@ export default function AddListingDialog({
   refetch
 }) {
   const [errors, setErrors] = React.useState({});
-  multiStep.saveData({
-    name: "address",
-    value: { from: contactId }
-  });
+
   const validate = values => {
     let listingError = "";
     if (!values.street_address1) {
@@ -56,6 +53,10 @@ export default function AddListingDialog({
 
   const handleSubmit = e => {
     e.preventDefault();
+    multiStep.saveData({
+      name: "address",
+      value: { from: contactId }
+    });
     const formData = multiStep.getData()["address"];
     const isValid = validate(formData);
 
@@ -63,10 +64,8 @@ export default function AddListingDialog({
       addressChange({
         variables: formData
       });
-      multiStep.saveData({
-        name: "address",
-        value: { from: contactId }
-      });
+
+      multiStep.clear();
       handleClose();
     }
   };

@@ -158,7 +158,7 @@ const resolvers = {
         },
         addressChange:async (_, {from, postal_code, street_address1, street_address2, lat, lng}, ctx)=>{
             let session = ctx.driver.session();
-            const cypherQuery = `MATCH (contact:Contact {id: "${from}"}) OPTIONAL MATCH (:Address)-[r]->(contact) DELETE r WITH contact MERGE (address:Address{postal_code: "${postal_code}", street_address1: "${street_address1}"}) ON CREATE SET address.street_address2 = "${street_address2}", address.lat = "${lat}", address.lng = "${lng}"  MERGE (contact)-[rel:HAS_ADDRESS]-(address) SET address.id=toString(id(address)) RETURN id(rel) as rel_id LIMIT 1`;
+            const cypherQuery = `MATCH (contact:Contact {id: "${from}"}) OPTIONAL MATCH (:Address)-[r]->(contact) DELETE r WITH contact MERGE (address:Address{postal_code: "${postal_code}", street_address1: "${street_address1}", street_address2: "${street_address2}"}) ON CREATE SET address.lat = "${lat}", address.lng = "${lng}"  MERGE (contact)-[rel:HAS_ADDRESS]-(address) SET address.id=toString(id(address)) RETURN id(rel) as rel_id LIMIT 1`;
             return await session.run(cypherQuery).then(
                 result => {
                     const resData = result.records[0]?result.records[0].get('rel_id').properties:null;
@@ -176,7 +176,7 @@ const resolvers = {
             }
             set.push(`contact.id = toString(id(contact))`);
 
-            const cypherQuery = `MATCH (user:User{id:"1"}) MERGE (address:Address{postal_code: "${address.postal_code}", street_address1: "${address.street_address1}"}) ON CREATE SET address.street_address2 = "${address.street_address2}", address.lat = "${address.lat}", address.lng = "${address.lng}" CREATE (contact:Contact) SET ` + set.toString() + ` SET contact.created_at=datetime(), contact.last_modified=datetime(), address.id=toString(id(address)) MERGE (user)-[:OWNS_PROSPECT]->(contact) MERGE (contact)-[:HAS_ADDRESS]->(address) RETURN contact LIMIT 1`;
+            const cypherQuery = `MATCH (user:User{id:"1"}) MERGE (address:Address{postal_code: "${address.postal_code}", street_address1: "${address.street_address1}", street_address2: "${address.street_address2}}) ON CREATE SET address.lat = "${address.lat}", address.lng = "${address.lng}" CREATE (contact:Contact) SET ` + set.toString() + ` SET contact.created_at=datetime(), contact.last_modified=datetime(), address.id=toString(id(address)) MERGE (user)-[:OWNS_PROSPECT]->(contact) MERGE (contact)-[:HAS_ADDRESS]->(address) RETURN contact LIMIT 1`;
             return await session.run(cypherQuery).then(
                 result => {
                     return result.records[0].get('contact').properties;

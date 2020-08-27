@@ -62,6 +62,7 @@ const GET_CONTACT = gql`
       address {
         id
         street_address1
+        street_address2
         postal_code
       }
       properties {
@@ -958,7 +959,9 @@ function ContactEdit(props) {
                           {address !== null
                             ? address.postal_code +
                               " " +
-                              address.street_address1
+                              address.street_address1 +
+                              " " +
+                              address.street_address2
                             : "no address yet"}
                         </span>
                       </Typography>

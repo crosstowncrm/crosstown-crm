@@ -615,12 +615,17 @@ function ContactEdit(props) {
                         {editBirthdayMode ? (
                           <form onSubmit={handleSubmit}>
                             <TextField
+                              type="date"
                               label="birthday"
                               onChange={handleChange}
                               id="birthday"
                               defaultValue={birthday}
                               size="small"
+                              style={{
+                                width: 200
+                              }}
                             />
+
                             <br />
                             <Button color="primary" type="submit">
                               Update
@@ -831,11 +836,15 @@ function ContactEdit(props) {
                         {editLDMode ? (
                           <form onSubmit={handleSubmit}>
                             <TextField
+                              type="date"
                               label="lead_date"
                               onChange={handleChange}
                               id="lead_date"
                               defaultValue={lead_date}
                               size="small"
+                              style={{
+                                width: 200
+                              }}
                             />
                             <br />
                             <Button color="primary" type="submit">
@@ -949,7 +958,8 @@ function ContactEdit(props) {
                         <span onDoubleClick={callAddressDialog}>
                           address:
                           {address !== null
-                            ? address.postal_code +
+                            ? " " +
+                              address.postal_code +
                               " " +
                               address.street_address1 +
                               " " +

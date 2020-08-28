@@ -176,7 +176,7 @@ const resolvers = {
             }
             set.push(`contact.id = toString(id(contact))`);
 
-            const cypherQuery = `MATCH (user:User{id:"1"}) MERGE (address:Address{postal_code: "${address.postal_code}", street_address1: "${address.street_address1}", street_address2: "${address.street_address2}}) ON CREATE SET address.lat = "${address.lat}", address.lng = "${address.lng}" CREATE (contact:Contact) SET ` + set.toString() + ` SET contact.created_at=datetime(), contact.last_modified=datetime(), address.id=toString(id(address)) MERGE (user)-[:OWNS_PROSPECT]->(contact) MERGE (contact)-[:HAS_ADDRESS]->(address) RETURN contact LIMIT 1`;
+            const cypherQuery = `MATCH (user:User{id:"1"}) MERGE (address:Address{postal_code: "${address.postal_code}", street_address1: "${address.street_address1}", street_address2: "${address.street_address2}"}) ON CREATE SET address.lat = "${address.lat}", address.lng = "${address.lng}" CREATE (contact:Contact) SET ` + set.toString() + ` SET contact.created_at=datetime(), contact.last_modified=datetime(), address.id=toString(id(address)) MERGE (user)-[:OWNS_PROSPECT]->(contact) MERGE (contact)-[:HAS_ADDRESS]->(address) RETURN contact LIMIT 1`;
             return await session.run(cypherQuery).then(
                 result => {
                     return result.records[0].get('contact').properties;

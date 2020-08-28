@@ -1,15 +1,22 @@
 import React from "react";
-import { withStyles } from "@material-ui/core/styles/index";
+import { makeStyles } from "@material-ui/core/styles";
 import TextField from "@material-ui/core/TextField";
 import multiStep from "../../../multiStep/multiStep";
 
-const styles = theme => ({
-  root: {
-    maxWidth: "100%"
+const useStyles = makeStyles(theme => ({
+  container: {
+    display: "flex",
+    flexWrap: "wrap"
+  },
+  textField: {
+    marginLeft: theme.spacing(1),
+    marginRight: theme.spacing(1),
+    width: 200
   }
-});
+}));
 
-function ContactDetails(props) {
+export default function ContactDetails() {
+  const classes = useStyles();
   const handleChange = event => {
     multiStep.saveData({
       name: event.target.name,
@@ -21,7 +28,8 @@ function ContactDetails(props) {
     lead_type,
     lead_date,
     lifecycle_stage,
-    marital_status
+    marital_status,
+    birthday
   } = multiStep.getData();
   return (
     <div>
@@ -55,6 +63,11 @@ function ContactDetails(props) {
             name="lead_date"
             size="small"
             defaultValue={lead_date}
+            type="date"
+            className={classes.textField}
+            InputLabelProps={{
+              shrink: true
+            }}
           />
         </div>
       </div>
@@ -80,8 +93,22 @@ function ContactDetails(props) {
           />
         </div>
       </div>
+      <div className="row">
+        <div className="six columns">
+          <TextField
+            label="Date of Birth"
+            onChange={handleChange}
+            name="birthday"
+            size="small"
+            defaultValue={birthday}
+            type="date"
+            className={classes.textField}
+            InputLabelProps={{
+              shrink: true
+            }}
+          />
+        </div>
+      </div>
     </div>
   );
 }
-
-export default withStyles(styles)(ContactDetails);

@@ -413,6 +413,8 @@ type Mutation {
 
   updateData(nodeLabel: String, nodeId: String, contactId: String): String
 
+  deleteContact(contactId: String): String
+
   addressChange(from: ID!, postal_code: String, street_address1:String, street_address2:String, lat:String, lng:String): String
 
  }

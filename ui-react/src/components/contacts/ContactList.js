@@ -5,6 +5,7 @@ import "../../UserList.css";
 import { withStyles } from "@material-ui/core/styles";
 import { Link } from "react-router-dom";
 import Button from "@material-ui/core/Button";
+import DeleteContactDialog from "./dialogs/delete-contact-dialog";
 
 import {
   Table,
@@ -156,6 +157,20 @@ function ContactList(props) {
   const [field, setField] = React.useState(false);
   const [fieldValue, setFieldValue] = React.useState(false);
   const [engaged, setEngaged] = React.useState(false);
+  const [contactId, setContactId] = React.useState(false);
+
+  const [
+    openDeleteDialogComponent,
+    setOpenDeleteDialogComponent
+  ] = React.useState(false);
+
+  const callDeleteDialog = id => {
+    setOpenDeleteDialogComponent(true);
+    setContactId(id);
+  };
+  const handleCloseDeleteDialogComponent = () => {
+    setOpenDeleteDialogComponent(false);
+  };
 
   const getFilter = () => {
     return filterState.contactFilter.length > 0
@@ -163,7 +178,7 @@ function ContactList(props) {
       : "*";
   };
 
-  const { loading, data, error } = useQuery(GET_CONTACTS, {
+  const { loading, data, error, refetch } = useQuery(GET_CONTACTS, {
     variables: {
       first: rowsPerPage,
       offset: rowsPerPage * page,
@@ -311,6 +326,7 @@ function ContactList(props) {
                   </TableSortLabel>
                 </TableCell>
               ))}
+              <TableCell>Action</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -487,6 +503,11 @@ function ContactList(props) {
                         ? created_at.formatted.slice(0, -11)
                         : "no date yet"}
                     </TableCell>
+                    <TableCell>
+                      <Button onClick={() => callDeleteDialog(id)}>
+                        Delete
+                      </Button>
+                    </TableCell>
                   </TableRow>
                 );
               }
@@ -511,6 +532,14 @@ function ContactList(props) {
             onChangeRowsPerPage={handleChangeRowsPerPage}
           />
         )}
+      <DeleteContactDialog
+        key={"DeleteContact"}
+        isOpen={openDeleteDialogComponent}
+        handleClose={handleCloseDeleteDialogComponent}
+        contactId={contactId}
+        title="Contact"
+        refetch={refetch}
+      ></DeleteContactDialog>
     </Paper>
   );
 }

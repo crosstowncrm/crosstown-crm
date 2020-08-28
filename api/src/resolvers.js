@@ -183,6 +183,17 @@ const resolvers = {
                 }
             )
         },
+
+        deleteContact:async (_, params, ctx)=>{
+            const {contactId} = params;
+            let session = ctx.driver.session();
+            const cypherQuery = `MATCH (contact:Contact{id:"${contactId}"}) DETACH DELETE contact`;
+            return await session.run(cypherQuery).then(
+                result => {
+                    return result;
+                }
+            )
+        },
     }
 };
 

@@ -292,15 +292,7 @@ function ContactEdit(props) {
   const [
     updateData,
     { loading: undMutationLoading, error: undQMutationError }
-  ] = useMutation(UPDATE_DATA, {
-    // update: (proxy, { data: { updateData } }) => {
-    //     data.Contact[0][field] = fieldValue;
-    //     proxy.writeQuery({
-    //         query: GET_CONTACT,
-    //         data: { data: data }
-    //     });
-    // }
-  });
+  ] = useMutation(UPDATE_DATA, {});
 
   return (
     <>

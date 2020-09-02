@@ -1,11 +1,11 @@
 import React from "react";
-import { useQuery } from "@apollo/react-hooks";
 import gql from "graphql-tag";
-import "../../UserList.css";
 import { withStyles } from "@material-ui/core/styles";
 import { Link } from "react-router-dom";
 import Button from "@material-ui/core/Button";
-import DeleteContactDialog from "./dialogs/delete-contact-dialog";
+import DeleteContactDialog from "../contacts/dialogs/delete-contact-dialog";
+import { useMutation, useQuery } from "@apollo/react-hooks/lib/index";
+import TablePagination from "@material-ui/core/TablePagination";
 
 import {
   Table,
@@ -18,9 +18,6 @@ import {
   Typography,
   TextField
 } from "@material-ui/core";
-
-import { useMutation } from "@apollo/react-hooks/lib/index";
-import TablePagination from "@material-ui/core/TablePagination";
 
 const styles = theme => ({
   root: {
@@ -500,7 +497,7 @@ function ContactList(props) {
                     </TableCell>
                     <TableCell>
                       {created_at && created_at.formatted
-                        ? created_at.formatted.slice(0, -11)
+                        ? created_at.formatted
                         : "no date yet"}
                     </TableCell>
                     <TableCell>

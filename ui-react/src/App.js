@@ -35,10 +35,11 @@ import AccessibilityNewIcon from "@material-ui/icons/AccessibilityNew";
 import CameraRollIcon from "@material-ui/icons/CameraRoll";
 import BusinessIcon from "@material-ui/icons/Business";
 import HowToRegIcon from "@material-ui/icons/HowToReg";
-
+import DirectionsRunIcon from "@material-ui/icons/DirectionsRun";
 import Login from "./components/Login";
 import UserList from "./components/users/UserList";
 import UserData from "./components/users/edit-user.component";
+import UserCreate from "./components/users/create-user.component";
 import ContactList from "./components/contacts/ContactList";
 import ContactData from "./components/contacts/edit-contact.component";
 import ContactCreate from "./components/contacts/create-contact.component";
@@ -255,6 +256,14 @@ export default function App() {
             <HowToRegIcon />
           </ListItemIcon>
           <p>Clients</p>
+        </MenuItem>
+      </Link>
+      <Link to={"/users"} onClick={handleMobileMenuClose}>
+        <MenuItem primary={"Users"}>
+          <ListItemIcon>
+            <DirectionsRunIcon />
+          </ListItemIcon>
+          <p>Users</p>
         </MenuItem>
       </Link>
 
@@ -577,6 +586,11 @@ export default function App() {
                 exact
                 path="/contact/create"
                 component={ContactCreate}
+              />
+              <ProtectedRoute
+                exact
+                path="/user/create"
+                component={UserCreate}
               />
               <ProtectedRoute exact path="/clients" component={ClientList} />
               <ProtectedRoute exact path="/companies" component={CompanyList} />

@@ -14,10 +14,10 @@ import Typography from "@material-ui/core/Typography";
 import Avatar from "@material-ui/core/Avatar";
 import ArrowForwardIcon from "@material-ui/icons/ArrowForward";
 import TextField from "@material-ui/core/TextField";
-import AddCompanyDialog from "./dialogs/add-company-dialog";
-import ChangeAddressDialog from "./dialogs/change-address-dialog";
-import AddInterestDialog from "./dialogs/add-interest-dialog";
-import AddListingDialog from "./dialogs/add-listing-dialog";
+import AddCompanyDialog from "../users/dialogs/add-company-dialog";
+import ChangeAddressDialog from "../users/dialogs/change-address-dialog";
+import AddInterestDialog from "../users/dialogs/add-interest-dialog";
+import AddListingDialog from "../users/dialogs/add-listing-dialog";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import FormControl from "@material-ui/core/FormControl";
 

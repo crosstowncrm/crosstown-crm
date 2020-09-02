@@ -14,14 +14,14 @@ const styles = theme => ({
   }
 });
 
-const GET_CONTACTS = gql`
-  query contactsPaginateQuery(
+const GET_USERS = gql`
+  query usersPaginateQuery(
     $first: Int
     $offset: Int
     $orderByMe: String
     $filter: String
   ) {
-    contact(
+    user(
       first: $first
       offset: $offset
       orderByMe: $orderByMe
@@ -31,7 +31,7 @@ const GET_CONTACTS = gql`
       first_name
       last_name
       email
-      lead_status
+      pswd
       phone
       created_at {
         formatted
@@ -43,64 +43,48 @@ const GET_CONTACTS = gql`
     }
   }
 `;
-const GET_CONTACTS_COUNT = gql`
-  query conatctsCountQuery {
-    getContactCount
+
+const GET_USERS_COUNT = gql`
+  query usersCountQuery {
+    getUserCount
   }
 `;
+
 function StepSubmit(props) {
   multiStep.validate();
   const [errors, setErrors] = React.useState(multiStep.getErrors());
-  const CREATE_NEW_CONTACT = gql`
-    mutation createContact(
+  const CREATE_NEW_USER = gql`
+    mutation createUser(
       $first_name: String
       $last_name: String
-      $suffix: String
       $birthday: String
       $email: String
       $phone: String
       $mobile: String
-      $linkedin_url: String
-      $facebook_url: String
-      $instagram_url: String
-      $twitter_url: String
-      $lead_status: String
+      $pswd: String
       $lead_type: String
       $lead_date: String
       $lifecycle_stage: String
       $created_at: _Neo4jDateInput
       $last_modified: String
-      #        $last_activity: String,
-      #        $last_seen: String,
-      #        $first_seen: String,
       $email_domain: String
       $marital_status: String
       $address: Addressik
     ) {
-      createContact(
+      createUser(
         address: $address
         first_name: $first_name
         last_name: $last_name
-        suffix: $suffix
         birthday: $birthday
-        #        contact_emails: [String]
         email: $email
         phone: $phone
         mobile: $mobile
-        #        phone_numbers: [String]
-        linkedin_url: $linkedin_url
-        facebook_url: $facebook_url
-        instagram_url: $instagram_url
-        twitter_url: $twitter_url
-        lead_status: $lead_status
+        pswd: $pswd
         lead_type: $lead_type
         lead_date: $lead_date
         lifecycle_stage: $lifecycle_stage
         created_at: $created_at
         last_modified: $last_modified
-        #        last_activity: $last_activity,
-        #        $last_seen: String,
-        #        $first_seen: String,
         email_domain: $email_domain
         marital_status: $marital_status
       ) {
@@ -110,17 +94,17 @@ function StepSubmit(props) {
   `;
 
   const [
-    createNewContact,
+    createNewUser,
     { loading: cncMutationLoading, error: cncQMutationError }
-  ] = useMutation(CREATE_NEW_CONTACT, {});
+  ] = useMutation(CREATE_NEW_USER);
 
-  const createContact = event => {
+  const createUser = event => {
     if (multiStep.isValid() === true) {
-      createNewContact({
+      createNewUser({
         variables: multiStep.getData(),
         refetchQueries: [
           {
-            query: GET_CONTACTS,
+            query: GET_USERS,
             variables: {
               first: 10,
               offset: 0,
@@ -129,7 +113,7 @@ function StepSubmit(props) {
             }
           },
           {
-            query: GET_CONTACTS_COUNT
+            query: GET_USERS_COUNT
           }
         ]
       });
@@ -144,7 +128,7 @@ function StepSubmit(props) {
     <div>
       <div className="row">
         <div className="ten columns terms">
-          <span>Create contact with current data:</span>
+          <span>Create user with current data:</span>
           <ul className="docs-terms">
             {Object.entries(multiStep.getData()).map(([key, value]) => {
               return typeof value === "string" ? (
@@ -174,12 +158,7 @@ function StepSubmit(props) {
           </div>
         </div>
       ) : (
-        <Link
-          variant="body2"
-          color="primary"
-          to="/contacts"
-          onClick={createContact}
-        >
+        <Link variant="body2" color="primary" to="/users" onClick={createUser}>
           <Button color="primary" type="button">
             Create
           </Button>

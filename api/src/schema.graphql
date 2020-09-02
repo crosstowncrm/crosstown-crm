@@ -3,15 +3,16 @@ type User {
   first_name: String
   last_name: String
   email: String
-  phone_number: String
+  phone: String
   email_signature: String
   pswd: String
-  created_date: String
+  created_at: Date
   address:  Address @relation(name: "HAS_ADDRESS", direction: "OUT")
   follows: [User] @relation(name: "FOLLOWS", direction: "BOTH")
   teams:  [Team] @relation(name: "IS_MEMBER_OF", direction: "OUT")
   contacts:  [Contact] @relation(name: "OWNS_PROSPECT", direction: "OUT")
   listings:  [Listing] @relation(name: "IS_PRIMARY_AGENT_FOR", direction: "OUT")
+  owner:  User @relation(name: "OWNS_PROSPECT", direction: "IN")
 }
 
 type Deal {
@@ -345,6 +346,8 @@ type Query {
 
   contact(filter: String="*", filter: String="*", orderByMe: String="owner.first_name asc"): [Contact]
 
+  user(filter: String="*", filter: String="*", orderByMe: String="owner.first_name asc"): [User]
+
   interest:[Interest!]!
     @cypher(
         statement: "MATCH (contact:Contact)-[hii:HAS_INTEREST_IN]-(:Property) WHERE hii.id IS NOT NULL RETURN hii"
@@ -401,19 +404,30 @@ type Mutation {
 
   createDeal(action: Int, amount: String, client_id: String, est_date: String, living: Int, property_id: String): Deal
     @cypher(statement: "MATCH (client:Client {id: $client_id }) MATCH (property:Property{id:$property_id}) MATCH (strategy:Strategy {id: $living }) MATCH (type:Type {id: $action }) CREATE (deal:Deal{stage: 'start', action: $action, amount: $amount, start_time: datetime(), est_date: datetime($est_date), living: $living}) MERGE (client)-[:HAS_INTEREST_IN]->(deal)-[:HAS_INTEREST_IN]->(property) MERGE (type)<-[:HAS_TYPE]-(deal)-[:HAS_STRATEGY]->(strategy) SET deal.id = toString(id(deal)) RETURN deal")
-
-  updateContact(field: String, value: String, contactId: String): Contact
-
-  mergeContactInterest(from: String, to: String): Interest
-    @cypher(statement: "MATCH (contact:Contact{id: $from}) MATCH (property:Property{id: $to}) MERGE (contact)-[hii:HAS_INTEREST_IN]->(property) RETURN hii")
-
+  
   createContact(address: Addressik, first_name: String, last_name: String, suffix: String, birthday: String, email: String, phone: String, mobile: String, linkedin_url: String,
         facebook_url: String, instagram_url: String, twitter_url: String, lead_status: String, lead_type: String, lead_date: String, lifecycle_stage: String,
         created_at: _Neo4jDateInput, last_modified: String, email_domain: String, marital_status: String): Contact
+  
+  updateContact(field: String, value: String, contactId: String): Contact
+    
+  deleteContact(contactId: String): String
+    
+  mergeContactInterest(from: String, to: String): Interest
+        @cypher(statement: "MATCH (contact:Contact{id: $from}) MATCH (property:Property{id: $to}) MERGE (contact)-[hii:HAS_INTEREST_IN]->(property) RETURN hii")
+
+  
+  
+  createUser(address: Addressik, first_name: String, last_name: String, birthday: String, email: String, phone: String, mobile: String, pswd: String, lead_type: String, lead_date: String, lifecycle_stage: String,
+    created_at: _Neo4jDateInput, last_modified: String, email_domain: String, marital_status: String): User
+
+  updateUser(field: String, value: String, userId: String): User
+
+  deleteUser(userId: String): String
 
   updateData(nodeLabel: String, nodeId: String, contactId: String): String
 
-  deleteContact(contactId: String): String
+  
 
   addressChange(from: ID!, postal_code: String, street_address1:String, street_address2:String, lat:String, lng:String): String
 

@@ -10,10 +10,11 @@ const resolvers = {
                 result => {
                     const resData = result.records.map(
                         record => {
+                            console.log(process.env.JWT_SECRET);
                             let {id} =  record.get('user').properties;
                             return {
                                 userId: id,
-                                token: jwt.sign({userId:id}, process.env.JWT_SECRET, {expiresIn:'1h'}),
+                                token: jwt.sign({userId:id}, process.env.JWT_SECRET||"crying_robocop", {expiresIn:'1h'}),
                                 tokenExpiration: 1
                             };
                         }

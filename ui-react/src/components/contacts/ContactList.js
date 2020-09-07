@@ -3,7 +3,7 @@ import gql from "graphql-tag";
 import { withStyles } from "@material-ui/core/styles";
 import { Link } from "react-router-dom";
 import Button from "@material-ui/core/Button";
-import DeleteContactDialog from "../contacts/dialogs/delete-contact-dialog";
+import DeleteContactDialog from "../dialogs/delete-contact-dialog";
 import { useMutation, useQuery } from "@apollo/react-hooks/lib/index";
 import TablePagination from "@material-ui/core/TablePagination";
 

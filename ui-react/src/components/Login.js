@@ -20,7 +20,8 @@ import auth from "../auth/auth.js";
 const LOGIN_USER = gql`
   query loginUser($name: String, $pswd: String) {
     loginUser(name: $name, pswd: $pswd) {
-      id
+        userId
+        token
     }
   }
 `;
@@ -53,10 +54,10 @@ function Login(props) {
     if (lu.data) {
       data = lu.data.loginUser;
     }
+
     if (data.length > 0) {
-      localStorage.setItem("userId", data[0].id);
-      auth.login();
-      const path = "/" + data[0].__typename.toLowerCase() + "s/" + data[0].id;
+      auth.setToken(data[0].token);
+      const path = "/users/" + data[0].userId;
       return <Redirect to={path} />;
     }
 
@@ -110,7 +111,7 @@ function Login(props) {
               </CardContent>
               <CardActions style={{ justifyContent: "space-between" }}>
                 <Button>Forgot password</Button>
-                <Button type="submit" color="primary" raised>
+                <Button type="submit" color="primary">
                   Sign in
                 </Button>
               </CardActions>

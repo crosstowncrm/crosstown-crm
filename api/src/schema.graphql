@@ -15,6 +15,12 @@ type User {
   owner:  User @relation(name: "OWNS_PROSPECT", direction: "IN")
 }
 
+type AuthData {
+    userId: ID
+    token: String
+    tokenExpiration: Int
+}
+
 type Deal {
     id: ID!
     title: String
@@ -387,18 +393,16 @@ type Query {
       statement: "MATCH (u:User) WHERE u.name CONTAINS $substring RETURN u"
   )
 
-  loginUser(name: String, pswd: String): [User]
-  @cypher(
-      statement: "MATCH (user:User {last_name: $name, pswd: $pswd}) RETURN user LIMIT 1"
-  )
-  loginContact(name: String, pswd: String): [Contact]
-  @cypher(
-      statement: "MATCH (contact:Contact {last_name: $name, pswd: $pswd}) RETURN contact LIMIT 1"
-  )
+  loginUser(name: String, pswd: String): [AuthData]
+
 
 }
 
 type Mutation {
+
+
+
+
   readArticle(reader_id: String, article_id: String ): String
     @cypher(statement: "MATCH (contact:Contact {id: $reader_id }) MATCH (article:Article{id:$article_id}) MERGE (contact)-[read:VIEWED]->(article) RETURN id(read) as rel_id")
 
@@ -416,8 +420,6 @@ type Mutation {
   mergeContactInterest(from: String, to: String): Interest
         @cypher(statement: "MATCH (contact:Contact{id: $from}) MATCH (property:Property{id: $to}) MERGE (contact)-[hii:HAS_INTEREST_IN]->(property) RETURN hii")
 
-  
-  
   createUser(address: Addressik, first_name: String, last_name: String, birthday: String, email: String, phone: String, mobile: String, pswd: String, lead_type: String, lead_date: String, lifecycle_stage: String,
     created_at: _Neo4jDateInput, last_modified: String, email_domain: String, marital_status: String): User
 
@@ -425,11 +427,9 @@ type Mutation {
 
   deleteUser(userId: String): String
 
-  updateData(nodeLabel: String, nodeId: String, contactId: String): String
+  updateData(nodeLabel: String, nodeId: String, contactId: String, label: String): String
 
-  
-
-  addressChange(from: ID!, postal_code: String, street_address1:String, street_address2:String, lat:String, lng:String): String
+  addressChange(from: ID!, postal_code: String, street_address1:String, street_address2:String, lat:String, lng:String, label:String): String
 
  }
 

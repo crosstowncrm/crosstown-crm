@@ -1,22 +1,28 @@
-class Auth{
-    constructor(){
-        this.auth = false;
+import React from "react";
+
+const auth =()=> {
+
+    let inMemoryJWT = null;
+
+    const getToken = () => sessionStorage.getItem("inMemoryJWT");
+
+    const setToken = (token) => {
+        sessionStorage.setItem("inMemoryJWT", token);
+        return true;
+    };
+
+    const ereaseToken = () => {
+        sessionStorage.setItem("inMemoryJWT", null);
+        return true;
     }
 
-    login(){
-        this.auth = true;
-        // cb();
-        console.log('it is true');
+    const isAuth = () => {
+        return sessionStorage.getItem("inMemoryJWT") !== null? true : false
     }
 
-    logout(){
-        this.auth = false;
-        // cb();
+    return {
+        setToken, getToken, ereaseToken, isAuth
     }
+};
 
-    isAuth(){
-        return this.auth
-    }
-}
-
-export default new Auth()
+export default auth()

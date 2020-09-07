@@ -165,7 +165,7 @@ export default function App() {
   };
 
   const logout = () => {
-    auth.logout();
+    auth.ereaseToken();
   };
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
   const isMobilePropertyOpen = Boolean(mobilePropertyEl);

@@ -1,11 +1,33 @@
 import { neo4jgraphql } from "neo4j-graphql-js";
+import  jwt  from "jsonwebtoken";
 const resolvers = {
 
     Query: {
+        loginUser: async (_, {name, pswd}, ctx)=>{
+            let session = ctx.driver.session();
+            const cypherQuery = `MATCH (user:User {last_name: "${name}", pswd: "${pswd}"}) RETURN user LIMIT 1;`;
+            const user = await session.run(cypherQuery).then(
+                result => {
+                    const resData = result.records.map(
+                        record => {
+                            let {id} =  record.get('user').properties;
+                            return {
+                                userId: id,
+                                token: jwt.sign({userId:id}, process.env.JWT_SECRET, {expiresIn:'1h'}),
+                                tokenExpiration: 1
+                            };
+                        }
+                    );
+                    return resData;
+                }
+            );
+            return user;
+        },
         client:async (object, params, ctx, resolveInfo)=>{
             const result = await neo4jgraphql(object, params, ctx, resolveInfo, true);
             return result
         },
+
         company:async (_, {filter, orderByMe, first, offset}, ctx)=>{
             let session = ctx.driver.session();
             const cypherQuery = `CALL db.index.fulltext.queryNodes('searchCompany', '${filter}') YIELD node 
@@ -32,7 +54,7 @@ const resolvers = {
                                 }
                             };
                         }
-                    )
+                    );
                     return resData;
                 }
             )
@@ -135,11 +157,11 @@ const resolvers = {
 
     },
     Mutation: {
-        
-        updateData:async (_, {nodeLabel, nodeId, contactId}, ctx)=>{
+
+        updateData:async (_, {nodeLabel, nodeId, contactId, label}, ctx)=>{
             const digest = {"User":"OWNS_PROSPECT"};
             let session = ctx.driver.session();
-            const cypherQuery = `MATCH (:${nodeLabel})-[r]-(contact:Contact {id: "${contactId}"}) DELETE r WITH contact MATCH (node:${nodeLabel} {id: "${nodeId}"}) MERGE (contact)<-[rel:${digest[nodeLabel]}]-(node) RETURN id(rel) as rel_id LIMIT 1`;
+            const cypherQuery = `MATCH (:${nodeLabel})-[r]-(contact:${label} {id: "${contactId}"}) DELETE r WITH contact MATCH (node:${nodeLabel} {id: "${nodeId}"}) MERGE (contact)<-[rel:${digest[nodeLabel]}]-(node) RETURN id(rel) as rel_id LIMIT 1`;
             return await session.run(cypherQuery).then(
                 result => {
                     const resData = result.records[0].get('rel_id').properties;
@@ -147,9 +169,9 @@ const resolvers = {
                 }
             )
         },
-        addressChange:async (_, {from, postal_code, street_address1, street_address2, lat, lng}, ctx)=>{
+        addressChange:async (_, {from, postal_code, street_address1, street_address2, lat, lng, label}, ctx)=>{
             let session = ctx.driver.session();
-            const cypherQuery = `MATCH (contact:Contact {id: "${from}"}) OPTIONAL MATCH (:Address)-[r]->(contact) DELETE r WITH contact MERGE (address:Address{postal_code: "${postal_code}", street_address1: "${street_address1}", street_address2: "${street_address2}"}) ON CREATE SET address.lat = "${lat}", address.lng = "${lng}"  MERGE (contact)-[rel:HAS_ADDRESS]-(address) SET address.id=toString(id(address)) RETURN id(rel) as rel_id LIMIT 1`;
+            const cypherQuery = `MATCH (contact:${label} {id: "${from}"}) OPTIONAL MATCH (:Address)-[r]->(contact) DELETE r WITH contact MERGE (address:Address{postal_code: "${postal_code}", street_address1: "${street_address1}", street_address2: "${street_address2}"}) ON CREATE SET address.lat = "${lat}", address.lng = "${lng}"  MERGE (contact)-[rel:HAS_ADDRESS]-(address) SET address.id=toString(id(address)) RETURN id(rel) as rel_id LIMIT 1`;
             return await session.run(cypherQuery).then(
                 result => {
                     const resData = result.records[0]?result.records[0].get('rel_id').properties:null;

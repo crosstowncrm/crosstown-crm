@@ -106,8 +106,8 @@ const UPDATE_CONTACT = gql`
 `;
 
 const UPDATE_DATA = gql`
-  mutation updateData($nodeLabel: String, $nodeId: String, $contactId: String) {
-    updateData(nodeLabel: $nodeLabel, nodeId: $nodeId, contactId: $contactId)
+  mutation updateData($nodeLabel: String, $nodeId: String, $contactId: String, $label: String) {
+    updateData(nodeLabel: $nodeLabel, nodeId: $nodeId, contactId: $contactId, label: $label)
   }
 `;
 
@@ -139,7 +139,6 @@ function ContactEdit(props) {
   const [editTwitMode, setEditTwitMode] = React.useState(false);
   const [editBirthdayMode, setEditBirthdayMode] = React.useState(false);
   const [editMSMode, setEditMSMode] = React.useState(false);
-  const [editAddressMode, setEditAddressMode] = React.useState(false);
   const [editOwnerMode, setEditOwnerMode] = React.useState(false);
 
   const [openDialogComponent, setOpenDialogComponent] = React.useState(false);
@@ -210,7 +209,6 @@ function ContactEdit(props) {
     setEditTwitMode(false);
     setEditLCSMode(false);
     setEditMSMode(false);
-    setEditAddressMode(false);
     setEditOwnerMode(false);
 
     setEngaged(false);
@@ -252,7 +250,8 @@ function ContactEdit(props) {
       variables: {
         nodeLabel: event.target.name,
         nodeId: fieldValue,
-        contactId: params["uid"]
+        contactId: params["uid"],
+        label: "Contact"
       },
       update: refetch
     });
@@ -1227,43 +1226,45 @@ function ContactEdit(props) {
                     ))}
                   </Card>
                 </Grid>
-                <ChangeAddressDialog
-                  key={"changeAddress"}
-                  isOpen={openAddressDialogComponent}
-                  handleClose={handleCloseAddressDialogComponent}
-                  contactId={params["uid"]}
-                  title="Associations"
-                  refetch={refetch}
-                ></ChangeAddressDialog>
-                <AddCompanyDialog
-                  key={"addCompany"}
-                  isOpen={openDialogComponent}
-                  handleClose={handleCloseDialogComponent}
-                  contactId={params["uid"]}
-                  title="Associations"
-                  refetch={refetch}
-                ></AddCompanyDialog>
-                <AddInterestDialog
-                  key={"AddInterest"}
-                  isOpen={openDialogInterestComponent}
-                  handleClose={handleCloseInterestDialogComponent}
-                  contactId={params["uid"]}
-                  title="Interest"
-                  refetch={refetch}
-                ></AddInterestDialog>
-                <AddListingDialog
-                  key={"AddListing"}
-                  isOpen={openDialogListingComponent}
-                  handleClose={handleCloseListingDialogComponent}
-                  contactId={params["uid"]}
-                  title="Listing"
-                  refetch={refetch}
-                ></AddListingDialog>
+
               </>
             ))}
           </Grid>
         </Grid>
       )}
+        <ChangeAddressDialog
+            key={"changeAddress"}
+            isOpen={openAddressDialogComponent}
+            handleClose={handleCloseAddressDialogComponent}
+            contactId={params["uid"]}
+            title="Address"
+            refetch={refetch}
+            label="Contact"
+        ></ChangeAddressDialog>
+        <AddCompanyDialog
+            key={"addCompany"}
+            isOpen={openDialogComponent}
+            handleClose={handleCloseDialogComponent}
+            contactId={params["uid"]}
+            title="Associations"
+            refetch={refetch}
+        ></AddCompanyDialog>
+        <AddInterestDialog
+            key={"AddInterest"}
+            isOpen={openDialogInterestComponent}
+            handleClose={handleCloseInterestDialogComponent}
+            contactId={params["uid"]}
+            title="Interest"
+            refetch={refetch}
+        ></AddInterestDialog>
+        <AddListingDialog
+            key={"AddListing"}
+            isOpen={openDialogListingComponent}
+            handleClose={handleCloseListingDialogComponent}
+            contactId={params["uid"]}
+            title="Listing"
+            refetch={refetch}
+        ></AddListingDialog>
     </>
   );
 }

@@ -62,7 +62,7 @@ const GET_COMPANIES = gql`
       id
       name
       employees_num
-      property_type
+      lead_status
       phone
       created_at {
         formatted
@@ -394,13 +394,13 @@ function CompanyList(props) {
                       {employees_num ? employees_num : "no employees_num yet"}
                     </TableCell>
                       <TableCell align="left" className={classes.tableCell}>
-                          {isEditMode["property_type"] &&
-                          isEditMode["property_type"]["id"] === id ? (
+                          {isEditMode["lead_status"] &&
+                          isEditMode["lead_status"]["id"] === id ? (
                               <>
                                   <TextField
-                                      label="property type"
+                                      label="lead status"
                                       onChange={handleChange}
-                                      id="property_type"
+                                      id="lead_status"
                                       defaultValue={property_type}
                                   />
                                   <br />

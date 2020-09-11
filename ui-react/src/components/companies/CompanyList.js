@@ -62,7 +62,7 @@ const GET_COMPANIES = gql`
       id
       name
       employees_num
-      lead_status
+      property_type
       phone
       created_at {
         formatted
@@ -98,7 +98,7 @@ const headCells = [
     label: "Employees num"
   },
   {
-    id: "node.lead_status",
+    id: "node.property_type",
     numeric: false,
     disablePadding: false,
     label: "Lead Status"
@@ -350,7 +350,7 @@ function CompanyList(props) {
                 id,
                 name,
                 employees_num,
-                lead_status,
+                property_type,
                 phone,
                 created_at,
                 owner
@@ -394,14 +394,14 @@ function CompanyList(props) {
                       {employees_num ? employees_num : "no employees_num yet"}
                     </TableCell>
                       <TableCell align="left" className={classes.tableCell}>
-                          {isEditMode["lead_status"] &&
-                          isEditMode["lead_status"]["id"] === id ? (
+                          {isEditMode["property_type"] &&
+                          isEditMode["property_type"]["id"] === id ? (
                               <>
                                   <TextField
-                                      label="lead status"
+                                      label="property type"
                                       onChange={handleChange}
-                                      id="lead_status"
-                                      defaultValue={lead_status}
+                                      id="property_type"
+                                      defaultValue={property_type}
                                   />
                                   <br />
                                   <Button
@@ -420,12 +420,12 @@ function CompanyList(props) {
                                   onDoubleClick={event => {
                                       event.preventDefault();
                                       if (!engaged) {
-                                          setIsEditMode({ lead_status: { id: id } });
+                                          setIsEditMode({ property_type: { id: id } });
                                           setEngaged(true);
                                       } else return;
                                   }}
                               >
-                          {lead_status ? lead_status : "no lead status yet"}
+                          {property_type ? property_type : "no lead status yet"}
                         </span>
                           )}
                       </TableCell>

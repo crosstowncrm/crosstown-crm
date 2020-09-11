@@ -246,9 +246,11 @@ type SharedPost @relation(name: "SHARED_POST") {
 type Property {
   id: ID!
   name: String
+  phone: String
   property_type: String
   secondary_type: String
   additional_types: [String]
+  owner: Contact @relation(name: "ASSOCIATED_WITH", direction: "IN")
   address:  Address @relation(name: "HAS_ADDRESS", direction: "OUT")
 #  parcels:  [Parcel] @relation(name: "INCLUDES PARCELS", direction: "OUT")
 #  structures: [Structure] @relation(name: "INCLUDES STRUCTURES", direction: "OUT")
@@ -256,6 +258,7 @@ type Property {
   contacts:  [Contact] @relation(name: "HAS_INTEREST_IN", direction: "IN")
   companies:  [Company] @relation(name: "HAS_INTEREST_IN", direction: "IN")
   listings:  [Listing] @relation(name: "IS_LISTING_OF", direction: "OUT")
+  created_at: Date
 }
 
 type Listing {
@@ -348,30 +351,46 @@ type Query {
     @cypher(
         statement: "CALL db.index.fulltext.queryNodes('searchClient', $filter) YIELD node RETURN node"
   )
-  company(filter: String="*", filter: String="*", orderByMe: String="owner.first_name asc"):[Company]
 
-  contact(filter: String="*", filter: String="*", orderByMe: String="owner.first_name asc"): [Contact]
-
-  user(filter: String="*", filter: String="*", orderByMe: String="owner.first_name asc"): [User]
-
-  interest:[Interest!]!
-    @cypher(
-        statement: "MATCH (contact:Contact)-[hii:HAS_INTEREST_IN]-(:Property) WHERE hii.id IS NOT NULL RETURN hii"
-  )
   getClient:[Client]
 
   getClientCount: Int
     @cypher(
         statement: "MATCH (client:Client) RETURN count(client) as client_count"
     )
-  getCompanyCount: Int
+
+  company(filter: String="*", filter: String="*", orderByMe: String="owner.first_name asc"):[Company]
+
+    getCompanyCount: Int
     @cypher(
         statement: "MATCH (company:Company) RETURN count(company) as company_count"
     )
-  getContactCount: Int
+
+  contact(filter: String="*", filter: String="*", orderByMe: String="owner.first_name asc"): [Contact]
+    getContactCount: Int
     @cypher(
         statement: "MATCH (contact:Contact) RETURN count(contact) as contact_count"
     )
+
+  user(filter: String="*", filter: String="*", orderByMe: String="owner.first_name asc"): [User]
+    getUserCount: Int
+    @cypher(
+        statement: "MATCH (user:User) RETURN count(user) as user_count"
+    )
+
+  interest:[Interest!]!
+    @cypher(
+        statement: "MATCH (contact:Contact)-[hii:HAS_INTEREST_IN]-(:Property) WHERE hii.id IS NOT NULL RETURN hii"
+  )
+
+
+  property(filter: String="*", filter: String="*", orderByMe: String="owner.first_name asc"): [Property!]
+    getPropertyCount: Int
+    @cypher(
+        statement: "MATCH (property:Property) RETURN count(property) as property_count"
+    )
+
+
   getDealCount: Int
     @cypher(
         statement: "MATCH (deal:Deal) RETURN count(deal) as deal_count"
@@ -380,14 +399,8 @@ type Query {
     @cypher(
         statement: "MATCH (listing:Listing) RETURN count(listing) as listing_count"
     )
-  getPropertyCount: Int
-    @cypher(
-        statement: "MATCH (property:Property) RETURN count(property) as property_count"
-    )
-  getUserCount: Int
-    @cypher(
-        statement: "MATCH (user:User) RETURN count(user) as user_count"
-    )
+
+
   usersBySubstring(substring: String): [Client]
     @cypher(
       statement: "MATCH (u:User) WHERE u.name CONTAINS $substring RETURN u"
@@ -430,6 +443,14 @@ type Mutation {
   updateCompany(field: String, value: String, companyId: String): Company
 
   deleteCompany(companyId: String): String
+
+  createProperty(address: Addressik, name: String, email: String, phone: String, mobile: String, linkedin_url: String,
+    facebook_url: String, instagram_url: String, twitter_url: String, property_type: String, lead_type: String, lead_date: String, lifecycle_stage: String,
+    created_at: _Neo4jDateInput, last_modified: String, email_domain: String): Property
+
+  updateProperty(field: String, value: String, propertyId: String): Company
+
+  deleteProperty(propertyId: String): String
 
   updateData(nodeLabel: String, nodeId: String, unitId: String, label: String): String
 

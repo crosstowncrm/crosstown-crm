@@ -49,6 +49,7 @@ import ClientList from "./components/clients/ClientList";
 import CompanyData from "./components/companies/edit-company.component";
 import PropertyList from "./components/properties/PropertyList";
 import PropertyData from "./components/properties/edit-property.component";
+import PropertyCreate from "./components/properties/create-property.component";
 import ListingList from "./components/listings/ListingList";
 import ListingData from "./components/listings/edit-listing.component";
 import ArticleList from "./components/articles/ArticleList";
@@ -614,6 +615,11 @@ export default function App() {
                 exact
                 path="/properties/:uid"
                 component={PropertyData}
+              />
+              <ProtectedRoute
+                  exact
+                  path="/property/create"
+                  component={PropertyCreate}
               />
               <ProtectedRoute exact path="/listings" component={ListingList} />
               <ProtectedRoute

@@ -6,29 +6,29 @@ import DialogTitle from "@material-ui/core/DialogTitle";
 import { useMutation } from "@apollo/react-hooks/lib/index";
 import gql from "graphql-tag";
 
-const DELETE_CONTACT = gql`
-  mutation deleteContact($contactId: String) {
-    deleteContact(contactId: $contactId)
+const DELETE_COMPANY = gql`
+  mutation deleteCompany($companyId: String) {
+    deleteCompany(companyId: $companyId)
   }
 `;
 
-export default function DeleteContactDialog({
+export default function DeleteCompanyDialog({
   isOpen,
   handleClose,
-  contactId,
+  companyId,
   refetch
 }) {
   const handleSubmit = e => {
     e.preventDefault();
-    deleteContact({
-      variables: { contactId: contactId }
+    deleteCompany({
+      variables: { companyId: companyId }
     });
     handleClose();
   };
   const [
-    deleteContact,
+    deleteCompany,
     { loading: duMutationLoading, error: duMutationError }
-  ] = useMutation(DELETE_CONTACT, {
+  ] = useMutation(DELETE_COMPANY, {
     update: refetch
   });
 

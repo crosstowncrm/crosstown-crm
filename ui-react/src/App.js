@@ -43,6 +43,7 @@ import UserCreate from "./components/users/create-user.component";
 import ContactList from "./components/contacts/ContactList";
 import ContactData from "./components/contacts/edit-contact.component";
 import ContactCreate from "./components/contacts/create-contact.component";
+import CompanyCreate from "./components/companies/create-company.component";
 import CompanyList from "./components/companies/CompanyList";
 import ClientList from "./components/clients/ClientList";
 import CompanyData from "./components/companies/edit-company.component";
@@ -591,6 +592,11 @@ export default function App() {
                 exact
                 path="/user/create"
                 component={UserCreate}
+              />
+              <ProtectedRoute
+                  exact
+                  path="/company/create"
+                  component={CompanyCreate}
               />
               <ProtectedRoute exact path="/clients" component={ClientList} />
               <ProtectedRoute exact path="/companies" component={CompanyList} />

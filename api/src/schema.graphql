@@ -400,19 +400,16 @@ type Query {
 
 type Mutation {
 
-
-
-
   readArticle(reader_id: String, article_id: String ): String
     @cypher(statement: "MATCH (contact:Contact {id: $reader_id }) MATCH (article:Article{id:$article_id}) MERGE (contact)-[read:VIEWED]->(article) RETURN id(read) as rel_id")
 
   createDeal(action: Int, amount: String, client_id: String, est_date: String, living: Int, property_id: String): Deal
     @cypher(statement: "MATCH (client:Client {id: $client_id }) MATCH (property:Property{id:$property_id}) MATCH (strategy:Strategy {id: $living }) MATCH (type:Type {id: $action }) CREATE (deal:Deal{stage: 'start', action: $action, amount: $amount, start_time: datetime(), est_date: datetime($est_date), living: $living}) MERGE (client)-[:HAS_INTEREST_IN]->(deal)-[:HAS_INTEREST_IN]->(property) MERGE (type)<-[:HAS_TYPE]-(deal)-[:HAS_STRATEGY]->(strategy) SET deal.id = toString(id(deal)) RETURN deal")
-  
+
   createContact(address: Addressik, first_name: String, last_name: String, suffix: String, birthday: String, email: String, phone: String, mobile: String, linkedin_url: String,
         facebook_url: String, instagram_url: String, twitter_url: String, lead_status: String, lead_type: String, lead_date: String, lifecycle_stage: String,
         created_at: _Neo4jDateInput, last_modified: String, email_domain: String, marital_status: String): Contact
-  
+
   updateContact(field: String, value: String, contactId: String): Contact
     
   deleteContact(contactId: String): String
@@ -427,7 +424,14 @@ type Mutation {
 
   deleteUser(userId: String): String
 
-  updateData(nodeLabel: String, nodeId: String, contactId: String, label: String): String
+  createCompany(address: Addressik, name: String, email: String, phone: String, mobile: String, linkedin_url: String,
+        facebook_url: String, instagram_url: String, twitter_url: String, lead_status: String, lead_type: String, lead_date: String, lifecycle_stage: String,
+        created_at: _Neo4jDateInput, last_modified: String, email_domain: String): Company
+  updateCompany(field: String, value: String, companyId: String): Company
+
+  deleteCompany(companyId: String): String
+
+  updateData(nodeLabel: String, nodeId: String, unitId: String, label: String): String
 
   addressChange(from: ID!, postal_code: String, street_address1:String, street_address2:String, lat:String, lng:String, label:String): String
 

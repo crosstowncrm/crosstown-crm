@@ -50,6 +50,30 @@ class MultiStep {
     return true;
   };
 
+  validateComp = () => {
+    let companyNameError = "";
+    let companyStreetAddressError = "";
+
+    if (!this.data.name) {
+        companyNameError = "Required";
+        this.errors = { ...this.errors, ["name"]: companyNameError };
+    }
+
+    if (!this.data.address || !this.data.address.street_address1) {
+        companyStreetAddressError = "Required";
+        this.errors.address = {
+            ...this.errors.address,
+            ["street_address1"]: companyStreetAddressError
+        };
+    }
+
+    if (companyNameError || companyStreetAddressError) {
+        return false;
+    }
+    this.errors = {};
+    return true;
+  };
+
   isValid = () => {
     return this.validate();
   };

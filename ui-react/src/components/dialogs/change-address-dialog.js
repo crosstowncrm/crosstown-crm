@@ -5,8 +5,8 @@ import DialogActions from "@material-ui/core/DialogActions";
 import DialogContent from "@material-ui/core/DialogContent";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import { useMutation } from "@apollo/react-hooks/lib/index";
-import ContactAddress from "../../contacts/steps/step-contact-address";
-import multiStep from "../../../multiStep/multiStep";
+import ContactAddress from "../contacts/steps/step-contact-address";
+import multiStep from "../../multiStep/multiStep";
 import gql from "graphql-tag";
 
 const ADDRESS_CHANGE = gql`
@@ -17,6 +17,7 @@ const ADDRESS_CHANGE = gql`
     $street_address2: String
     $lat: String
     $lng: String
+    $label: String
   ) {
     addressChange(
       from: $from
@@ -25,14 +26,16 @@ const ADDRESS_CHANGE = gql`
       street_address2: $street_address2
       lat: $lat
       lng: $lng
+      label: $label
     )
   }
 `;
 
-export default function AddListingDialog({
+export default function ChangeAddressDialog({
   isOpen,
   handleClose,
-  contactId,
+  unitId,
+  label,
   refetch
 }) {
   const [errors, setErrors] = React.useState({});
@@ -55,7 +58,11 @@ export default function AddListingDialog({
     e.preventDefault();
     multiStep.saveData({
       name: "address",
-      value: { from: contactId }
+      value: { from: unitId }
+    });
+    multiStep.saveData({
+        name: "address",
+        value: { label: label }
     });
     const formData = multiStep.getData()["address"];
     const isValid = validate(formData);

@@ -1,5 +1,4 @@
 import React from "react";
-
 import Table from "@material-ui/core/Table";
 import TableBody from "@material-ui/core/TableBody";
 import TableCell from "@material-ui/core/TableCell";
@@ -7,16 +6,17 @@ import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 import Checkbox from "@material-ui/core/Checkbox";
 import Paper from "@material-ui/core/Paper";
-
 import { useQuery } from "@apollo/react-hooks";
 import gql from "graphql-tag";
 import "../../UserList.css";
 import { withStyles } from "@material-ui/core/styles";
 import { Link } from "react-router-dom";
-
+import Button from "@material-ui/core/Button";
 import TablePagination from "@material-ui/core/TablePagination";
-
 import { TableSortLabel, Typography, TextField } from "@material-ui/core";
+import {useMutation} from "@apollo/react-hooks/lib/index";
+
+import DeleteCompanyDialog from "../dialogs/delete-company-dialog";
 
 const styles = theme => ({
   root: {
@@ -81,6 +81,14 @@ const GET_COMPANIES_COUNT = gql`
   }
 `;
 
+const UPDATE_COMPANY = gql`
+    mutation updateCompany($field: String, $value: String, $companyId: String) {
+        updateCompany(field: $field, value: $value, companyId: $companyId) {
+            id
+        }
+    }
+`;
+
 const headCells = [
   { id: "node.name", numeric: false, disablePadding: false, label: "Name" },
   {
@@ -111,7 +119,7 @@ const headCells = [
     id: "owner.first_name",
     numeric: false,
     disablePadding: false,
-    label: "Contact Owner"
+    label: "Company Owner"
   }
 ];
 
@@ -129,11 +137,36 @@ function CompanyList(props) {
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
   const [filterState, setFilterState] = React.useState({ companyFilter: "" });
+  const [field, setField] = React.useState(false);
+  const [fieldValue, setFieldValue] = React.useState(false);
+  const [engaged, setEngaged] = React.useState(false);
+  const [isEditMode, setIsEditMode] = React.useState({});
+  const [companyId, setCompanyId] = React.useState(false);
+
+  const [
+    openDeleteDialogComponent,
+    setOpenDeleteDialogComponent
+  ] = React.useState(false);
+
+  const handleCloseDeleteDialogComponent = () => {
+        setOpenDeleteDialogComponent(false);
+  };
+
+  const callDeleteDialog = id => {
+    setOpenDeleteDialogComponent(true);
+      setCompanyId(id);
+  };
 
   const getFilter = () => {
     return filterState.companyFilter.length > 0
       ? "*" + filterState.companyFilter + "*"
       : "*";
+  };
+
+  const handleChange = event => {
+      event.preventDefault();
+      setField(event.target.id);
+      setFieldValue(event.target.value);
   };
 
   const handleSelectAllClick = event => {
@@ -152,7 +185,7 @@ function CompanyList(props) {
     filter: getFilter()
   };
 
-  let { loading, data, error } = useQuery(GET_COMPANIES, {
+  let { loading, data, error, refetch } = useQuery(GET_COMPANIES, {
     variables: variables
   });
 
@@ -210,6 +243,40 @@ function CompanyList(props) {
 
   const isSelected = name => selected.indexOf(name) !== -1;
 
+  const handleCancel = event => {
+      event.preventDefault();
+      setEngaged(false);
+      setIsEditMode({});
+  };
+
+  const companyUpdate = (id, index) => {
+      if (!!field && fieldValue !== data.company[index][field]) {
+          updateCompany({
+              variables: {
+                  field: "company." + field,
+                  value: fieldValue,
+                  companyId: id
+              }
+          });
+      }
+      setIsEditMode({});
+      setEngaged(false);
+  };
+
+  const [
+      updateCompany,
+      { loading: cndMutationLoading, error: cndQMutationError }
+  ] = useMutation(UPDATE_COMPANY, {
+      update: (proxy, { data: { updateCompany } }) => {
+          const number = data.company.findIndex(x => x.id === updateCompany.id);
+          data.company[number][field] = fieldValue;
+          proxy.writeQuery({
+              query: GET_COMPANIES,
+              data: { data: data }
+          });
+      }
+  });
+
   return (
     <Paper className={classes.root}>
       <Typography variant="h2" gutterBottom>
@@ -228,6 +295,11 @@ function CompanyList(props) {
           className: classes.input
         }}
       />
+      <Link variant="body2" color="primary" to="/company/create">
+          <Button color="primary" type="button">
+              New Company
+          </Button>
+      </Link>
       {loading && !error && <p>Loading...</p>}
       {error && !loading && <p>Error</p>}
 
@@ -268,6 +340,7 @@ function CompanyList(props) {
                   </TableSortLabel>
                 </TableCell>
               ))}
+            <TableCell>Action</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -281,7 +354,8 @@ function CompanyList(props) {
                 phone,
                 created_at,
                 owner
-              }) => {
+              },
+               index) => {
                 const isItemSelected = isSelected(id);
                 const labelId = `enhanced-table-checkbox-${id}`;
                 return (
@@ -306,8 +380,8 @@ function CompanyList(props) {
                       scope="row"
                       padding="none"
                     >
-                      {__typename.toString() === "Contact" ? (
-                        <Link className="edit-link" to={"/contacts/" + id}>
+                      {__typename.toString() === "Company" ? (
+                        <Link className="edit-link" to={"/companies/" + id}>
                           {name}-{__typename.toString()}
                         </Link>
                       ) : (
@@ -319,10 +393,78 @@ function CompanyList(props) {
                     <TableCell>
                       {employees_num ? employees_num : "no employees_num yet"}
                     </TableCell>
-                    <TableCell>
-                      {lead_status ? lead_status : "no lead status yet"}
-                    </TableCell>
-                    <TableCell>{phone ? phone : "no phone yet"}</TableCell>
+                      <TableCell align="left" className={classes.tableCell}>
+                          {isEditMode["lead_status"] &&
+                          isEditMode["lead_status"]["id"] === id ? (
+                              <>
+                                  <TextField
+                                      label="lead status"
+                                      onChange={handleChange}
+                                      id="lead_status"
+                                      defaultValue={lead_status}
+                                  />
+                                  <br />
+                                  <Button
+                                      color="primary"
+                                      onClick={() => companyUpdate(id, index)}
+                                  >
+                                      Update
+                                  </Button>
+                                  <Button color="secondary" onClick={handleCancel}>
+                                      Cancel
+                                  </Button>
+                              </>
+                          ) : (
+                              <span
+                                  id={index}
+                                  onDoubleClick={event => {
+                                      event.preventDefault();
+                                      if (!engaged) {
+                                          setIsEditMode({ lead_status: { id: id } });
+                                          setEngaged(true);
+                                      } else return;
+                                  }}
+                              >
+                          {lead_status ? lead_status : "no lead status yet"}
+                        </span>
+                          )}
+                      </TableCell>
+                      <TableCell align="left" className={classes.tableCell}>
+                          {isEditMode["phone"] &&
+                          isEditMode["phone"]["id"] === id ? (
+                              <>
+                                  <TextField
+                                      label="phone"
+                                      onChange={handleChange}
+                                      id="phone"
+                                      defaultValue={phone}
+                                  />
+                                  <br />
+                                  <Button
+                                      color="primary"
+                                      onClick={() => companyUpdate(id, index)}
+                                  >
+                                      Update
+                                  </Button>
+                                  <Button color="secondary" onClick={handleCancel}>
+                                      Cancel
+                                  </Button>
+                              </>
+                          ) : (
+                              <span
+                                  id={index}
+                                  onDoubleClick={event => {
+                                      event.preventDefault();
+                                      if (!engaged) {
+                                          setIsEditMode({ phone: { id: id } });
+                                          setEngaged(true);
+                                      } else return;
+                                  }}
+                              >
+                          {phone ? phone : "no phone"}
+                        </span>
+                          )}
+                      </TableCell>
                     <TableCell>
                       {created_at ? created_at.formatted : "no date yet"}
                     </TableCell>
@@ -331,6 +473,11 @@ function CompanyList(props) {
                       {owner
                         ? `${owner.first_name} ${owner.last_name}`
                         : "no owner yet"}
+                    </TableCell>
+                    <TableCell>
+                      <Button onClick={() => callDeleteDialog(id)}>
+                          Delete
+                      </Button>
                     </TableCell>
                   </TableRow>
                 );
@@ -356,6 +503,15 @@ function CompanyList(props) {
             onChangeRowsPerPage={handleChangeRowsPerPage}
           />
         )}
+
+        <DeleteCompanyDialog
+            key={"DeleteCompany"}
+            isOpen={openDeleteDialogComponent}
+            handleClose={handleCloseDeleteDialogComponent}
+            companyId={companyId}
+            title="Company"
+            refetch={refetch}
+        ></DeleteCompanyDialog>
     </Paper>
   );
 }

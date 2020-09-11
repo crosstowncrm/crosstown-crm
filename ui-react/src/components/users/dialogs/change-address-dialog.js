@@ -17,6 +17,7 @@ const ADDRESS_CHANGE = gql`
     $street_address2: String
     $lat: String
     $lng: String
+    $label: String
   ) {
     addressChange(
       from: $from
@@ -25,6 +26,7 @@ const ADDRESS_CHANGE = gql`
       street_address2: $street_address2
       lat: $lat
       lng: $lng
+      label: $label
     )
   }
 `;
@@ -33,6 +35,7 @@ export default function AddListingDialog({
   isOpen,
   handleClose,
   contactId,
+  label,
   refetch
 }) {
   const [errors, setErrors] = React.useState({});
@@ -55,8 +58,14 @@ export default function AddListingDialog({
     e.preventDefault();
     multiStep.saveData({
       name: "address",
-      value: { from: contactId }
+      value: { from: contactId}
     });
+
+    multiStep.saveData({
+        name: "address",
+        value: { label: label}
+    });
+
     const formData = multiStep.getData()["address"];
     const isValid = validate(formData);
 

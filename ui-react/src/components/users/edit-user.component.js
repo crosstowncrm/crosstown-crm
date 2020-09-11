@@ -12,11 +12,10 @@ import CardContent from "@material-ui/core/CardContent";
 import Button from "@material-ui/core/Button";
 import Typography from "@material-ui/core/Typography";
 import Avatar from "@material-ui/core/Avatar";
-import ArrowForwardIcon from "@material-ui/icons/ArrowForward";
 import TextField from "@material-ui/core/TextField";
 
-import ChangeAddressDialog from "../users/dialogs/change-address-dialog";
-import AddListingDialog from "../users/dialogs/add-listing-dialog";
+import ChangeAddressDialog from "../dialogs/change-address-dialog";
+import AddListingDialog from "../dialogs/add-listing-dialog";
 
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import FormControl from "@material-ui/core/FormControl";
@@ -72,7 +71,7 @@ const UPDATE_USER = gql`
 
 const UPDATE_DATA = gql`
   mutation updateData($nodeLabel: String, $nodeId: String, $userId: String, $label: String) {
-    updateData(nodeLabel: $nodeLabel, nodeId: $nodeId, contactId: $userId, label: $label)
+    updateData(nodeLabel: $nodeLabel, nodeId: $nodeId, unitId: $userId, label: $label)
   }
 `;
 
@@ -753,7 +752,7 @@ function UserEdit(props) {
             key={"changeAddress"}
             isOpen={openAddressDialogComponent}
             handleClose={handleCloseAddressDialogComponent}
-            contactId={params["uid"]}
+            unitId={params["uid"]}
             title="Address"
             refetch={refetch}
             label="User"

@@ -10,7 +10,6 @@ const resolvers = {
                 result => {
                     const resData = result.records.map(
                         record => {
-                            console.log(process.env.JWT_SECRET);
                             let {id} =  record.get('user').properties;
                             return {
                                 userId: id,
@@ -159,10 +158,10 @@ const resolvers = {
     },
     Mutation: {
 
-        updateData:async (_, {nodeLabel, nodeId, contactId, label}, ctx)=>{
+        updateData:async (_, {nodeLabel, nodeId, unitId, label}, ctx)=>{
             const digest = {"User":"OWNS_PROSPECT"};
             let session = ctx.driver.session();
-            const cypherQuery = `MATCH (:${nodeLabel})-[r]-(contact:${label} {id: "${contactId}"}) DELETE r WITH contact MATCH (node:${nodeLabel} {id: "${nodeId}"}) MERGE (contact)<-[rel:${digest[nodeLabel]}]-(node) RETURN id(rel) as rel_id LIMIT 1`;
+            const cypherQuery = `MATCH (unit:${label} {id: "${unitId}"}) OPTIONAL MATCH (:${nodeLabel})-[r]-(unit) DELETE r WITH unit MATCH (node:${nodeLabel} {id: "${nodeId}"}) MERGE (unit)<-[rel:${digest[nodeLabel]}]-(node) RETURN id(rel) as rel_id LIMIT 1`;
             return await session.run(cypherQuery).then(
                 result => {
                     const resData = result.records[0].get('rel_id').properties;
@@ -172,7 +171,8 @@ const resolvers = {
         },
         addressChange:async (_, {from, postal_code, street_address1, street_address2, lat, lng, label}, ctx)=>{
             let session = ctx.driver.session();
-            const cypherQuery = `MATCH (contact:${label} {id: "${from}"}) OPTIONAL MATCH (:Address)-[r]->(contact) DELETE r WITH contact MERGE (address:Address{postal_code: "${postal_code}", street_address1: "${street_address1}", street_address2: "${street_address2}"}) ON CREATE SET address.lat = "${lat}", address.lng = "${lng}"  MERGE (contact)-[rel:HAS_ADDRESS]-(address) SET address.id=toString(id(address)) RETURN id(rel) as rel_id LIMIT 1`;
+            const cypherQuery = `MATCH (unit:${label} {id: "${from}"}) OPTIONAL MATCH (:Address)-[r]->(unit) DELETE r WITH unit MERGE (address:Address{postal_code: "${postal_code}", street_address1: "${street_address1}", street_address2: "${street_address2}"}) ON CREATE SET address.lat = "${lat}", address.lng = "${lng}"  MERGE (unit)-[rel:HAS_ADDRESS]-(address) SET address.id=toString(id(address)) RETURN id(rel) as rel_id LIMIT 1`;
+            console.log(cypherQuery);
             return await session.run(cypherQuery).then(
                 result => {
                     const resData = result.records[0]?result.records[0].get('rel_id').properties:null;
@@ -251,6 +251,42 @@ const resolvers = {
             const {userId} = params;
             let session = ctx.driver.session();
             const cypherQuery = `MATCH (user:User{id:"${userId}"}) DETACH DELETE user`;
+            return await session.run(cypherQuery).then(
+                result => {
+                    return true;
+                }
+            )
+        },
+        createCompany:async (_, params, ctx)=>{
+            const {address} = params;
+            delete params.address;
+            let session = ctx.driver.session();
+            let set = [];
+            for (const [key, value] of Object.entries(params)) {
+                set.push(`company.${key} = "${value?value:""}"`);
+            }
+            set.push(`company.id = toString(id(company))`);
+            const cypherQuery = `MATCH (owner:User{id:"1"}) MERGE (address:Address{postal_code: "${address.postal_code?address.postal_code:""}", street_address1: "${address.street_address1}", street_address2: "${address.street_address2?address.street_address2:""}"}) ON CREATE SET address.lat = "${address.lat?address.lat:""}", address.lng = "${address.lng?address.lng:""}" CREATE (company:Company) SET ` + set.toString() + ` SET company.created_at=date(), company.last_modified=datetime(), address.id=toString(id(address)) MERGE (owner)-[:OWNS_PROSPECT]->(company) MERGE (company)-[:HAS_ADDRESS]->(address) RETURN company LIMIT 1`;
+            return await session.run(cypherQuery).then(
+                result => {
+                    return result.records[0].get('company').properties;
+                }
+            )
+        },
+        updateCompany:async (_, {field, value, companyId}, ctx)=>{
+            let session = ctx.driver.session();
+            const cypherQuery = `MATCH (company:Company {id: "${companyId}"}) SET ` + field + `= "${value}" RETURN company LIMIT 1`;
+            return await session.run(cypherQuery).then(
+                result => {
+                    const resData = result.records[0].get("company").properties;
+                    return resData;
+                }
+            )
+        },
+        deleteCompany:async (_, params, ctx)=>{
+            const {companyId} = params;
+            let session = ctx.driver.session();
+            const cypherQuery = `MATCH (company:Company{id:"${companyId}"}) DETACH DELETE company`;
             return await session.run(cypherQuery).then(
                 result => {
                     return true;

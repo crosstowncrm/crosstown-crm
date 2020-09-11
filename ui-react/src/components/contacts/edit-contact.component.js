@@ -14,10 +14,10 @@ import Typography from "@material-ui/core/Typography";
 import Avatar from "@material-ui/core/Avatar";
 import ArrowForwardIcon from "@material-ui/icons/ArrowForward";
 import TextField from "@material-ui/core/TextField";
-import AddCompanyDialog from "../users/dialogs/add-company-dialog";
-import ChangeAddressDialog from "../users/dialogs/change-address-dialog";
-import AddInterestDialog from "../users/dialogs/add-interest-dialog";
-import AddListingDialog from "../users/dialogs/add-listing-dialog";
+import AddCompanyDialog from "../dialogs/add-company-dialog";
+import ChangeAddressDialog from "../dialogs/change-address-dialog";
+import AddInterestDialog from "../dialogs/add-interest-dialog";
+import AddListingDialog from "../dialogs/add-listing-dialog";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import FormControl from "@material-ui/core/FormControl";
 
@@ -107,7 +107,7 @@ const UPDATE_CONTACT = gql`
 
 const UPDATE_DATA = gql`
   mutation updateData($nodeLabel: String, $nodeId: String, $contactId: String, $label: String) {
-    updateData(nodeLabel: $nodeLabel, nodeId: $nodeId, contactId: $contactId, label: $label)
+    updateData(nodeLabel: $nodeLabel, nodeId: $nodeId, unitId: $contactId, label: $label)
   }
 `;
 
@@ -140,7 +140,6 @@ function ContactEdit(props) {
   const [editBirthdayMode, setEditBirthdayMode] = React.useState(false);
   const [editMSMode, setEditMSMode] = React.useState(false);
   const [editOwnerMode, setEditOwnerMode] = React.useState(false);
-
   const [openDialogComponent, setOpenDialogComponent] = React.useState(false);
   const [
     openAddressDialogComponent,
@@ -1236,7 +1235,7 @@ function ContactEdit(props) {
             key={"changeAddress"}
             isOpen={openAddressDialogComponent}
             handleClose={handleCloseAddressDialogComponent}
-            contactId={params["uid"]}
+            unitId={params["uid"]}
             title="Address"
             refetch={refetch}
             label="Contact"

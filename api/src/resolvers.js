@@ -154,13 +154,70 @@ const resolvers = {
             )
         },
 
+        activity:async (_, {first, offset}, ctx)=>{
+            let session = ctx.driver.session();
+            const cypherQuery = `MATCH (user:User)-[:OWNS_PROSPECT]-(contact:Contact)-[r]-(object)
+                                    WHERE r.datetime IS NOT NULL
+                                    RETURN contact, collect(r.datetime) as actionDateList, collect(type(r)) as actions, 
+                                    collect(labels(object)[0]) as objects, collect(object.id) as objectIds, 
+                                    max(r.datetime) as maxdate
+                                    ORDER BY maxdate 
+                                    SKIP ${offset} 
+                                    LIMIT ${first};
+                                `;
+            return await session.run(cypherQuery).then(
+                result => {
+                    const resData = result.records.map(
+                        record => {
+                            const contact = record.get('contact') === null?null:record.get('contact').properties;
+                            const actionDateList = record.get('actionDateList');
+                            let actionDates = [];
+                            actionDateList.map(record => {
+                                actionDates = [...actionDates, record.toString()];
+                            });
+                            const actions = record.get('actions') === null?null:record.get('actions');
+                            let acts = [];
+                            actions.map(record => {
+                                acts = [...acts, record.toString().toLowerCase().replace("_", " ")];
+                            });
+                            const objects = record.get('objects') === null?null:record.get('objects');
+                            const objectIds = record.get('objects') === null?null:record.get('objectIds');
+                            let ids = [];
+                            objectIds.map(record => {
+                                ids = [...ids, record.toString().toLowerCase()];
+                            });
 
+                            const last ={objectId: ids.shift(), action: acts.shift(), date: actionDates.shift(), object: objects.shift()};
+
+                            return {
+                                actionDateList: actionDates,
+                                actions: acts,
+                                objects: objects,
+                                objectIds: ids,
+                                last: last,
+                                contact: contact===null? null: {
+                                    id: contact.id,
+                                    first_name: contact.first_name,
+                                    last_name: contact.last_name
+                                }
+                            };
+                        }
+                    );
+                    return resData;
+                }
+            )
+        },
         getClient:async(object, params, ctx, resolveInfo)=>{
             const result = await neo4jgraphql(object, params, ctx, resolveInfo, true);
             return result
         },
 
         getClientCount:async(object, params, ctx, resolveInfo)=>{
+            const result = await neo4jgraphql(object, params, ctx, resolveInfo, true);
+            return result
+        },
+
+        getActivityCount:async(object, params, ctx, resolveInfo)=>{
             const result = await neo4jgraphql(object, params, ctx, resolveInfo, true);
             return result
         },

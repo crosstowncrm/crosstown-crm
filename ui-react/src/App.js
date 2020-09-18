@@ -36,6 +36,7 @@ import CameraRollIcon from "@material-ui/icons/CameraRoll";
 import BusinessIcon from "@material-ui/icons/Business";
 import HowToRegIcon from "@material-ui/icons/HowToReg";
 import DirectionsRunIcon from "@material-ui/icons/DirectionsRun";
+import TransferWithinAStationIcon from '@material-ui/icons/TransferWithinAStation';
 import Login from "./components/Login";
 import UserList from "./components/users/UserList";
 import UserData from "./components/users/edit-user.component";
@@ -45,6 +46,7 @@ import ContactData from "./components/contacts/edit-contact.component";
 import ContactCreate from "./components/contacts/create-contact.component";
 import CompanyCreate from "./components/companies/create-company.component";
 import CompanyList from "./components/companies/CompanyList";
+import ActivityList from "./components/activities/ActivityList";
 import ClientList from "./components/clients/ClientList";
 import CompanyData from "./components/companies/edit-company.component";
 import PropertyList from "./components/properties/PropertyList";
@@ -58,6 +60,7 @@ import ArticleData from "./components/articles/edit-article.component";
 import PostData from "./components/posts/edit-post.component";
 import DealsList from "./components/deals/DealsList";
 import DealData from "./components/deals/edit-deal.component";
+
 
 import auth from "./auth/auth";
 import { ProtectedRoute } from "./auth/protected.route";
@@ -268,15 +271,16 @@ export default function App() {
           <p>Users</p>
         </MenuItem>
       </Link>
-
-      <MenuItem>
-        <IconButton aria-label="show 11 new notifications" color="inherit">
-          <Badge badgeContent={11} color="secondary">
-            <NotificationsIcon />
-          </Badge>
-        </IconButton>
-        <p>Activity Feed</p>
-      </MenuItem>
+      <Link to={"/activity"} onClick={handleMobileMenuClose}>
+        <MenuItem>
+          <IconButton aria-label="show 11 new notifications" color="inherit">
+            <Badge badgeContent={11} color="secondary">
+              <TransferWithinAStationIcon />
+            </Badge>
+          </IconButton>
+          <p>Activity Feed</p>
+        </MenuItem>
+      </Link>
     </Menu>
   );
   const mobilePropertyMenuId = "primary-search-account-property-menu-mobile";
@@ -600,6 +604,8 @@ export default function App() {
                   component={CompanyCreate}
               />
               <ProtectedRoute exact path="/clients" component={ClientList} />
+              <ProtectedRoute exact path="/activity" component={ActivityList} />
+
               <ProtectedRoute exact path="/companies" component={CompanyList} />
               <ProtectedRoute
                 exact

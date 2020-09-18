@@ -344,6 +344,22 @@ type Team {
   established: Date
 }
 
+type Activity {
+    contact: Contact
+    actionDateList: [String]
+    actions: [String]
+    objects: [String]
+    objectIds: [String]
+    last: Last
+}
+
+type Last {
+    objectId: String
+    action: String
+    date: String
+    object: String
+}
+
 
 type Query {
 
@@ -354,9 +370,16 @@ type Query {
 
   getClient:[Client]
 
+  activity:[Activity]
+
   getClientCount: Int
     @cypher(
         statement: "MATCH (client:Client) RETURN count(client) as client_count"
+    )
+
+  getActivityCount: Int
+    @cypher(
+        statement: "MATCH (user:User)-[:OWNS_PROSPECT]-(contact:Contact)-[r]-(object) WHERE r.datetime IS NOT NULL RETURN count(DISTINCT contact) as activity_count"
     )
 
   company(filter: String="*", filter: String="*", orderByMe: String="owner.first_name asc"):[Company]

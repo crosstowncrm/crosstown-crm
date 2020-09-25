@@ -3,22 +3,10 @@ import gql from "graphql-tag";
 import "../../UserList.css";
 import { withStyles } from "@material-ui/core/styles";
 import { useMutation, useQuery } from "@apollo/react-hooks/lib/index";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableRow,
-  Tooltip,
-  TableSortLabel,
-  Typography,
-  TextField,
-  Button,
-  Dialog
-} from "@material-ui/core";
+import { Typography, TextField, Button, Dialog } from "@material-ui/core";
 
 import { Link } from "react-router-dom";
-
+import Grid from "@material-ui/core/Grid";
 import DialogActions from "@material-ui/core/DialogActions";
 import DialogContent from "@material-ui/core/DialogContent";
 import DialogTitle from "@material-ui/core/DialogTitle";
@@ -27,7 +15,50 @@ import FormHelperText from "@material-ui/core/FormHelperText";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import TablePagination from "@material-ui/core/TablePagination";
 
+import Card from "@material-ui/core/Card";
+import CardHeader from "@material-ui/core/CardHeader";
+import CardMedia from "@material-ui/core/CardMedia";
+import CardContent from "@material-ui/core/CardContent";
+import CardActions from "@material-ui/core/CardActions";
+import Avatar from "@material-ui/core/Avatar";
+import IconButton from "@material-ui/core/IconButton";
+import { red } from "@material-ui/core/colors";
+import FavoriteIcon from "@material-ui/icons/Favorite";
+import ShareIcon from "@material-ui/icons/Share";
+import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
+import MoreVertIcon from "@material-ui/icons/MoreVert";
+import clsx from "clsx";
+
+import Paper from "@material-ui/core/Paper";
+
 const styles = theme => ({
+  rootl: {
+    maxWidth: 345
+  },
+  medial: {
+    height: 0,
+    paddingTop: "56.25%" // 16:9
+  },
+  expandl: {
+    transform: "rotate(0deg)",
+    marginLeft: "auto",
+    transition: theme.transitions.create("transform", {
+      duration: theme.transitions.duration.shortest
+    })
+  },
+  expandOpenl: {
+    transform: "rotate(180deg)"
+  },
+  avatarl: {
+    backgroundColor: red[500]
+  },
+  rootn: {
+    flexGrow: 1
+  },
+  papern: {
+    height: 140,
+    width: 100
+  },
   root: {
     maxWidth: 700,
     marginTop: theme.spacing(3),
@@ -41,6 +72,17 @@ const styles = theme => ({
     marginLeft: theme.spacing(1),
     marginRight: theme.spacing(1),
     minWidth: 300
+  },
+  containero: {
+    display: "flex"
+  },
+  papero: {
+    height: 200,
+    flex: 1,
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    elevation: 8
   }
 });
 
@@ -75,10 +117,15 @@ const GET_CLIENTS = gql`
   query clientsPaginateQuery(
     $first: Int
     $offset: Int
-    $orderBy: [_ClientOrdering]
+    $orderByClient: [_ClientOrdering]
     $filter: String
   ) {
-    client(first: $first, offset: $offset, orderBy: $orderBy, filter: $filter) {
+    client(
+      first: $first
+      offset: $offset
+      orderBy: $orderByClient
+      filter: $filter
+    ) {
       id
       name
     }
@@ -89,13 +136,13 @@ const GET_PROPERTIES = gql`
   query propertiesPaginateQuery(
     $first: Int
     $offset: Int
-    $orderBy: [_PropertyOrdering]
+    $orderByProp: [_PropertyOrdering]
     $filter: _PropertyFilter
   ) {
     Property(
       first: $first
       offset: $offset
-      orderBy: $orderBy
+      orderBy: $orderByProp
       filter: $filter
     ) {
       id
@@ -114,11 +161,14 @@ function DealsList(props) {
   const { classes } = props;
   const [order, setOrder] = React.useState("asc");
   const [orderBy, setOrderBy] = React.useState("id");
+  const [orderByClient, setorderByClient] = React.useState("name");
+  const [orderByProp, setorderByProp] = React.useState("name");
+  const [expanded, setExpanded] = React.useState(false);
+
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
   const [filterState, setFilterState] = React.useState({ dealFilter: "" });
   const [open, setOpen] = React.useState(false);
-  const [fullWidth, setFullWidth] = React.useState(true);
   const [formData, updateFormData] = React.useState({});
   const [errors, setErrors] = React.useState({});
 
@@ -127,16 +177,9 @@ function DealsList(props) {
       ? { title_contains: filterState.dealFilter }
       : {};
   };
-  const handleSortRequest = property => {
-    const newOrderBy = property;
-    let newOrder = "desc";
 
-    if (orderBy === property && order === "desc") {
-      newOrder = "asc";
-    }
-
-    setOrder(newOrder);
-    setOrderBy(newOrderBy);
+  const handleExpandClick = () => {
+    setExpanded(!expanded);
   };
 
   const handleFilterChange = filterName => event => {
@@ -153,7 +196,7 @@ function DealsList(props) {
     error: dealsQueryError
   } = useQuery(GET_DEALS, {
     variables: {
-      // first: rowsPerPage,
+      first: rowsPerPage,
       offset: rowsPerPage * page,
       orderBy: orderBy + "_" + order,
       filter: getFilter()
@@ -166,7 +209,7 @@ function DealsList(props) {
     error: clientsQueryError
   } = useQuery(GET_CLIENTS, {
     variables: {
-      orderBy: orderBy + "_" + order
+      orderBy: orderByClient + "_" + order
     }
   });
 
@@ -176,7 +219,7 @@ function DealsList(props) {
     error: propertiesQueryError
   } = useQuery(GET_PROPERTIES, {
     variables: {
-      orderBy: orderBy + "_" + order
+      orderBy: orderByProp + "_" + order
     }
   });
 
@@ -214,8 +257,6 @@ function DealsList(props) {
     let amountError = "";
     let livingError = "";
     let est_dateError = "";
-
-    console.log(values);
 
     if (!values.client) {
       clientError = "Required";
@@ -325,8 +366,6 @@ function DealsList(props) {
     { loading: cndMutationLoading, error: cndQMutationError }
   ] = useMutation(CREATE_NEW_DEAL, {
     update: (proxy, { data: { createDeal } }) => {
-      console.log("createDeal\n" + createDeal.id);
-      // Read the data from our cache for this query.
       const data = proxy.readQuery({
         query: GET_DEALS,
         variables: {
@@ -337,7 +376,6 @@ function DealsList(props) {
       });
 
       data.Deal.push(createDeal);
-      // Write our data back to the cache.
       proxy.writeQuery({
         query: GET_DEALS,
         data: { data: data.Deal.concat(createDeal) }
@@ -387,7 +425,7 @@ function DealsList(props) {
       >
         <DialogTitle id="max-width-dialog-title">New Deal</DialogTitle>
         <DialogContent>
-          <form className={classes.form} validate={validate}>
+          <form className={classes.form}>
             {clientsQueryLoading && !clientsQueryError && <p>Loading...</p>}
             {clientsQueryError && !clientsQueryLoading && <p>Error</p>}
 
@@ -509,7 +547,7 @@ function DealsList(props) {
             Close
           </Button>
           <Button onClick={handleSubmit} color="primary">
-            Сonduct
+            Create
           </Button>
         </DialogActions>
       </Dialog>
@@ -522,52 +560,80 @@ function DealsList(props) {
       {dealsQueryError && !dealsQueryLoading && <p>Error</p>}
 
       {deals && !dealsQueryLoading && !dealsQueryError && (
-        <Table className={classes.table}>
-          <TableHead>
-            <TableRow>
-              <TableCell>Start time</TableCell>
-
-              <TableCell>Deal Title</TableCell>
-
-              <TableCell
-                key="event_time"
-                sortDirection={orderBy === "event_time" ? order : false}
-              >
-                <Tooltip title="Sort" placement="bottom-start" enterDelay={300}>
-                  <TableSortLabel
-                    active={orderBy === "event_time"}
-                    direction={order}
-                    onClick={() => handleSortRequest("event_time")}
-                  >
-                    Est. Close Date
-                  </TableSortLabel>
-                </Tooltip>
-              </TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {deals.Deal.map(
-              ({ id, property, client, start_time, est_date }) => {
-                return (
-                  <TableRow key={id}>
-                    <TableCell>
-                      {start_time ? start_time.formatted : "no data yet"}
-                    </TableCell>
-                    <TableCell>
-                      <Link className="edit-link" to={"/deals/" + id}>
+        <Grid container spacing={2} justify="flex-start">
+          {deals.Deal.map(({ id, property, client, start_time, est_date }) => {
+            return (
+              <Grid item xs={12} sm={6}>
+                <Paper className={classes.paper}>
+                  <Card className={classes.rootl}>
+                    <CardHeader
+                      avatar={
+                        <Avatar aria-label="recipe" className={classes.avatarl}>
+                          {property.name}
+                        </Avatar>
+                      }
+                      action={
+                        <IconButton aria-label="settings">
+                          <MoreVertIcon />
+                        </IconButton>
+                      }
+                      title={property.name}
+                      subheader={client.name}
+                    />
+                    <CardMedia
+                      className={classes.medial}
+                      image="img/grandstack.png"
+                      title={property.name}
+                    />
+                    <CardContent>
+                      <Typography
+                        variant="body2"
+                        color="textSecondary"
+                        component="p"
+                      >
+                        {start_time ? start_time.formatted : "no data yet"}
+                      </Typography>
+                      <Typography
+                        variant="body2"
+                        color="textSecondary"
+                        component="p"
+                      >
                         {client.name} has interest in {property.name}
-                      </Link>
-                    </TableCell>
-                    <TableCell>
-                      {est_date ? est_date.formatted : "no data yet"}
-                    </TableCell>
-                  </TableRow>
-                );
-              }
-            )}
-          </TableBody>
-        </Table>
+                      </Typography>
+                      <Typography
+                        variant="body2"
+                        color="textSecondary"
+                        component="p"
+                      >
+                        {est_date ? est_date.formatted : "no data yet"}
+                      </Typography>
+                    </CardContent>
+                    <CardActions disableSpacing>
+                      <IconButton aria-label="add to favorites">
+                        <FavoriteIcon />
+                      </IconButton>
+                      <IconButton aria-label="share">
+                        <ShareIcon />
+                      </IconButton>
+                      <IconButton
+                        className={clsx(classes.expandl, {
+                          [classes.expandOpenl]: expanded
+                        })}
+                        onClick={handleExpandClick}
+                        aria-expanded={expanded}
+                        aria-label="show more"
+                      >
+                        <ExpandMoreIcon />
+                      </IconButton>
+                    </CardActions>
+                  </Card>
+                </Paper>
+              </Grid>
+            );
+          })}
+        </Grid>
       )}
+
       {dealsCountQueryLoading && !dealsCountQueryError && <p>Loading...</p>}
       {dealsCountQueryError && !dealsCountQueryLoading && <p>Error</p>}
 

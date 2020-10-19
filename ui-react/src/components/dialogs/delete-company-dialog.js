@@ -3,7 +3,7 @@ import Button from "@material-ui/core/Button";
 import Dialog from "@material-ui/core/Dialog";
 import DialogActions from "@material-ui/core/DialogActions";
 import DialogTitle from "@material-ui/core/DialogTitle";
-import { useMutation } from "@apollo/react-hooks/lib/index";
+import { useMutation } from "@apollo/client";
 import gql from "graphql-tag";
 
 const DELETE_COMPANY = gql`
@@ -16,20 +16,20 @@ export default function DeleteCompanyDialog({
   isOpen,
   handleClose,
   companyId,
-  refetch
+  refetch,
 }) {
-  const handleSubmit = e => {
+  const handleSubmit = (e) => {
     e.preventDefault();
     deleteCompany({
-      variables: { companyId: companyId }
+      variables: { companyId: companyId },
     });
     handleClose();
   };
   const [
     deleteCompany,
-    { loading: duMutationLoading, error: duMutationError }
+    { loading: duMutationLoading, error: duMutationError },
   ] = useMutation(DELETE_COMPANY, {
-    update: refetch
+    update: refetch,
   });
 
   return (

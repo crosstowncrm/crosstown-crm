@@ -4,7 +4,7 @@ import { withStyles } from "@material-ui/core/styles";
 import { Link } from "react-router-dom";
 import Button from "@material-ui/core/Button";
 import DeleteContactDialog from "../dialogs/delete-contact-dialog";
-import { useMutation, useQuery } from "@apollo/react-hooks/lib/index";
+import { useMutation, useQuery } from "@apollo/client";
 import TablePagination from "@material-ui/core/TablePagination";
 
 import {
@@ -16,23 +16,23 @@ import {
   Paper,
   TableSortLabel,
   Typography,
-  TextField
+  TextField,
 } from "@material-ui/core";
 
-const styles = theme => ({
+const styles = (theme) => ({
   root: {
     maxWidth: "100%",
     marginTop: theme.spacing(3),
     overflowX: "auto",
-    margin: "auto"
+    margin: "auto",
   },
   table: {
-    minWidth: 700
+    minWidth: 700,
   },
   textField: {
     marginLeft: theme.spacing(1),
     marginRight: theme.spacing(1),
-    minWidth: 300
+    minWidth: 300,
   },
   visuallyHidden: {
     border: 0,
@@ -43,17 +43,17 @@ const styles = theme => ({
     padding: 0,
     position: "absolute",
     top: 20,
-    width: 1
+    width: 1,
   },
   input: {
-    maxWidth: 100
+    maxWidth: 100,
   },
   inputCell: {
-    maxWidth: "100%"
+    maxWidth: "100%",
   },
   tableCell: {
-    maxWidth: "100%"
-  }
+    maxWidth: "100%",
+  },
 });
 
 const GET_CONTACTS = gql`
@@ -109,38 +109,38 @@ const headCells = [
     id: "node.first_name",
     numeric: false,
     disablePadding: false,
-    label: "Name"
+    label: "Name",
   },
   {
     id: "node.email",
     numeric: false,
     disablePadding: false,
-    label: "Email"
+    label: "Email",
   },
   {
     id: "node.lead_status",
     numeric: false,
     disablePadding: false,
-    label: "Lead Status"
+    label: "Lead Status",
   },
   {
     id: "node.phone",
     numeric: false,
     disablePadding: false,
-    label: "Phone Number"
+    label: "Phone Number",
   },
   {
     id: "owner.first_name",
     numeric: false,
     disablePadding: false,
-    label: "Contact Owner"
+    label: "Contact Owner",
   },
   {
     id: "node.created_at",
     numeric: false,
     disablePadding: false,
-    label: "Create Date"
-  }
+    label: "Create Date",
+  },
 ];
 
 function ContactList(props) {
@@ -158,10 +158,10 @@ function ContactList(props) {
 
   const [
     openDeleteDialogComponent,
-    setOpenDeleteDialogComponent
+    setOpenDeleteDialogComponent,
   ] = React.useState(false);
 
-  const callDeleteDialog = id => {
+  const callDeleteDialog = (id) => {
     setOpenDeleteDialogComponent(true);
     setContactId(id);
   };
@@ -180,8 +180,8 @@ function ContactList(props) {
       first: rowsPerPage,
       offset: rowsPerPage * page,
       orderByMe: `${orderByMe} ${order}`,
-      filter: getFilter()
-    }
+      filter: getFilter(),
+    },
   });
 
   const contactUpdate = (id, index) => {
@@ -190,15 +190,15 @@ function ContactList(props) {
         variables: {
           field: "contact." + field,
           value: fieldValue,
-          contactId: id
-        }
+          contactId: id,
+        },
       });
     }
     setIsEditMode({});
     setEngaged(false);
   };
 
-  const createSortHandler = property => event => {
+  const createSortHandler = (property) => (event) => {
     handleRequestSort(event, property);
   };
 
@@ -208,33 +208,22 @@ function ContactList(props) {
     setOrderByMe(property);
   };
 
-  const handleFilterChange = filterName => event => {
+  const handleFilterChange = (filterName) => (event) => {
     const val = event.target.value;
 
-    setFilterState(oldFilterState => ({
+    setFilterState((oldFilterState) => ({
       ...oldFilterState,
-      [filterName]: val
+      [filterName]: val,
     }));
   };
 
-  // const [readArticle, { loading2, error2 }] = useMutation(READ_ARTICLE);
-
-  // const handleClick = event => {
-  //     readArticle({
-  //         variables: {
-  //             reader_id: localStorage.getItem('userId'),
-  //             article_id: event.target.getAttribute("artid")
-  //         }
-  //     });
-  // };
-
-  const handleChange = event => {
+  const handleChange = (event) => {
     event.preventDefault();
     setField(event.target.id);
     setFieldValue(event.target.value);
   };
 
-  const handleCancel = event => {
+  const handleCancel = (event) => {
     event.preventDefault();
     setEngaged(false);
     setIsEditMode({});
@@ -244,7 +233,7 @@ function ContactList(props) {
     setPage(newPage);
   };
 
-  const handleChangeRowsPerPage = event => {
+  const handleChangeRowsPerPage = (event) => {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
   };
@@ -252,21 +241,14 @@ function ContactList(props) {
   const {
     loading: contactsCountQueryLoading,
     data: contactsCount,
-    error: contactsCountQueryError
+    error: contactsCountQueryError,
   } = useQuery(GET_CONTACTS_COUNT);
 
   const [
     updateContact,
-    { loading: cndMutationLoading, error: cndQMutationError }
+    { loading: cndMutationLoading, error: cndQMutationError },
   ] = useMutation(UPDATE_CONTACT, {
-    update: (proxy, { data: { updateContact } }) => {
-      const number = data.contact.findIndex(x => x.id === updateContact.id);
-      data.contact[number][field] = fieldValue;
-      proxy.writeQuery({
-        query: GET_CONTACTS,
-        data: { data: data }
-      });
-    }
+    update: () => refetch(),
   });
 
   return (
@@ -285,7 +267,7 @@ function ContactList(props) {
         variant="outlined"
         type="text"
         InputProps={{
-          className: classes.inputCell
+          className: classes.inputCell,
         }}
       />
       <Link variant="body2" color="primary" to="/contact/create">
@@ -300,7 +282,7 @@ function ContactList(props) {
         <Table className={classes.table}>
           <TableHead>
             <TableRow>
-              {headCells.map(headCell => (
+              {headCells.map((headCell) => (
                 <TableCell
                   key={headCell.id}
                   align={headCell.numeric ? "right" : "left"}
@@ -338,7 +320,7 @@ function ContactList(props) {
                   lead_status,
                   phone,
                   created_at,
-                  owner
+                  owner,
                 },
                 index
               ) => {
@@ -406,7 +388,7 @@ function ContactList(props) {
                       ) : (
                         <span
                           id={index}
-                          onDoubleClick={event => {
+                          onDoubleClick={(event) => {
                             event.preventDefault();
                             if (!engaged) {
                               setIsEditMode({ email: { id: id } });
@@ -442,7 +424,7 @@ function ContactList(props) {
                       ) : (
                         <span
                           id={index}
-                          onDoubleClick={event => {
+                          onDoubleClick={(event) => {
                             event.preventDefault();
                             if (!engaged) {
                               setIsEditMode({ lead_status: { id: id } });
@@ -478,7 +460,7 @@ function ContactList(props) {
                       ) : (
                         <span
                           id={index}
-                          onDoubleClick={event => {
+                          onDoubleClick={(event) => {
                             event.preventDefault();
                             if (!engaged) {
                               setIsEditMode({ phone: { id: id } });

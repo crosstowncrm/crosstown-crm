@@ -4,7 +4,7 @@ import Dialog from "@material-ui/core/Dialog";
 import DialogActions from "@material-ui/core/DialogActions";
 import DialogContent from "@material-ui/core/DialogContent";
 import DialogTitle from "@material-ui/core/DialogTitle";
-import { useMutation } from "@apollo/react-hooks/lib/index";
+import { useMutation } from "@apollo/client";
 import ContactAddress from "../../contacts/steps/step-contact-address";
 import multiStep from "../../../multiStep/multiStep";
 import gql from "graphql-tag";
@@ -36,34 +36,34 @@ export default function AddListingDialog({
   handleClose,
   contactId,
   label,
-  refetch
+  refetch,
 }) {
   const [errors, setErrors] = React.useState({});
 
-  const validate = values => {
+  const validate = (values) => {
     let listingError = "";
     if (!values.street_address1) {
       listingError = "Required";
     }
     if (listingError) {
       setErrors({
-        listingError
+        listingError,
       });
       return false;
     }
     return true;
   };
 
-  const handleSubmit = e => {
+  const handleSubmit = (e) => {
     e.preventDefault();
     multiStep.saveData({
       name: "address",
-      value: { from: contactId}
+      value: { from: contactId },
     });
 
     multiStep.saveData({
-        name: "address",
-        value: { label: label}
+      name: "address",
+      value: { label: label },
     });
 
     const formData = multiStep.getData()["address"];
@@ -71,7 +71,7 @@ export default function AddListingDialog({
 
     if (isValid) {
       addressChange({
-        variables: formData
+        variables: formData,
       });
 
       multiStep.clear();
@@ -81,9 +81,9 @@ export default function AddListingDialog({
 
   const [
     addressChange,
-    { loading: acMutationLoading, error: acMutationError }
+    { loading: acMutationLoading, error: acMutationError },
   ] = useMutation(ADDRESS_CHANGE, {
-    update: refetch
+    update: refetch,
   });
 
   return (

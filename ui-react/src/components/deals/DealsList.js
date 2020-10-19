@@ -2,10 +2,9 @@ import React from "react";
 import gql from "graphql-tag";
 import "../../UserList.css";
 import { withStyles } from "@material-ui/core/styles";
-import { useMutation, useQuery } from "@apollo/react-hooks/lib/index";
+import { useMutation, useQuery } from "@apollo/client";
 import { Typography, TextField, Button, Dialog } from "@material-ui/core";
 
-import { Link } from "react-router-dom";
 import Grid from "@material-ui/core/Grid";
 import DialogActions from "@material-ui/core/DialogActions";
 import DialogContent from "@material-ui/core/DialogContent";
@@ -31,50 +30,50 @@ import clsx from "clsx";
 
 import Paper from "@material-ui/core/Paper";
 
-const styles = theme => ({
+const styles = (theme) => ({
   rootl: {
-    maxWidth: 345
+    maxWidth: 345,
   },
   medial: {
     height: 0,
-    paddingTop: "56.25%" // 16:9
+    paddingTop: "56.25%", // 16:9
   },
   expandl: {
     transform: "rotate(0deg)",
     marginLeft: "auto",
     transition: theme.transitions.create("transform", {
-      duration: theme.transitions.duration.shortest
-    })
+      duration: theme.transitions.duration.shortest,
+    }),
   },
   expandOpenl: {
-    transform: "rotate(180deg)"
+    transform: "rotate(180deg)",
   },
   avatarl: {
-    backgroundColor: red[500]
+    backgroundColor: red[500],
   },
   rootn: {
-    flexGrow: 1
+    flexGrow: 1,
   },
   papern: {
     height: 140,
-    width: 100
+    width: 100,
   },
   root: {
     maxWidth: 700,
     marginTop: theme.spacing(3),
     overflowX: "auto",
-    margin: "auto"
+    margin: "auto",
   },
   table: {
-    minWidth: 700
+    minWidth: 700,
   },
   textField: {
     marginLeft: theme.spacing(1),
     marginRight: theme.spacing(1),
-    minWidth: 300
+    minWidth: 300,
   },
   containero: {
-    display: "flex"
+    display: "flex",
   },
   papero: {
     height: 200,
@@ -82,8 +81,8 @@ const styles = theme => ({
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    elevation: 8
-  }
+    elevation: 8,
+  },
 });
 
 const GET_DEALS = gql`
@@ -182,45 +181,45 @@ function DealsList(props) {
     setExpanded(!expanded);
   };
 
-  const handleFilterChange = filterName => event => {
+  const handleFilterChange = (filterName) => (event) => {
     const val = event.target.value;
-    setFilterState(oldFilterState => ({
+    setFilterState((oldFilterState) => ({
       ...oldFilterState,
-      [filterName]: val
+      [filterName]: val,
     }));
   };
 
   const {
     loading: dealsQueryLoading,
     data: deals,
-    error: dealsQueryError
+    error: dealsQueryError,
   } = useQuery(GET_DEALS, {
     variables: {
       first: rowsPerPage,
       offset: rowsPerPage * page,
       orderBy: orderBy + "_" + order,
-      filter: getFilter()
-    }
+      filter: getFilter(),
+    },
   });
 
   const {
     loading: clientsQueryLoading,
     data: clients,
-    error: clientsQueryError
+    error: clientsQueryError,
   } = useQuery(GET_CLIENTS, {
     variables: {
-      orderBy: orderByClient + "_" + order
-    }
+      orderBy: orderByClient + "_" + order,
+    },
   });
 
   const {
     loading: propertiesQueryLoading,
     data: properties,
-    error: propertiesQueryError
+    error: propertiesQueryError,
   } = useQuery(GET_PROPERTIES, {
     variables: {
-      orderBy: orderByProp + "_" + order
-    }
+      orderBy: orderByProp + "_" + order,
+    },
   });
 
   const handleClickOpen = () => {
@@ -246,11 +245,11 @@ function DealsList(props) {
 
     updateFormData({
       ...formData,
-      [name]: value
+      [name]: value,
     });
   };
 
-  const validate = values => {
+  const validate = (values) => {
     let clientError = "";
     let actionError = "";
     let propertyError = "";
@@ -290,7 +289,7 @@ function DealsList(props) {
         propertyError,
         amountError,
         livingError,
-        est_dateError
+        est_dateError,
       });
       return false;
     }
@@ -298,13 +297,13 @@ function DealsList(props) {
     return true;
   };
 
-  const handleSubmit = e => {
+  const handleSubmit = (e) => {
     e.preventDefault();
 
     const isValid = validate(formData);
     if (isValid) {
       createNewDeal({
-        variables: formData
+        variables: formData,
       });
       // clear form
       updateFormData({});
@@ -317,12 +316,12 @@ function DealsList(props) {
     { name: "Sales", id: 1 },
     { name: "Leases", id: 2 },
     { name: "Buys", id: 3 },
-    { name: "Rents", id: 4 }
+    { name: "Rents", id: 4 },
   ];
   // strategy
   const livings = [
     { name: "Commercial", id: 1 },
-    { name: "Residential", id: 2 }
+    { name: "Residential", id: 2 },
   ];
 
   const CREATE_NEW_DEAL = gql`
@@ -363,7 +362,7 @@ function DealsList(props) {
 
   const [
     createNewDeal,
-    { loading: cndMutationLoading, error: cndQMutationError }
+    { loading: cndMutationLoading, error: cndQMutationError },
   ] = useMutation(CREATE_NEW_DEAL, {
     update: (proxy, { data: { createDeal } }) => {
       const data = proxy.readQuery({
@@ -371,23 +370,23 @@ function DealsList(props) {
         variables: {
           offset: rowsPerPage * page,
           orderBy: orderBy + "_" + order,
-          filter: getFilter()
-        }
+          filter: getFilter(),
+        },
       });
 
       data.Deal.push(createDeal);
       proxy.writeQuery({
         query: GET_DEALS,
-        data: { data: data.Deal.concat(createDeal) }
+        data: { data: data.Deal.concat(createDeal) },
       });
-    }
+    },
   });
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
   };
 
-  const handleChangeRowsPerPage = event => {
+  const handleChangeRowsPerPage = (event) => {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
   };
@@ -395,7 +394,7 @@ function DealsList(props) {
   const {
     loading: dealsCountQueryLoading,
     data: dealsCount,
-    error: dealsCountQueryError
+    error: dealsCountQueryError,
   } = useQuery(GET_DEALS_COUNT);
 
   return (
@@ -414,7 +413,7 @@ function DealsList(props) {
         variant="outlined"
         type="text"
         InputProps={{
-          className: classes.input
+          className: classes.input,
         }}
       />
       <Dialog
@@ -435,10 +434,10 @@ function DealsList(props) {
                   id="client"
                   name="client"
                   options={clients.client}
-                  getOptionLabel={option => option.name}
+                  getOptionLabel={(option) => option.id}
                   style={{ width: 300 }}
                   onChange={handleChange}
-                  renderInput={params => (
+                  renderInput={(params) => (
                     <TextField
                       {...params}
                       label="Client"
@@ -457,11 +456,11 @@ function DealsList(props) {
               <Autocomplete
                 id="action"
                 options={actions}
-                getOptionLabel={option => option.name}
+                getOptionLabel={(option) => option.name}
                 style={{ width: 300 }}
                 onChange={handleChange}
                 name="action"
-                renderInput={params => (
+                renderInput={(params) => (
                   <TextField {...params} label="does" variant="outlined" />
                 )}
               />
@@ -481,11 +480,11 @@ function DealsList(props) {
                 <Autocomplete
                   id="property"
                   options={properties.Property}
-                  getOptionLabel={option => option.name}
+                  getOptionLabel={(option) => option.name}
                   style={{ width: 300 }}
                   onChange={handleChange}
                   name="property"
-                  renderInput={params => (
+                  renderInput={(params) => (
                     <TextField
                       {...params}
                       label="Property"
@@ -503,11 +502,11 @@ function DealsList(props) {
               <Autocomplete
                 id="living"
                 options={livings}
-                getOptionLabel={option => option.name}
+                getOptionLabel={(option) => option.name}
                 style={{ width: 300 }}
                 onChange={handleChange}
                 name="living"
-                renderInput={params => (
+                renderInput={(params) => (
                   <TextField {...params} label="livings" variant="outlined" />
                 )}
               />
@@ -534,7 +533,7 @@ function DealsList(props) {
                 defaultValue="2020-08-24T10:30"
                 className={classes.textField}
                 InputLabelProps={{
-                  shrink: true
+                  shrink: true,
                 }}
                 onChange={handleChange}
                 name="est_date"
@@ -617,7 +616,7 @@ function DealsList(props) {
                       </IconButton>
                       <IconButton
                         className={clsx(classes.expandl, {
-                          [classes.expandOpenl]: expanded
+                          [classes.expandOpenl]: expanded,
                         })}
                         onClick={handleExpandClick}
                         aria-expanded={expanded}

@@ -22,12 +22,12 @@ import Autocomplete from "@material-ui/lab/Autocomplete";
 import FormControl from "@material-ui/core/FormControl";
 
 import { CardHeader, Divider } from "@material-ui/core";
-import { useMutation } from "@apollo/react-hooks/lib/index";
+import { useMutation } from "@apollo/client";
 
-const styles = theme => ({
+const styles = (theme) => ({
   root: {
-    maxWidth: "100%"
-  }
+    maxWidth: "100%",
+  },
 });
 
 const GET_CONTACT = gql`
@@ -84,7 +84,7 @@ const GET_CONTACT = gql`
         first_name
         last_name
       }
-      viewed(filter: { action: true }) {
+      viewed {
         timestamp {
           formatted
         }
@@ -106,8 +106,18 @@ const UPDATE_CONTACT = gql`
 `;
 
 const UPDATE_DATA = gql`
-  mutation updateData($nodeLabel: String, $nodeId: String, $contactId: String, $label: String) {
-    updateData(nodeLabel: $nodeLabel, nodeId: $nodeId, unitId: $contactId, label: $label)
+  mutation updateData(
+    $nodeLabel: String
+    $nodeId: String
+    $contactId: String
+    $label: String
+  ) {
+    updateData(
+      nodeLabel: $nodeLabel
+      nodeId: $nodeId
+      unitId: $contactId
+      label: $label
+    )
   }
 `;
 
@@ -143,15 +153,15 @@ function ContactEdit(props) {
   const [openDialogComponent, setOpenDialogComponent] = React.useState(false);
   const [
     openAddressDialogComponent,
-    setOpenAddressDialogComponent
+    setOpenAddressDialogComponent,
   ] = React.useState(false);
   const [
     openDialogInterestComponent,
-    setOpenInterestDialogComponent
+    setOpenInterestDialogComponent,
   ] = React.useState(false);
   const [
     openDialogListingComponent,
-    setOpenListingDialogComponent
+    setOpenListingDialogComponent,
   ] = React.useState(false);
 
   const callDialog = () => {
@@ -215,49 +225,49 @@ function ContactEdit(props) {
 
   const { loading, data, error, refetch } = useQuery(GET_CONTACT, {
     variables: {
-      id: params["uid"]
-    }
+      id: params["uid"],
+    },
   });
 
   const {
     loading: usersQueryLoading,
     data: users,
-    error: usersQueryError
+    error: usersQueryError,
   } = useQuery(GET_USERS, {
     variables: {
-      orderBy: "first_name_asc"
-    }
+      orderBy: "first_name_asc",
+    },
   });
 
-  const handleSubmit = event => {
+  const handleSubmit = (event) => {
     event.preventDefault();
     if (!!field && fieldValue !== data.Contact[0][field]) {
       updateContact({
         variables: {
           field: "contact." + field,
           value: fieldValue,
-          contactId: params["uid"]
-        }
+          contactId: params["uid"],
+        },
       });
     }
     setAllFalse();
   };
 
-  const handleAcSubmit = event => {
+  const handleAcSubmit = (event) => {
     event.preventDefault();
     updateData({
       variables: {
         nodeLabel: event.target.name,
         nodeId: fieldValue,
         contactId: params["uid"],
-        label: "Contact"
+        label: "Contact",
       },
-      update: refetch
+      update: refetch,
     });
     setAllFalse();
   };
 
-  const handleChange = event => {
+  const handleChange = (event) => {
     event.preventDefault();
     setField(event.target.id);
     setFieldValue(event.target.value);
@@ -269,27 +279,27 @@ function ContactEdit(props) {
     setFieldValue(value.id);
   };
 
-  const handleCancel = event => {
+  const handleCancel = (event) => {
     event.preventDefault();
     setAllFalse();
   };
 
   const [
     updateContact,
-    { loading: cndMutationLoading, error: cndQMutationError }
+    { loading: cndMutationLoading, error: cndQMutationError },
   ] = useMutation(UPDATE_CONTACT, {
     update: (proxy, { data: { updateContact } }) => {
       data.Contact[0][field] = fieldValue;
       proxy.writeQuery({
         query: GET_CONTACT,
-        data: { data: data }
+        data: { data: data },
       });
-    }
+    },
   });
 
   const [
     updateData,
-    { loading: undMutationLoading, error: undQMutationError }
+    { loading: undMutationLoading, error: undQMutationError },
   ] = useMutation(UPDATE_DATA, {});
 
   return (
@@ -304,7 +314,7 @@ function ContactEdit(props) {
           style={{
             border: "3px solid blue",
             margin: "12px",
-            width: "98%"
+            width: "98%",
           }}
         >
           <Grid item md={3}>
@@ -313,7 +323,7 @@ function ContactEdit(props) {
               md={12}
               style={{
                 border: "2px solid blue",
-                margin: "2px"
+                margin: "2px",
               }}
             >
               About
@@ -323,7 +333,7 @@ function ContactEdit(props) {
               md={12}
               style={{
                 border: "2px solid blue",
-                margin: "2px"
+                margin: "2px",
               }}
             >
               {data.Contact.map(
@@ -350,7 +360,7 @@ function ContactEdit(props) {
                   lifecycle_stage,
                   marital_status,
                   address,
-                  owner
+                  owner,
                 }) => (
                   <Card key={`card-${id}`}>
                     <CardContent>
@@ -410,7 +420,7 @@ function ContactEdit(props) {
                           </form>
                         ) : (
                           <span
-                            onDoubleClick={event => {
+                            onDoubleClick={(event) => {
                               event.preventDefault();
                               if (!engaged) {
                                 setEditFNMode(!editFNMode);
@@ -447,7 +457,7 @@ function ContactEdit(props) {
                           </form>
                         ) : (
                           <span
-                            onDoubleClick={event => {
+                            onDoubleClick={(event) => {
                               event.preventDefault();
                               if (!engaged) {
                                 setEditLNMode(!editLNMode);
@@ -483,7 +493,7 @@ function ContactEdit(props) {
                           </form>
                         ) : (
                           <span
-                            onDoubleClick={event => {
+                            onDoubleClick={(event) => {
                               event.preventDefault();
                               if (!engaged) {
                                 setEditMailMode(!editMailMode);
@@ -519,7 +529,7 @@ function ContactEdit(props) {
                           </form>
                         ) : (
                           <span
-                            onDoubleClick={event => {
+                            onDoubleClick={(event) => {
                               event.preventDefault();
                               if (!engaged) {
                                 setEditPhoneMode(!PhoneMode);
@@ -556,7 +566,7 @@ function ContactEdit(props) {
                           </form>
                         ) : (
                           <span
-                            onDoubleClick={event => {
+                            onDoubleClick={(event) => {
                               event.preventDefault();
                               if (!engaged) {
                                 setEditMobileMode(!editMobileMode);
@@ -593,7 +603,7 @@ function ContactEdit(props) {
                           </form>
                         ) : (
                           <span
-                            onDoubleClick={event => {
+                            onDoubleClick={(event) => {
                               event.preventDefault();
                               if (!engaged) {
                                 setEditLSMode(!editLSMode);
@@ -620,7 +630,7 @@ function ContactEdit(props) {
                               defaultValue={birthday}
                               size="small"
                               style={{
-                                width: 200
+                                width: 200,
                               }}
                             />
 
@@ -634,7 +644,7 @@ function ContactEdit(props) {
                           </form>
                         ) : (
                           <span
-                            onDoubleClick={event => {
+                            onDoubleClick={(event) => {
                               event.preventDefault();
                               if (!engaged) {
                                 setEditBirthdayMode(!editBirthdayMode);
@@ -670,7 +680,7 @@ function ContactEdit(props) {
                           </form>
                         ) : (
                           <span
-                            onDoubleClick={event => {
+                            onDoubleClick={(event) => {
                               event.preventDefault();
                               if (!engaged) {
                                 setEditLiMode(!editLiMode);
@@ -706,7 +716,7 @@ function ContactEdit(props) {
                           </form>
                         ) : (
                           <span
-                            onDoubleClick={event => {
+                            onDoubleClick={(event) => {
                               event.preventDefault();
                               if (!engaged) {
                                 setEditFBMode(!editFBMode);
@@ -742,7 +752,7 @@ function ContactEdit(props) {
                           </form>
                         ) : (
                           <span
-                            onDoubleClick={event => {
+                            onDoubleClick={(event) => {
                               event.preventDefault();
                               if (!engaged) {
                                 setEditInstMode(!editInstMode);
@@ -778,7 +788,7 @@ function ContactEdit(props) {
                           </form>
                         ) : (
                           <span
-                            onDoubleClick={event => {
+                            onDoubleClick={(event) => {
                               event.preventDefault();
                               if (!engaged) {
                                 setEditTwitMode(!editTwitMode);
@@ -814,7 +824,7 @@ function ContactEdit(props) {
                           </form>
                         ) : (
                           <span
-                            onDoubleClick={event => {
+                            onDoubleClick={(event) => {
                               event.preventDefault();
                               if (!engaged) {
                                 setEditLTMode(!editLTMode);
@@ -841,7 +851,7 @@ function ContactEdit(props) {
                               defaultValue={lead_date}
                               size="small"
                               style={{
-                                width: 200
+                                width: 200,
                               }}
                             />
                             <br />
@@ -854,7 +864,7 @@ function ContactEdit(props) {
                           </form>
                         ) : (
                           <span
-                            onDoubleClick={event => {
+                            onDoubleClick={(event) => {
                               event.preventDefault();
                               if (!engaged) {
                                 setEditLDMode(!editLDMode);
@@ -890,7 +900,7 @@ function ContactEdit(props) {
                           </form>
                         ) : (
                           <span
-                            onDoubleClick={event => {
+                            onDoubleClick={(event) => {
                               event.preventDefault();
                               if (!engaged) {
                                 setEditLCSMode(!editLCSMode);
@@ -926,7 +936,7 @@ function ContactEdit(props) {
                           </form>
                         ) : (
                           <span
-                            onDoubleClick={event => {
+                            onDoubleClick={(event) => {
                               event.preventDefault();
                               if (!engaged) {
                                 setEditMSMode(!editMSMode);
@@ -979,12 +989,12 @@ function ContactEdit(props) {
                                   id="user"
                                   name="user"
                                   options={users.User}
-                                  getOptionLabel={option =>
+                                  getOptionLabel={(option) =>
                                     option.first_name + " " + option.last_name
                                   }
                                   style={{ width: 250 }}
                                   onChange={handleAcChange}
-                                  renderInput={params => (
+                                  renderInput={(params) => (
                                     <TextField
                                       {...params}
                                       label="User"
@@ -1012,7 +1022,7 @@ function ContactEdit(props) {
                           </form>
                         ) : (
                           <span
-                            onDoubleClick={event => {
+                            onDoubleClick={(event) => {
                               event.preventDefault();
                               if (!engaged) {
                                 setEditOwnerMode(!editOwnerMode);
@@ -1056,7 +1066,7 @@ function ContactEdit(props) {
               md={12}
               style={{
                 border: "2px solid blue",
-                margin: "2px"
+                margin: "2px",
               }}
             >
               Activity
@@ -1066,7 +1076,7 @@ function ContactEdit(props) {
               md={12}
               style={{
                 border: "2px solid blue",
-                margin: "2px"
+                margin: "2px",
               }}
             >
               {data.Contact.map(({ viewed }, j) =>
@@ -1110,7 +1120,7 @@ function ContactEdit(props) {
               md={12}
               style={{
                 border: "2px solid blue",
-                margin: "2px"
+                margin: "2px",
               }}
             >
               Associations, Interests, Listings
@@ -1124,7 +1134,7 @@ function ContactEdit(props) {
                   md={12}
                   style={{
                     border: "2px solid blue",
-                    margin: "2px"
+                    margin: "2px",
                   }}
                 >
                   <Card key={"company"}>
@@ -1136,7 +1146,7 @@ function ContactEdit(props) {
                     </CardActions>
                     <Divider />
                     <CardContent key={"key"}>
-                      {companies.map(company => (
+                      {companies.map((company) => (
                         <Typography key={"tp_" + company.id}>
                           <Link
                             key={"link_" + company.id}
@@ -1156,7 +1166,7 @@ function ContactEdit(props) {
                   md={12}
                   style={{
                     border: "2px solid blue",
-                    margin: "2px"
+                    margin: "2px",
                   }}
                 >
                   <Card key={"property"}>
@@ -1172,7 +1182,7 @@ function ContactEdit(props) {
                     </CardActions>
                     <Divider />
                     <CardContent>
-                      {properties.map(property => (
+                      {properties.map((property) => (
                         <Typography key={"tp_" + property.Property.id}>
                           <Link
                             key={"link_" + property.Property.id}
@@ -1193,7 +1203,7 @@ function ContactEdit(props) {
                   md={12}
                   style={{
                     border: "2px solid blue",
-                    margin: "2px"
+                    margin: "2px",
                   }}
                 >
                   <Card key={"listing"}>
@@ -1210,7 +1220,7 @@ function ContactEdit(props) {
                     </CardActions>
 
                     <Divider />
-                    {listings.map(listing => (
+                    {listings.map((listing) => (
                       <CardContent key={"ls_" + listing.id}>
                         <Typography key={"tp_" + listing.id}>
                           <Link
@@ -1225,45 +1235,44 @@ function ContactEdit(props) {
                     ))}
                   </Card>
                 </Grid>
-
               </>
             ))}
           </Grid>
         </Grid>
       )}
-        <ChangeAddressDialog
-            key={"changeAddress"}
-            isOpen={openAddressDialogComponent}
-            handleClose={handleCloseAddressDialogComponent}
-            unitId={params["uid"]}
-            title="Address"
-            refetch={refetch}
-            label="Contact"
-        ></ChangeAddressDialog>
-        <AddCompanyDialog
-            key={"addCompany"}
-            isOpen={openDialogComponent}
-            handleClose={handleCloseDialogComponent}
-            contactId={params["uid"]}
-            title="Associations"
-            refetch={refetch}
-        ></AddCompanyDialog>
-        <AddInterestDialog
-            key={"AddInterest"}
-            isOpen={openDialogInterestComponent}
-            handleClose={handleCloseInterestDialogComponent}
-            contactId={params["uid"]}
-            title="Interest"
-            refetch={refetch}
-        ></AddInterestDialog>
-        <AddListingDialog
-            key={"AddListing"}
-            isOpen={openDialogListingComponent}
-            handleClose={handleCloseListingDialogComponent}
-            contactId={params["uid"]}
-            title="Listing"
-            refetch={refetch}
-        ></AddListingDialog>
+      <ChangeAddressDialog
+        key={"changeAddress"}
+        isOpen={openAddressDialogComponent}
+        handleClose={handleCloseAddressDialogComponent}
+        unitId={params["uid"]}
+        title="Address"
+        refetch={refetch}
+        label="Contact"
+      ></ChangeAddressDialog>
+      <AddCompanyDialog
+        key={"addCompany"}
+        isOpen={openDialogComponent}
+        handleClose={handleCloseDialogComponent}
+        contactId={params["uid"]}
+        title="Associations"
+        refetch={refetch}
+      ></AddCompanyDialog>
+      <AddInterestDialog
+        key={"AddInterest"}
+        isOpen={openDialogInterestComponent}
+        handleClose={handleCloseInterestDialogComponent}
+        contactId={params["uid"]}
+        title="Interest"
+        refetch={refetch}
+      ></AddInterestDialog>
+      <AddListingDialog
+        key={"AddListing"}
+        isOpen={openDialogListingComponent}
+        handleClose={handleCloseListingDialogComponent}
+        contactId={params["uid"]}
+        title="Listing"
+        refetch={refetch}
+      ></AddListingDialog>
     </>
   );
 }

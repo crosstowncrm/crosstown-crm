@@ -6,29 +6,29 @@ import DialogTitle from "@material-ui/core/DialogTitle";
 import { useMutation } from "@apollo/client";
 import gql from "graphql-tag";
 
-const DELETE_PROPERTY = gql`
-  mutation deleteProperty($propertyId: String) {
-    deleteProperty(propertyId: $propertyId)
+const DELETE_TASK = gql`
+  mutation deleteTask($taskId: String) {
+    deleteTask(taskId: $taskId)
   }
 `;
 
-export default function DeletePropertyDialog({
+export default function DeleteTaskDialog({
   isOpen,
   handleClose,
-  propertyId,
+  taskId,
   refetch,
 }) {
   const handleSubmit = (e) => {
     e.preventDefault();
-    deleteProperty({
-      variables: { propertyId: propertyId },
+    deleteTask({
+      variables: { taskId: taskId },
     });
     handleClose();
   };
   const [
-    deleteProperty,
+    deleteTask,
     { loading: duMutationLoading, error: duMutationError },
-  ] = useMutation(DELETE_PROPERTY, {
+  ] = useMutation(DELETE_TASK, {
     update: refetch,
   });
 

@@ -14,78 +14,73 @@ const styles = (theme) => ({
   },
 });
 
-const GET_PROPERTIES = gql`
-  query propertiesPaginateQuery(
+const GET_TASKS = gql`
+  query tasksPaginateQuery(
     $first: Int
     $offset: Int
-    $orderByMe: String
+    $orderBy: [_TaskOrdering]
     $filter: String
   ) {
-    property(
-      first: $first
-      offset: $offset
-      orderByMe: $orderByMe
-      filter: $filter
-    ) {
+    task(first: $first, offset: $offset, orderBy: $orderBy, filter: $filter) {
       id
-      name
-      property_type
-      phone
-      created_at {
+      type
+      priority
+      title
+      notes
+      due_date {
         formatted
       }
-      owner {
+      assigned {
+        id
         first_name
         last_name
+      }
+      associated {
+        id
+        ... on Contact {
+          first_name
+          last_name
+        }
+        ... on Company {
+          name
+        }
+      }
+      created_at {
+        formatted
       }
     }
   }
 `;
-const GET_PROPERTIES_COUNT = gql`
-  query propertiesCountQuery {
-    getPropertyCount
+
+const GET_TASKS_COUNT = gql`
+  query conatctsCountQuery {
+    getTaskCount
   }
 `;
 
 function StepSubmit() {
-  multiStep.validateComp();
+  multiStep.validateTask();
   const [errors, setErrors] = React.useState(multiStep.getErrors());
-  const CREATE_NEW_PROPERTY = gql`
-    mutation createProperty(
-      $name: String
-      $email: String
-      $phone: String
-      $mobile: String
-      $linkedin_url: String
-      $facebook_url: String
-      $instagram_url: String
-      $twitter_url: String
-      $property_type: String
-      $lead_type: String
-      $lead_date: String
-      $lifecycle_stage: String
-      $created_at: _Neo4jDateInput
-      $last_modified: String
-      $email_domain: String
-      $address: Addressik
+  const CREATE_NEW_TASK = gql`
+    mutation createTask(
+      $type: String
+      $priority: String
+      $title: String
+      $associated: String
+      $label: String
+      $assigned: String
+      $notes: String
+      $date: String
     ) {
-      createProperty(
-        address: $address
-        name: $name
-        email: $email
-        phone: $phone
-        mobile: $mobile
-        linkedin_url: $linkedin_url
-        facebook_url: $facebook_url
-        instagram_url: $instagram_url
-        twitter_url: $twitter_url
-        property_type: $property_type
-        lead_type: $lead_type
-        lead_date: $lead_date
-        lifecycle_stage: $lifecycle_stage
-        created_at: $created_at
-        last_modified: $last_modified
-        email_domain: $email_domain
+      createTask(
+        type: $type
+        priority: $priority
+        title: $title
+        associated: $associated
+        label: $label
+        assigned: $assigned
+        notes: $notes
+        dueDate: $date
       ) {
         id
       }
@@ -93,26 +88,26 @@ function StepSubmit() {
   `;
 
   const [
-    createNewProperty,
-    { loading: cncMutationLoading, error: cncQMutationError },
-  ] = useMutation(CREATE_NEW_PROPERTY, {});
+    createNewTask,
+    { loading: cntMutationLoading, error: cntQMutationError },
+  ] = useMutation(CREATE_NEW_TASK, {});
 
-  const createProperty = (event) => {
-    if (multiStep.validateComp() === true) {
-      createNewProperty({
+  const createTask = (event) => {
+    if (multiStep.validateTask() === true) {
+      createNewTask({
         variables: multiStep.getData(),
         refetchQueries: [
           {
-            query: GET_PROPERTIES,
+            query: GET_TASKS,
             variables: {
               first: 10,
               offset: 0,
-              orderByMe: `node.name asc`,
+              orderBy: `due_date_asc`,
               filter: "*",
             },
           },
           {
-            query: GET_PROPERTIES_COUNT,
+            query: GET_TASKS_COUNT,
           },
         ],
       });
@@ -127,7 +122,7 @@ function StepSubmit() {
     <div>
       <div className="row">
         <div className="ten columns terms">
-          <span>Create property with current data:</span>
+          <span>Create contact with current data:</span>
           <ul className="docs-terms">
             {Object.entries(multiStep.getData()).map(([key, value]) => {
               return typeof value === "string" ? (
@@ -157,12 +152,7 @@ function StepSubmit() {
           </div>
         </div>
       ) : (
-        <Link
-          variant="body2"
-          color="primary"
-          to="/properties"
-          onClick={createProperty}
-        >
+        <Link variant="body2" color="primary" to="/tasks" onClick={createTask}>
           <Button color="primary" type="button">
             Create
           </Button>

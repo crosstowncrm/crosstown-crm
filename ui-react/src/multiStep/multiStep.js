@@ -9,7 +9,7 @@ class MultiStep {
   }
 
   saveData(formData) {
-    if (formData.value.constructor.name !== "Object") {
+    if (formData.value && formData.value.constructor.name !== "Object") {
       this.data = { ...this.data, [formData.name]: formData.value };
     } else {
       const name = Object.keys(formData.value)[0];
@@ -39,7 +39,7 @@ class MultiStep {
       clientStreetAddressError = "Required";
       this.errors.address = {
         ...this.errors.address,
-        ["street_address1"]: clientStreetAddressError
+        ["street_address1"]: clientStreetAddressError,
       };
     }
 
@@ -55,20 +55,47 @@ class MultiStep {
     let companyStreetAddressError = "";
 
     if (!this.data.name) {
-        companyNameError = "Required";
-        this.errors = { ...this.errors, ["name"]: companyNameError };
+      companyNameError = "Required";
+      this.errors = { ...this.errors, ["name"]: companyNameError };
     }
 
     if (!this.data.address || !this.data.address.street_address1) {
-        companyStreetAddressError = "Required";
-        this.errors.address = {
-            ...this.errors.address,
-            ["street_address1"]: companyStreetAddressError
-        };
+      companyStreetAddressError = "Required";
+      this.errors.address = {
+        ...this.errors.address,
+        ["street_address1"]: companyStreetAddressError,
+      };
     }
 
     if (companyNameError || companyStreetAddressError) {
-        return false;
+      return false;
+    }
+    this.errors = {};
+    return true;
+  };
+
+  validateTask = () => {
+    let taskNameError = "";
+    let taskAssignedError = "";
+    let taskAssociatedError = "";
+    console.log(this.data);
+    if (!this.data.title) {
+      taskNameError = "Required";
+      this.errors = { ...this.errors, ["title"]: taskNameError };
+    }
+
+    if (!this.data.associated) {
+      taskAssociatedError = "Required";
+      this.errors = { ...this.errors, ["associated"]: taskAssociatedError };
+    }
+
+    if (!this.data.assigned) {
+      taskAssignedError = "Required";
+      this.errors = { ...this.errors, ["assigned"]: taskAssignedError };
+    }
+
+    if (taskNameError || taskAssociatedError || taskAssignedError) {
+      return false;
     }
     this.errors = {};
     return true;
@@ -78,7 +105,7 @@ class MultiStep {
     return this.validate();
   };
 
-  errorRemove = field => {
+  errorRemove = (field) => {
     delete this.errors[field];
   };
 }

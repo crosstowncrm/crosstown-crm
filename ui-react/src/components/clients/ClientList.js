@@ -18,20 +18,20 @@ import TablePagination from "@material-ui/core/TablePagination";
 
 import { TableSortLabel, Typography, TextField } from "@material-ui/core";
 
-const styles = theme => ({
+const styles = (theme) => ({
   root: {
     maxWidth: "100%",
     marginTop: theme.spacing(3),
     overflowX: "auto",
-    margin: "auto"
+    margin: "auto",
   },
   table: {
-    minWidth: 700
+    minWidth: 700,
   },
   textField: {
     marginLeft: theme.spacing(1),
     marginRight: theme.spacing(1),
-    minWidth: 300
+    minWidth: 300,
   },
   visuallyHidden: {
     border: 0,
@@ -42,8 +42,8 @@ const styles = theme => ({
     padding: 0,
     position: "absolute",
     top: 20,
-    width: 1
-  }
+    width: 1,
+  },
 });
 
 const GET_CLIENTS = gql`
@@ -77,17 +77,48 @@ const GET_CLIENTS_COUNT = gql`
 `;
 
 const headCells = [
-  { id: "name", numeric: false, disablePadding: false, label: "Name" },
-  { id: "email", numeric: false, disablePadding: false, label: "Email" },
-  { id: "status", numeric: false, disablePadding: false, label: "Lead Status" },
-  { id: "phone", numeric: false, disablePadding: false, label: "Phone Number" },
+  {
+    id: "name",
+    numeric: false,
+    disablePadding: false,
+    label: "Name",
+    sortable: true,
+  },
+  {
+    id: "email",
+    numeric: false,
+    disablePadding: false,
+    label: "Email",
+    sortable: true,
+  },
+  {
+    id: "status",
+    numeric: false,
+    disablePadding: false,
+    label: "Lead Status",
+    sortable: true,
+  },
+  {
+    id: "phone",
+    numeric: false,
+    disablePadding: false,
+    label: "Phone Number",
+    sortable: true,
+  },
   {
     id: "created",
     numeric: false,
     disablePadding: false,
-    label: "Create Date"
+    label: "Create Date",
+    sortable: true,
   },
-  { id: "owner", numeric: false, disablePadding: false, label: "Contact Owner" }
+  {
+    id: "owner.name",
+    numeric: false,
+    disablePadding: false,
+    label: "Contact Owner",
+    sortable: false,
+  },
 ];
 
 function ClientList(props) {
@@ -96,7 +127,7 @@ function ClientList(props) {
     onSelectAllClick,
     numSelected,
     rowCount,
-    onRequestSort
+    onRequestSort,
   } = props;
   const [selected, setSelected] = React.useState([]);
   const [order, setOrder] = React.useState("asc");
@@ -111,7 +142,7 @@ function ClientList(props) {
       : "*";
   };
 
-  const handleSelectAllClick = event => {
+  const handleSelectAllClick = (event) => {
     if (event.target.checked) {
       // const newSelecteds = rows.map((n) => n.name);
       // setSelected(newSelecteds);
@@ -125,11 +156,11 @@ function ClientList(props) {
       first: rowsPerPage,
       offset: rowsPerPage * page,
       orderBy: orderBy + "_" + order,
-      filter: getFilter()
-    }
+      filter: getFilter(),
+    },
   });
 
-  const createSortHandler = property => event => {
+  const createSortHandler = (property) => (event) => {
     onRequestSort(event, property);
   };
 
@@ -152,12 +183,12 @@ function ClientList(props) {
     setSelected(newSelected);
   };
 
-  const handleFilterChange = filterName => event => {
+  const handleFilterChange = (filterName) => (event) => {
     const val = event.target.value;
 
-    setFilterState(oldFilterState => ({
+    setFilterState((oldFilterState) => ({
       ...oldFilterState,
-      [filterName]: val
+      [filterName]: val,
     }));
   };
 
@@ -165,7 +196,7 @@ function ClientList(props) {
     setPage(newPage);
   };
 
-  const handleChangeRowsPerPage = event => {
+  const handleChangeRowsPerPage = (event) => {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
   };
@@ -173,10 +204,10 @@ function ClientList(props) {
   const {
     loading: clientsCountQueryLoading,
     data: clientsCount,
-    error: clientsCountQueryError
+    error: clientsCountQueryError,
   } = useQuery(GET_CLIENTS_COUNT);
 
-  const isSelected = name => selected.indexOf(name) !== -1;
+  const isSelected = (name) => selected.indexOf(name) !== -1;
 
   return (
     <Paper className={classes.root}>
@@ -193,7 +224,7 @@ function ClientList(props) {
         variant="outlined"
         type="text"
         InputProps={{
-          className: classes.input
+          className: classes.input,
         }}
       />
       {loading && !error && <p>Loading...</p>}
@@ -209,11 +240,11 @@ function ClientList(props) {
                   checked={rowCount > 0 && numSelected === rowCount}
                   onChange={handleSelectAllClick}
                   inputProps={{
-                    "aria-label": "select all clients"
+                    "aria-label": "select all clients",
                   }}
                 />
               </TableCell>
-              {headCells.map(headCell => (
+              {headCells.map((headCell) => (
                 <TableCell
                   key={headCell.id}
                   align={headCell.numeric ? "right" : "left"}
@@ -248,7 +279,7 @@ function ClientList(props) {
                 lead_status,
                 phone,
                 created_at,
-                owner
+                owner,
               }) => {
                 const isItemSelected = isSelected(id);
                 const labelId = `enhanced-table-checkbox-${id}`;
@@ -256,7 +287,7 @@ function ClientList(props) {
                   <TableRow
                     key={__typename + "-" + id}
                     hover
-                    onClick={event => handleClick(event, id)}
+                    onClick={(event) => handleClick(event, id)}
                     role="checkbox"
                     aria-checked={isItemSelected}
                     tabIndex={-1}

@@ -1,6 +1,6 @@
 import React from "react";
 import { withStyles } from "@material-ui/core/styles/index";
-import { useMutation } from "@apollo/react-hooks/lib/index";
+import { useMutation } from "@apollo/client";
 
 import gql from "graphql-tag";
 import { Link } from "react-router-dom";
@@ -8,10 +8,10 @@ import Button from "@material-ui/core/Button";
 
 import multiStep from "../../../multiStep/multiStep";
 
-const styles = theme => ({
+const styles = (theme) => ({
   root: {
-    maxWidth: "100%"
-  }
+    maxWidth: "100%",
+  },
 });
 
 const GET_USERS = gql`
@@ -95,10 +95,10 @@ function StepSubmit(props) {
 
   const [
     createNewUser,
-    { loading: cncMutationLoading, error: cncQMutationError }
+    { loading: cncMutationLoading, error: cncQMutationError },
   ] = useMutation(CREATE_NEW_USER);
 
-  const createUser = event => {
+  const createUser = (event) => {
     if (multiStep.isValid() === true) {
       createNewUser({
         variables: multiStep.getData(),
@@ -109,13 +109,13 @@ function StepSubmit(props) {
               first: 10,
               offset: 0,
               orderByMe: `node.first_name asc`,
-              filter: "*"
-            }
+              filter: "*",
+            },
           },
           {
-            query: GET_USERS_COUNT
-          }
-        ]
+            query: GET_USERS_COUNT,
+          },
+        ],
       });
       multiStep.clear();
     } else {

@@ -8,7 +8,7 @@ import DialogContentText from "@material-ui/core/DialogContentText";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import FormControl from "@material-ui/core/FormControl";
 import Autocomplete from "@material-ui/lab/Autocomplete";
-import { useMutation, useQuery } from "@apollo/react-hooks/lib/index";
+import { useMutation, useQuery } from "@apollo/client";
 import gql from "graphql-tag";
 
 const GET_LISTINGS = gql`
@@ -41,7 +41,7 @@ export default function AddListingDialog({
   isOpen,
   handleClose,
   contactId,
-  refetch
+  refetch,
 }) {
   const [formData, updateFormData] = React.useState({ from: contactId });
   const [errors, setErrors] = React.useState({});
@@ -49,43 +49,43 @@ export default function AddListingDialog({
   const {
     loading: listingsQueryLoading,
     data: listings,
-    error: listingsQueryError
+    error: listingsQueryError,
   } = useQuery(GET_LISTINGS, {
     variables: {
-      orderBy: "name_asc"
-    }
+      orderBy: "name_asc",
+    },
   });
 
   const handleChange = (e, value) => {
     console.log(value);
     updateFormData({
       ...formData,
-      ["to"]: value.id
+      ["to"]: value.id,
     });
   };
 
-  const validate = values => {
+  const validate = (values) => {
     let listingError = "";
     if (!values.to) {
       listingError = "Required";
     }
     if (listingError) {
       setErrors({
-        listingError
+        listingError,
       });
       return false;
     }
     return true;
   };
 
-  const handleSubmit = e => {
+  const handleSubmit = (e) => {
     e.preventDefault();
     const isValid = validate(formData);
 
     if (isValid) {
       console.log(formData);
       associationAdd({
-        variables: formData
+        variables: formData,
       });
       updateFormData({ from: contactId });
       handleClose();
@@ -94,9 +94,9 @@ export default function AddListingDialog({
 
   const [
     associationAdd,
-    { loading: laMutationLoading, error: laMutationError }
+    { loading: laMutationLoading, error: laMutationError },
   ] = useMutation(LISTING_ADD, {
-    update: refetch
+    update: refetch,
   });
 
   return (
@@ -115,10 +115,10 @@ export default function AddListingDialog({
                 id="company"
                 name="company"
                 options={listings.Listing}
-                getOptionLabel={option => option.name}
+                getOptionLabel={(option) => option.name}
                 style={{ width: 300 }}
                 onChange={handleChange}
-                renderInput={params => (
+                renderInput={(params) => (
                   <TextField
                     {...params}
                     label="Listing"

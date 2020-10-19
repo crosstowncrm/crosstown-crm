@@ -1,10 +1,11 @@
 import React from "react";
 import gql from "graphql-tag";
+import { withStyles } from "@material-ui/core/styles";
 import { Link } from "react-router-dom";
 import Button from "@material-ui/core/Button";
+import DeleteTaskDialog from "../dialogs/delete-task-dialog";
 import { useMutation, useQuery } from "@apollo/client";
 import TablePagination from "@material-ui/core/TablePagination";
-import DeleteUserDialog from "./dialogs/delete-user-dialog";
 
 import {
   Table,
@@ -17,7 +18,6 @@ import {
   Typography,
   TextField,
 } from "@material-ui/core";
-import { withStyles } from "@material-ui/core/styles/index";
 
 const styles = (theme) => ({
   root: {
@@ -56,100 +56,99 @@ const styles = (theme) => ({
   },
 });
 
-const GET_USERS = gql`
-  query usersPaginateQuery(
+const GET_TASKS = gql`
+  query tasksPaginateQuery(
     $first: Int
     $offset: Int
-    $orderByMe: String
+    $orderBy: [_TaskOrdering]
     $filter: String
   ) {
-    user(
-      first: $first
-      offset: $offset
-      orderByMe: $orderByMe
-      filter: $filter
-    ) {
+    task(first: $first, offset: $offset, orderBy: $orderBy, filter: $filter) {
       id
-      first_name
-      last_name
-      email
-      pswd
-      phone
-      created_at {
+      type
+      priority
+      title
+      notes
+      due_date {
         formatted
       }
-      owner {
+      assigned {
+        id
         first_name
         last_name
       }
+      created_at {
+        formatted
+      }
     }
   }
 `;
-
-const UPDATE_USER = gql`
-  mutation updateUser($field: String, $value: String, $userId: String) {
-    updateUser(field: $field, value: $value, userId: $userId) {
+const UPDATE_TASK = gql`
+  mutation updateTask($field: String, $value: String, $taskId: String) {
+    updateTask(field: $field, value: $value, taskId: $taskId) {
       id
     }
   }
 `;
 
-const GET_USERS_COUNT = gql`
-  query usersCountQuery {
-    getUserCount
+const GET_TASKS_COUNT = gql`
+  query conatctsCountQuery {
+    getTaskCount
   }
 `;
+
 const headCells = [
   {
-    id: "node.first_name",
+    id: "node.title",
     numeric: false,
     disablePadding: false,
-    label: "Name",
+    label: "Title",
   },
   {
-    id: "node.email",
+    id: "node.type",
     numeric: false,
     disablePadding: false,
-    label: "Email",
+    label: "Type",
   },
   {
-    id: "node.pswd",
+    id: "node.priority",
     numeric: false,
     disablePadding: false,
-    label: "Password",
+    label: "Priority",
   },
   {
-    id: "node.phone",
+    id: "node.due_date",
     numeric: false,
     disablePadding: false,
-    label: "Phone Number",
+    label: "Due Date",
   },
   {
-    id: "owner.first_name",
+    id: "user.first_name",
     numeric: false,
     disablePadding: false,
-    label: "User's Owner",
+    label: "Assigned To",
   },
   {
-    id: "node.created_at",
+    id: "node.notes",
     numeric: false,
     disablePadding: false,
-    label: "Create Date",
+    label: "Notes",
   },
 ];
 
-const UserList = (props) => {
+function TaskList(props) {
   const { classes } = props;
   const [order, setOrder] = React.useState("asc");
+  const [orderBy, setOrderBy] = React.useState("title");
   const [orderByMe, setOrderByMe] = React.useState("node.first_name");
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
-  const [filterState, setFilterState] = React.useState({ userFilter: "" });
+  const [filterState, setFilterState] = React.useState({ taskFilter: "" });
   const [isEditMode, setIsEditMode] = React.useState({});
   const [field, setField] = React.useState(false);
   const [fieldValue, setFieldValue] = React.useState(false);
   const [engaged, setEngaged] = React.useState(false);
-  const [userId, setUserId] = React.useState(false);
+  const [taskId, setTaskId] = React.useState(false);
 
   const [
     openDeleteDialogComponent,
@@ -158,35 +157,36 @@ const UserList = (props) => {
 
   const callDeleteDialog = (id) => {
     setOpenDeleteDialogComponent(true);
-    setUserId(id);
+    setTaskId(id);
   };
   const handleCloseDeleteDialogComponent = () => {
     setOpenDeleteDialogComponent(false);
   };
 
   const getFilter = () => {
-    return filterState.userFilter.length > 0
-      ? "*" + filterState.userFilter + "*"
+    return filterState.taskFilter.length > 0
+      ? "*" + filterState.taskFilter + "*"
       : "*";
   };
 
-  const { loading, data, error, refetch } = useQuery(GET_USERS, {
+  const { loading, data, error, refetch } = useQuery(GET_TASKS, {
     variables: {
       first: rowsPerPage,
       offset: rowsPerPage * page,
-      orderByMe: `${orderByMe} ${order}`,
+      orderBy: `${orderBy}_${order}`,
       filter: getFilter(),
     },
   });
 
-  const userUpdate = (id, index) => {
-    if (!!field && fieldValue !== data.user[index][field]) {
-      updateUser({
+  const taskUpdate = (id, index) => {
+    if (!!field && fieldValue !== data.task[index][field]) {
+      updateTask({
         variables: {
-          field: "user." + field,
+          field: "task." + field,
           value: fieldValue,
-          userId: id,
+          taskId: id,
         },
+        update: () => refetch(),
       });
     }
     setIsEditMode({});
@@ -205,6 +205,7 @@ const UserList = (props) => {
 
   const handleFilterChange = (filterName) => (event) => {
     const val = event.target.value;
+
     setFilterState((oldFilterState) => ({
       ...oldFilterState,
       [filterName]: val,
@@ -215,6 +216,7 @@ const UserList = (props) => {
     event.preventDefault();
     setField(event.target.id);
     setFieldValue(event.target.value);
+    console.log(event.target.id, event.target.value);
   };
 
   const handleCancel = (event) => {
@@ -233,36 +235,28 @@ const UserList = (props) => {
   };
 
   const {
-    loading: usersCountQueryLoading,
-    data: usersCount,
-    error: usersCountQueryError,
-  } = useQuery(GET_USERS_COUNT);
+    loading: tasksCountQueryLoading,
+    data: tasksCount,
+    error: tasksCountQueryError,
+  } = useQuery(GET_TASKS_COUNT);
 
   const [
-    updateUser,
-    { loading: uuMutationLoading, error: uuQMutationError },
-  ] = useMutation(UPDATE_USER, {
-    update: (proxy, { data: { updateUser } }) => {
-      const number = data.user.findIndex((x) => x.id === updateUser.id);
-      data.user[number][field] = fieldValue;
-      proxy.writeQuery({
-        query: GET_USERS,
-        data: { data: data },
-      });
-    },
-  });
+    updateTask,
+    { loading: cndMutationLoading, error: cndQMutationError },
+  ] = useMutation(UPDATE_TASK);
 
   return (
     <Paper className={classes.root}>
       <Typography variant="h2" gutterBottom>
-        User List
+        Task List
       </Typography>
+
       <TextField
         id="search"
-        label="User's Name Contains"
+        label="Task Title Contains"
         className={classes.textField}
-        value={filterState.userFilter}
-        onChange={handleFilterChange("userFilter")}
+        value={filterState.taskFilter}
+        onChange={handleFilterChange("taskFilter")}
         margin="normal"
         variant="outlined"
         type="text"
@@ -271,9 +265,9 @@ const UserList = (props) => {
         }}
       />
 
-      <Link variant="body2" color="primary" to="/user/create">
+      <Link variant="body2" color="primary" to="/task/create">
         <Button color="primary" type="button">
-          New User
+          New Task
         </Button>
       </Link>
 
@@ -311,18 +305,17 @@ const UserList = (props) => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {data.user.map(
+            {data.task.map(
               (
                 {
                   __typename,
                   id,
-                  first_name,
-                  last_name,
-                  email,
-                  pswd,
-                  phone,
-                  created_at,
-                  owner,
+                  title,
+                  type,
+                  priority,
+                  due_date,
+                  assigned,
+                  notes,
                 },
                 index
               ) => {
@@ -334,19 +327,13 @@ const UserList = (props) => {
                     tabIndex={-1}
                   >
                     <TableCell align="left" className={classes.tableCell}>
-                      {isEditMode["first_name"] ? (
+                      {isEditMode["title"] ? (
                         <>
                           <TextField
-                            label="First Name"
+                            label="Title"
                             onChange={handleChange}
-                            id="first_name"
-                            defaultValue={first_name}
-                          />
-                          <TextField
-                            label="Last Name"
-                            onChange={handleChange}
-                            id="last_name"
-                            defaultValue={last_name}
+                            id="title"
+                            defaultValue={title}
                           />
                           <br />
                           <Button color="primary" type="submit">
@@ -358,28 +345,27 @@ const UserList = (props) => {
                         </>
                       ) : (
                         <>
-                          <Link className="edit-link" to={"/users/" + id}>
-                            {first_name} {last_name}
+                          <Link className="edit-link" to={"/tasks/" + id}>
+                            {title}
                           </Link>
                         </>
                       )}
                     </TableCell>
 
                     <TableCell align="left" className={classes.tableCell}>
-                      {isEditMode["email"] &&
-                      isEditMode["email"]["id"] === id ? (
+                      {isEditMode["type"] && isEditMode["type"]["id"] === id ? (
                         <>
                           <TextField
                             className={classes.inputCell}
-                            label="email"
+                            label="type"
                             onChange={handleChange}
-                            id="email"
-                            defaultValue={email}
+                            id="type"
+                            defaultValue={type}
                           />
                           <br />
                           <Button
                             color="primary"
-                            onClick={() => userUpdate(id, index)}
+                            onClick={() => taskUpdate(id, index)}
                           >
                             Update
                           </Button>
@@ -393,28 +379,29 @@ const UserList = (props) => {
                           onDoubleClick={(event) => {
                             event.preventDefault();
                             if (!engaged) {
-                              setIsEditMode({ email: { id: id } });
+                              setIsEditMode({ type: { id: id } });
                               setEngaged(true);
                             } else return;
                           }}
                         >
-                          {email ? email : "no email yet"}
+                          {type ? type : "no type yet"}
                         </span>
                       )}
                     </TableCell>
                     <TableCell align="left" className={classes.tableCell}>
-                      {isEditMode["pswd"] && isEditMode["pswd"]["id"] === id ? (
+                      {isEditMode["priority"] &&
+                      isEditMode["priority"]["id"] === id ? (
                         <>
                           <TextField
-                            label="password"
+                            label="priority"
                             onChange={handleChange}
-                            id="pswd"
-                            defaultValue={pswd}
+                            id="priority"
+                            defaultValue={priority}
                           />
                           <br />
                           <Button
                             color="primary"
-                            onClick={() => userUpdate(id, index)}
+                            onClick={() => taskUpdate(id, index)}
                           >
                             Update
                           </Button>
@@ -428,61 +415,98 @@ const UserList = (props) => {
                           onDoubleClick={(event) => {
                             event.preventDefault();
                             if (!engaged) {
-                              setIsEditMode({ pswd: { id: id } });
+                              setIsEditMode({ priority: { id: id } });
                               setEngaged(true);
                             } else return;
                           }}
                         >
-                          {pswd ? pswd : "hmm, no password yet"}
-                        </span>
-                      )}
-                    </TableCell>
-                    <TableCell align="left" className={classes.tableCell}>
-                      {isEditMode["phone"] &&
-                      isEditMode["phone"]["id"] === id ? (
-                        <>
-                          <TextField
-                            label="phone"
-                            onChange={handleChange}
-                            id="phone"
-                            defaultValue={phone}
-                          />
-                          <br />
-                          <Button
-                            color="primary"
-                            onClick={() => userUpdate(id, index)}
-                          >
-                            Update
-                          </Button>
-                          <Button color="secondary" onClick={handleCancel}>
-                            Cancel
-                          </Button>
-                        </>
-                      ) : (
-                        <span
-                          id={index}
-                          onDoubleClick={(event) => {
-                            event.preventDefault();
-                            if (!engaged) {
-                              setIsEditMode({ phone: { id: id } });
-                              setEngaged(true);
-                            } else return;
-                          }}
-                        >
-                          {phone ? phone : "no phone"}
+                          {priority ? priority : "no priority yet"}
                         </span>
                       )}
                     </TableCell>
                     <TableCell>
-                      {owner
-                        ? `${owner.first_name} ${owner.last_name}`
-                        : "no owner"}
-                    </TableCell>
+                      {isEditMode["due_date"] &&
+                      isEditMode["due_date"]["id"] === id ? (
+                        <>
+                          <TextField
+                            type="date"
+                            label="due date"
+                            onChange={handleChange}
+                            id="due_date"
+                            defaultValue={due_date}
+                            size="small"
+                            style={{
+                              width: 200,
+                            }}
+                          />
 
+                          <br />
+                          <Button
+                            onClick={() => taskUpdate(id, index)}
+                            color="primary"
+                          >
+                            Update
+                          </Button>
+                          <Button color="secondary" onClick={handleCancel}>
+                            Cancel
+                          </Button>
+                        </>
+                      ) : (
+                        <span
+                          onDoubleClick={(event) => {
+                            event.preventDefault();
+                            if (!engaged) {
+                              setIsEditMode({ due_date: { id: id } });
+                              setEngaged(true);
+                            } else return;
+                          }}
+                        >
+                          {due_date && due_date.formatted
+                            ? due_date.formatted
+                            : "no date yet"}
+                        </span>
+                      )}
+                    </TableCell>
                     <TableCell>
-                      {created_at && created_at.formatted
-                        ? created_at.formatted
-                        : "no date yet"}
+                      {assigned
+                        ? `${assigned.first_name} ${assigned.last_name}`
+                        : "no data yet"}
+                    </TableCell>
+                    <TableCell align="left" className={classes.tableCell}>
+                      {isEditMode["notes"] &&
+                      isEditMode["notes"]["id"] === id ? (
+                        <>
+                          <TextField
+                            label="notes"
+                            onChange={handleChange}
+                            id="notes"
+                            defaultValue={notes}
+                          />
+                          <br />
+                          <Button
+                            color="primary"
+                            onClick={() => taskUpdate(id, index)}
+                          >
+                            Update
+                          </Button>
+                          <Button color="secondary" onClick={handleCancel}>
+                            Cancel
+                          </Button>
+                        </>
+                      ) : (
+                        <span
+                          id={index}
+                          onDoubleClick={(event) => {
+                            event.preventDefault();
+                            if (!engaged) {
+                              setIsEditMode({ notes: { id: id } });
+                              setEngaged(true);
+                            } else return;
+                          }}
+                        >
+                          {notes ? notes : "no notes yet"}
+                        </span>
+                      )}
                     </TableCell>
                     <TableCell>
                       <Button onClick={() => callDeleteDialog(id)}>
@@ -496,28 +520,29 @@ const UserList = (props) => {
           </TableBody>
         </Table>
       )}
-      {usersCountQueryLoading && !usersCountQueryError && <p>Loading...</p>}
-      {usersCountQueryError && !usersCountQueryLoading && <p>Error</p>}
+      {tasksCountQueryLoading && !tasksCountQueryError && <p>Loading...</p>}
+      {tasksCountQueryError && !tasksCountQueryLoading && <p>Error</p>}
 
-      {usersCount && !usersCountQueryLoading && !usersCountQueryError && (
+      {tasksCount && !tasksCountQueryLoading && !tasksCountQueryError && (
         <TablePagination
           component="div"
-          count={usersCount.getUserCount}
+          count={tasksCount.getTaskCount}
           page={page}
           onChangePage={handleChangePage}
           rowsPerPage={rowsPerPage}
           onChangeRowsPerPage={handleChangeRowsPerPage}
         />
       )}
-      <DeleteUserDialog
-        key={"DeleteUser"}
+      <DeleteTaskDialog
+        key={"DeleteTask"}
         isOpen={openDeleteDialogComponent}
         handleClose={handleCloseDeleteDialogComponent}
-        userId={userId}
-        title="User"
+        taskId={taskId}
+        title="Task"
         refetch={refetch}
-      ></DeleteUserDialog>
+      ></DeleteTaskDialog>
     </Paper>
   );
-};
-export default withStyles(styles)(UserList);
+}
+
+export default withStyles(styles)(TaskList);

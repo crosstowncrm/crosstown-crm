@@ -14,24 +14,24 @@ import { Link } from "react-router-dom";
 import Button from "@material-ui/core/Button";
 import TablePagination from "@material-ui/core/TablePagination";
 import { TableSortLabel, Typography, TextField } from "@material-ui/core";
-import {useMutation} from "@apollo/react-hooks/lib/index";
+import { useMutation } from "@apollo/client";
 
 import DeletePropertyDialog from "../dialogs/delete-property-dialog";
 
-const styles = theme => ({
+const styles = (theme) => ({
   root: {
     maxWidth: "100%",
     marginTop: theme.spacing(3),
     overflowX: "auto",
-    margin: "auto"
+    margin: "auto",
   },
   table: {
-    minWidth: 700
+    minWidth: 700,
   },
   textField: {
     marginLeft: theme.spacing(1),
     marginRight: theme.spacing(1),
-    minWidth: 300
+    minWidth: 300,
   },
   visuallyHidden: {
     border: 0,
@@ -42,8 +42,8 @@ const styles = theme => ({
     padding: 0,
     position: "absolute",
     top: 20,
-    width: 1
-  }
+    width: 1,
+  },
 });
 
 const GET_PROPERTIES = gql`
@@ -81,11 +81,11 @@ const GET_PROPERTIES_COUNT = gql`
 `;
 
 const UPDATE_PROPERTY = gql`
-    mutation updateProperty($field: String, $value: String, $propertyId: String) {
-        updateProperty(field: $field, value: $value, propertyId: $propertyId) {
-            id
-        }
+  mutation updateProperty($field: String, $value: String, $propertyId: String) {
+    updateProperty(field: $field, value: $value, propertyId: $propertyId) {
+      id
     }
+  }
 `;
 
 const headCells = [
@@ -94,26 +94,26 @@ const headCells = [
     id: "node.property_type",
     numeric: false,
     disablePadding: false,
-    label: "Lead Status"
+    label: "Lead Status",
   },
   {
     id: "node.phone",
     numeric: false,
     disablePadding: false,
-    label: "Phone Number"
+    label: "Phone Number",
   },
   {
     id: "node.created_at",
     numeric: false,
     disablePadding: false,
-    label: "Create Date"
+    label: "Create Date",
   },
   {
     id: "owner.first_name",
     numeric: false,
     disablePadding: false,
-    label: "Property Owner"
-  }
+    label: "Property Owner",
+  },
 ];
 
 function PropertyList(props) {
@@ -122,7 +122,7 @@ function PropertyList(props) {
     onSelectAllClick,
     numSelected,
     rowCount,
-    onRequestSort
+    onRequestSort,
   } = props;
   const [selected, setSelected] = React.useState([]);
   const [order, setOrder] = React.useState("asc");
@@ -138,16 +138,16 @@ function PropertyList(props) {
 
   const [
     openDeleteDialogComponent,
-    setOpenDeleteDialogComponent
+    setOpenDeleteDialogComponent,
   ] = React.useState(false);
 
   const handleCloseDeleteDialogComponent = () => {
-        setOpenDeleteDialogComponent(false);
+    setOpenDeleteDialogComponent(false);
   };
 
-  const callDeleteDialog = id => {
+  const callDeleteDialog = (id) => {
     setOpenDeleteDialogComponent(true);
-      setPropertyId(id);
+    setPropertyId(id);
   };
 
   const getFilter = () => {
@@ -156,13 +156,13 @@ function PropertyList(props) {
       : "*";
   };
 
-  const handleChange = event => {
-      event.preventDefault();
-      setField(event.target.id);
-      setFieldValue(event.target.value);
+  const handleChange = (event) => {
+    event.preventDefault();
+    setField(event.target.id);
+    setFieldValue(event.target.value);
   };
 
-  const handleSelectAllClick = event => {
+  const handleSelectAllClick = (event) => {
     if (event.target.checked) {
       // const newSelecteds = rows.map((n) => n.name);
       // setSelected(newSelecteds);
@@ -175,14 +175,14 @@ function PropertyList(props) {
     first: rowsPerPage,
     offset: rowsPerPage * page,
     orderByMe: `${orderByMe} ${order}`,
-    filter: getFilter()
+    filter: getFilter(),
   };
 
   let { loading, data, error, refetch } = useQuery(GET_PROPERTIES, {
-    variables: variables
+    variables: variables,
   });
 
-  const createSortHandler = property => event => {
+  const createSortHandler = (property) => (event) => {
     handleRequestSort(event, property);
   };
 
@@ -211,11 +211,11 @@ function PropertyList(props) {
     setSelected(newSelected);
   };
 
-  const handleFilterChange = filterName => event => {
+  const handleFilterChange = (filterName) => (event) => {
     const val = event.target.value;
-    setFilterState(oldFilterState => ({
+    setFilterState((oldFilterState) => ({
       ...oldFilterState,
-      [filterName]: val
+      [filterName]: val,
     }));
   };
 
@@ -223,7 +223,7 @@ function PropertyList(props) {
     setPage(newPage);
   };
 
-  const handleChangeRowsPerPage = event => {
+  const handleChangeRowsPerPage = (event) => {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
   };
@@ -231,43 +231,43 @@ function PropertyList(props) {
   const {
     loading: propertiesCountQueryLoading,
     data: propertiesCount,
-    error: propertiesCountQueryError
+    error: propertiesCountQueryError,
   } = useQuery(GET_PROPERTIES_COUNT);
 
-  const isSelected = name => selected.indexOf(name) !== -1;
+  const isSelected = (name) => selected.indexOf(name) !== -1;
 
-  const handleCancel = event => {
-      event.preventDefault();
-      setEngaged(false);
-      setIsEditMode({});
+  const handleCancel = (event) => {
+    event.preventDefault();
+    setEngaged(false);
+    setIsEditMode({});
   };
 
   const propertyUpdate = (id, index) => {
-      if (!!field && fieldValue !== data.property[index][field]) {
-          updateProperty({
-              variables: {
-                  field: "property." + field,
-                  value: fieldValue,
-                  propertyId: id
-              }
-          });
-      }
-      setIsEditMode({});
-      setEngaged(false);
+    if (!!field && fieldValue !== data.property[index][field]) {
+      updateProperty({
+        variables: {
+          field: "property." + field,
+          value: fieldValue,
+          propertyId: id,
+        },
+      });
+    }
+    setIsEditMode({});
+    setEngaged(false);
   };
 
   const [
-      updateProperty,
-      { loading: cndMutationLoading, error: cndQMutationError }
+    updateProperty,
+    { loading: cndMutationLoading, error: cndQMutationError },
   ] = useMutation(UPDATE_PROPERTY, {
-      update: (proxy, { data: { updateProperty } }) => {
-          const number = data.property.findIndex(x => x.id === updateProperty.id);
-          data.property[number][field] = fieldValue;
-          proxy.writeQuery({
-              query: GET_PROPERTIES,
-              data: { data: data }
-          });
-      }
+    update: (proxy, { data: { updateProperty } }) => {
+      const number = data.property.findIndex((x) => x.id === updateProperty.id);
+      data.property[number][field] = fieldValue;
+      proxy.writeQuery({
+        query: GET_PROPERTIES,
+        data: { data: data },
+      });
+    },
   });
 
   return (
@@ -285,13 +285,13 @@ function PropertyList(props) {
         variant="outlined"
         type="text"
         InputProps={{
-          className: classes.input
+          className: classes.input,
         }}
       />
       <Link variant="body2" color="primary" to="/property/create">
-          <Button color="primary" type="button">
-              New Property
-          </Button>
+        <Button color="primary" type="button">
+          New Property
+        </Button>
       </Link>
       {loading && !error && <p>Loading...</p>}
       {error && !loading && <p>Error</p>}
@@ -306,11 +306,11 @@ function PropertyList(props) {
                   checked={rowCount > 0 && numSelected === rowCount}
                   onChange={handleSelectAllClick}
                   inputProps={{
-                    "aria-label": "select all properties"
+                    "aria-label": "select all properties",
                   }}
                 />
               </TableCell>
-              {headCells.map(headCell => (
+              {headCells.map((headCell) => (
                 <TableCell
                   key={headCell.id}
                   align={headCell.numeric ? "right" : "left"}
@@ -333,28 +333,30 @@ function PropertyList(props) {
                   </TableSortLabel>
                 </TableCell>
               ))}
-            <TableCell>Action</TableCell>
+              <TableCell>Action</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {data.property.map(
-              ({
-                __typename,
-                id,
-                name,
-                property_type,
-                phone,
-                created_at,
-                owner
-              },
-               index) => {
+              (
+                {
+                  __typename,
+                  id,
+                  name,
+                  property_type,
+                  phone,
+                  created_at,
+                  owner,
+                },
+                index
+              ) => {
                 const isItemSelected = isSelected(id);
                 const labelId = `enhanced-table-checkbox-${id}`;
                 return (
                   <TableRow
                     key={__typename + "-" + id}
                     hover
-                    onClick={event => handleClick(event, id)}
+                    onClick={(event) => handleClick(event, id)}
                     role="checkbox"
                     aria-checked={isItemSelected}
                     tabIndex={-1}
@@ -383,78 +385,78 @@ function PropertyList(props) {
                       )}
                     </TableCell>
 
-                      <TableCell align="left" className={classes.tableCell}>
-                          {isEditMode["property_type"] &&
-                          isEditMode["property_type"]["id"] === id ? (
-                              <>
-                                  <TextField
-                                      label="lead status"
-                                      onChange={handleChange}
-                                      id="property_type"
-                                      defaultValue={property_type}
-                                  />
-                                  <br />
-                                  <Button
-                                      color="primary"
-                                      onClick={() => propertyUpdate(id, index)}
-                                  >
-                                      Update
-                                  </Button>
-                                  <Button color="secondary" onClick={handleCancel}>
-                                      Cancel
-                                  </Button>
-                              </>
-                          ) : (
-                              <span
-                                  id={index}
-                                  onDoubleClick={event => {
-                                      event.preventDefault();
-                                      if (!engaged) {
-                                          setIsEditMode({ property_type: { id: id } });
-                                          setEngaged(true);
-                                      } else return;
-                                  }}
-                              >
+                    <TableCell align="left" className={classes.tableCell}>
+                      {isEditMode["property_type"] &&
+                      isEditMode["property_type"]["id"] === id ? (
+                        <>
+                          <TextField
+                            label="lead status"
+                            onChange={handleChange}
+                            id="property_type"
+                            defaultValue={property_type}
+                          />
+                          <br />
+                          <Button
+                            color="primary"
+                            onClick={() => propertyUpdate(id, index)}
+                          >
+                            Update
+                          </Button>
+                          <Button color="secondary" onClick={handleCancel}>
+                            Cancel
+                          </Button>
+                        </>
+                      ) : (
+                        <span
+                          id={index}
+                          onDoubleClick={(event) => {
+                            event.preventDefault();
+                            if (!engaged) {
+                              setIsEditMode({ property_type: { id: id } });
+                              setEngaged(true);
+                            } else return;
+                          }}
+                        >
                           {property_type ? property_type : "no lead status yet"}
                         </span>
-                          )}
-                      </TableCell>
-                      <TableCell align="left" className={classes.tableCell}>
-                          {isEditMode["phone"] &&
-                          isEditMode["phone"]["id"] === id ? (
-                              <>
-                                  <TextField
-                                      label="phone"
-                                      onChange={handleChange}
-                                      id="phone"
-                                      defaultValue={phone}
-                                  />
-                                  <br />
-                                  <Button
-                                      color="primary"
-                                      onClick={() => propertyUpdate(id, index)}
-                                  >
-                                      Update
-                                  </Button>
-                                  <Button color="secondary" onClick={handleCancel}>
-                                      Cancel
-                                  </Button>
-                              </>
-                          ) : (
-                              <span
-                                  id={index}
-                                  onDoubleClick={event => {
-                                      event.preventDefault();
-                                      if (!engaged) {
-                                          setIsEditMode({ phone: { id: id } });
-                                          setEngaged(true);
-                                      } else return;
-                                  }}
-                              >
+                      )}
+                    </TableCell>
+                    <TableCell align="left" className={classes.tableCell}>
+                      {isEditMode["phone"] &&
+                      isEditMode["phone"]["id"] === id ? (
+                        <>
+                          <TextField
+                            label="phone"
+                            onChange={handleChange}
+                            id="phone"
+                            defaultValue={phone}
+                          />
+                          <br />
+                          <Button
+                            color="primary"
+                            onClick={() => propertyUpdate(id, index)}
+                          >
+                            Update
+                          </Button>
+                          <Button color="secondary" onClick={handleCancel}>
+                            Cancel
+                          </Button>
+                        </>
+                      ) : (
+                        <span
+                          id={index}
+                          onDoubleClick={(event) => {
+                            event.preventDefault();
+                            if (!engaged) {
+                              setIsEditMode({ phone: { id: id } });
+                              setEngaged(true);
+                            } else return;
+                          }}
+                        >
                           {phone ? phone : "no phone"}
                         </span>
-                          )}
-                      </TableCell>
+                      )}
+                    </TableCell>
                     <TableCell>
                       {created_at ? created_at.formatted : "no date yet"}
                     </TableCell>
@@ -466,7 +468,7 @@ function PropertyList(props) {
                     </TableCell>
                     <TableCell>
                       <Button onClick={() => callDeleteDialog(id)}>
-                          Delete
+                        Delete
                       </Button>
                     </TableCell>
                   </TableRow>
@@ -479,7 +481,9 @@ function PropertyList(props) {
       {propertiesCountQueryLoading && !propertiesCountQueryError && (
         <p>Loading...</p>
       )}
-      {propertiesCountQueryError && !propertiesCountQueryLoading && <p>Error</p>}
+      {propertiesCountQueryError && !propertiesCountQueryLoading && (
+        <p>Error</p>
+      )}
 
       {propertiesCount &&
         !propertiesCountQueryLoading &&
@@ -494,14 +498,14 @@ function PropertyList(props) {
           />
         )}
 
-        <DeletePropertyDialog
-            key={"DeleteProperty"}
-            isOpen={openDeleteDialogComponent}
-            handleClose={handleCloseDeleteDialogComponent}
-            propertyId={propertyId}
-            title="Property"
-            refetch={refetch}
-        ></DeletePropertyDialog>
+      <DeletePropertyDialog
+        key={"DeleteProperty"}
+        isOpen={openDeleteDialogComponent}
+        handleClose={handleCloseDeleteDialogComponent}
+        propertyId={propertyId}
+        title="Property"
+        refetch={refetch}
+      ></DeletePropertyDialog>
     </Paper>
   );
 }

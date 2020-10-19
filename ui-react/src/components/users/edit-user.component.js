@@ -21,12 +21,12 @@ import Autocomplete from "@material-ui/lab/Autocomplete";
 import FormControl from "@material-ui/core/FormControl";
 
 import { CardHeader, Divider } from "@material-ui/core";
-import { useMutation } from "@apollo/react-hooks/lib/index";
+import { useMutation } from "@apollo/client";
 
-const styles = theme => ({
+const styles = (theme) => ({
   root: {
-    maxWidth: "100%"
-  }
+    maxWidth: "100%",
+  },
 });
 
 const GET_USER = gql`
@@ -49,13 +49,13 @@ const GET_USER = gql`
         postal_code
       }
       listings {
-          id
-          name
+        id
+        name
       }
       owner {
-          id
-          first_name
-          last_name
+        id
+        first_name
+        last_name
       }
     }
   }
@@ -70,8 +70,18 @@ const UPDATE_USER = gql`
 `;
 
 const UPDATE_DATA = gql`
-  mutation updateData($nodeLabel: String, $nodeId: String, $userId: String, $label: String) {
-    updateData(nodeLabel: $nodeLabel, nodeId: $nodeId, unitId: $userId, label: $label)
+  mutation updateData(
+    $nodeLabel: String
+    $nodeId: String
+    $userId: String
+    $label: String
+  ) {
+    updateData(
+      nodeLabel: $nodeLabel
+      nodeId: $nodeId
+      unitId: $userId
+      label: $label
+    )
   }
 `;
 
@@ -91,7 +101,9 @@ function UserEdit(props) {
   const [editLNMode, setEditLNMode] = React.useState(false);
   const [editMailMode, setEditMailMode] = React.useState(false);
   const [editFNMode, setEditFNMode] = React.useState(false);
-  const [editMailSignatureMode, setEditMailSignatureMode] = React.useState(false);
+  const [editMailSignatureMode, setEditMailSignatureMode] = React.useState(
+    false
+  );
   const [editPhoneMode, setEditPhoneMode] = React.useState(false);
   const [editPswdMode, setEditPswdMode] = React.useState(false);
   const [editOwnerMode, setEditOwnerMode] = React.useState(false);
@@ -99,18 +111,16 @@ function UserEdit(props) {
   const [openDialogComponent, setOpenDialogComponent] = React.useState(false);
   const [
     openAddressDialogComponent,
-    setOpenAddressDialogComponent
+    setOpenAddressDialogComponent,
   ] = React.useState(false);
   const [
     openDialogInterestComponent,
-    setOpenInterestDialogComponent
+    setOpenInterestDialogComponent,
   ] = React.useState(false);
   const [
     openDialogListingComponent,
-    setOpenListingDialogComponent
+    setOpenListingDialogComponent,
   ] = React.useState(false);
-
-
 
   const callDialog = () => {
     setOpenDialogComponent(true);
@@ -163,49 +173,49 @@ function UserEdit(props) {
 
   const { loading, data, error, refetch } = useQuery(GET_USER, {
     variables: {
-      id: params["uid"]
-    }
+      id: params["uid"],
+    },
   });
 
   const {
     loading: usersQueryLoading,
     data: users,
-    error: usersQueryError
+    error: usersQueryError,
   } = useQuery(GET_USERS, {
     variables: {
-      orderBy: "first_name_asc"
-    }
+      orderBy: "first_name_asc",
+    },
   });
 
-  const handleSubmit = event => {
+  const handleSubmit = (event) => {
     event.preventDefault();
     if (!!field && fieldValue !== data.User[0][field]) {
       updateUser({
         variables: {
           field: "user." + field,
           value: fieldValue,
-          userId: params["uid"]
-        }
+          userId: params["uid"],
+        },
       });
     }
     setAllFalse();
   };
 
-  const handleAcSubmit = event => {
+  const handleAcSubmit = (event) => {
     event.preventDefault();
     updateData({
       variables: {
         nodeLabel: event.target.name,
         nodeId: fieldValue,
         userId: params["uid"],
-        label: "User"
+        label: "User",
       },
-      update: refetch
+      update: refetch,
     });
     setAllFalse();
   };
 
-  const handleChange = event => {
+  const handleChange = (event) => {
     event.preventDefault();
     setField(event.target.id);
     setFieldValue(event.target.value);
@@ -217,27 +227,27 @@ function UserEdit(props) {
     setFieldValue(value.id);
   };
 
-  const handleCancel = event => {
+  const handleCancel = (event) => {
     event.preventDefault();
     setAllFalse();
   };
 
   const [
     updateUser,
-    { loading: cndMutationLoading, error: cndQMutationError }
+    { loading: cndMutationLoading, error: cndQMutationError },
   ] = useMutation(UPDATE_USER, {
     update: (proxy, { data: { updateUser } }) => {
       data.User[0][field] = fieldValue;
       proxy.writeQuery({
         query: GET_USER,
-        data: { data: data }
+        data: { data: data },
       });
-    }
+    },
   });
 
   const [
     updateData,
-    { loading: undMutationLoading, error: undQMutationError }
+    { loading: undMutationLoading, error: undQMutationError },
   ] = useMutation(UPDATE_DATA, {});
 
   return (
@@ -252,7 +262,7 @@ function UserEdit(props) {
           style={{
             border: "3px solid blue",
             margin: "12px",
-            width: "98%"
+            width: "98%",
           }}
         >
           <Grid item md={4}>
@@ -261,7 +271,7 @@ function UserEdit(props) {
               md={12}
               style={{
                 border: "2px solid blue",
-                margin: "2px"
+                margin: "2px",
               }}
             >
               About
@@ -271,7 +281,7 @@ function UserEdit(props) {
               md={12}
               style={{
                 border: "2px solid blue",
-                margin: "2px"
+                margin: "2px",
               }}
             >
               {data.User.map(
@@ -285,7 +295,7 @@ function UserEdit(props) {
                   created_at,
                   email_signature,
                   address,
-                  owner
+                  owner,
                 }) => (
                   <Card key={`card-${id}`}>
                     <CardContent>
@@ -345,7 +355,7 @@ function UserEdit(props) {
                           </form>
                         ) : (
                           <span
-                            onDoubleClick={event => {
+                            onDoubleClick={(event) => {
                               event.preventDefault();
                               if (!engaged) {
                                 setEditFNMode(!editFNMode);
@@ -382,7 +392,7 @@ function UserEdit(props) {
                           </form>
                         ) : (
                           <span
-                            onDoubleClick={event => {
+                            onDoubleClick={(event) => {
                               event.preventDefault();
                               if (!engaged) {
                                 setEditLNMode(!editLNMode);
@@ -418,7 +428,7 @@ function UserEdit(props) {
                           </form>
                         ) : (
                           <span
-                            onDoubleClick={event => {
+                            onDoubleClick={(event) => {
                               event.preventDefault();
                               if (!engaged) {
                                 setEditMailMode(!editMailMode);
@@ -431,76 +441,79 @@ function UserEdit(props) {
                         )}
                       </Typography>
                       <Typography
-                          variant="body2"
-                          color="textSecondary"
-                          component="div"
+                        variant="body2"
+                        color="textSecondary"
+                        component="div"
                       >
-                          {editMailSignatureMode ? (
-                              <form onSubmit={handleSubmit}>
-                                  <TextField
-                                      label="password signature"
-                                      onChange={handleChange}
-                                      id="email_signature"
-                                      defaultValue={email_signature}
-                                      size="small"
-                                  />
-                                  <br />
-                                  <Button color="primary" type="submit">
-                                      Update
-                                  </Button>
-                                  <Button color="secondary" onClick={handleCancel}>
-                                      Cancel
-                                  </Button>
-                              </form>
-                          ) : (
-                              <span
-                                  onDoubleClick={event => {
-                                      event.preventDefault();
-                                      if (!engaged) {
-                                          setEditMailSignatureMode(!editMailSignatureMode);
-                                          setEngaged(true);
-                                      } else setEditMailSignatureMode(editMailSignatureMode);
-                                  }}
-                              >
-                          email signature: {email_signature}
-                        </span>
-                          )}
+                        {editMailSignatureMode ? (
+                          <form onSubmit={handleSubmit}>
+                            <TextField
+                              label="password signature"
+                              onChange={handleChange}
+                              id="email_signature"
+                              defaultValue={email_signature}
+                              size="small"
+                            />
+                            <br />
+                            <Button color="primary" type="submit">
+                              Update
+                            </Button>
+                            <Button color="secondary" onClick={handleCancel}>
+                              Cancel
+                            </Button>
+                          </form>
+                        ) : (
+                          <span
+                            onDoubleClick={(event) => {
+                              event.preventDefault();
+                              if (!engaged) {
+                                setEditMailSignatureMode(
+                                  !editMailSignatureMode
+                                );
+                                setEngaged(true);
+                              } else
+                                setEditMailSignatureMode(editMailSignatureMode);
+                            }}
+                          >
+                            email signature: {email_signature}
+                          </span>
+                        )}
                       </Typography>
                       <Typography
-                          variant="body2"
-                          color="textSecondary"
-                          component="div"
+                        variant="body2"
+                        color="textSecondary"
+                        component="div"
                       >
-                          {editPswdMode ? (
-                              <form onSubmit={handleSubmit}>
-                                  <TextField
-                                      label="password"
-                                      onChange={handleChange}
-                                      id="pswd"
-                                      defaultValue={pswd}
-                                      size="small"
-                                  />
-                                  <br />
-                                  <Button color="primary" type="submit">
-                                      Update
-                                  </Button>
-                                  <Button color="secondary" onClick={handleCancel}>
-                                      Cancel
-                                  </Button>
-                              </form>
-                          ) : (
-                              <span
-                                  onDoubleClick={event => {
-                                      event.preventDefault();
-                                      if (!engaged) {
-                                          setEditPswdMode(!editPswdMode);
-                                          setEngaged(true);
-                                      } else setEditPswdMode(editPswdMode);
-                                  }}
-                              >
-                        password: {pswd}
-                      </span>
-                          )}
+                        {editPswdMode ? (
+                          <form onSubmit={handleSubmit}>
+                            <TextField
+                              label="password"
+                              onChange={handleChange}
+                              id="pswd"
+                              defaultValue={pswd}
+                              size="small"
+                            />
+                            <br />
+                            <Button color="primary" type="submit">
+                              Update
+                            </Button>
+                            <Button color="secondary" onClick={handleCancel}>
+                              Cancel
+                            </Button>
+                          </form>
+                        ) : (
+                          <span
+                            onDoubleClick={(event) => {
+                              event.preventDefault();
+                              if (!engaged) {
+                                setEditPswdMode(!editPswdMode);
+                                setEngaged(true);
+                              } else setEditPswdMode(editPswdMode);
+                            }}
+                          >
+                            password: {pswd}
+                          </span>
+                        )}
                       </Typography>
                       <Typography
                         variant="body2"
@@ -526,7 +539,7 @@ function UserEdit(props) {
                           </form>
                         ) : (
                           <span
-                            onDoubleClick={event => {
+                            onDoubleClick={(event) => {
                               event.preventDefault();
                               if (!engaged) {
                                 setEditPhoneMode(!editPhoneMode);
@@ -539,94 +552,95 @@ function UserEdit(props) {
                         )}
                       </Typography>
                       <Typography
-                          variant="body2"
-                          color="textSecondary"
-                          component="div"
+                        variant="body2"
+                        color="textSecondary"
+                        component="div"
                       >
-                      <span onDoubleClick={callAddressDialog}>
-                        address:
+                        <span onDoubleClick={callAddressDialog}>
+                          address:
                           {address !== null
-                              ? " " +
+                            ? " " +
                               address.postal_code +
                               " " +
                               address.street_address1 +
                               " " +
                               address.street_address2
-                              : "no address yet"}
-                      </span>
+                            : "no address yet"}
+                        </span>
                       </Typography>
                       <Typography
-                          variant="body2"
-                          color="textSecondary"
-                          component="div"
+                        variant="body2"
+                        color="textSecondary"
+                        component="div"
                       >
-                          {editOwnerMode ? (
-                              <form name="User" onSubmit={handleAcSubmit}>
-                                  {users && !usersQueryLoading && !usersQueryError && (
-                                      <FormControl>
-                                          <Autocomplete
-                                              id="user"
-                                              name="user"
-                                              options={users.User}
-                                              getOptionLabel={option =>
-                                                  option.first_name + " " + option.last_name
-                                              }
-                                              style={{ width: 250 }}
-                                              onChange={handleAcChange}
-                                              renderInput={params => (
-                                                  <TextField
-                                                      {...params}
-                                                      label="User"
-                                                      variant="outlined"
-                                                      data-validators="isRequired"
-                                                      required={true}
-                                                  />
-                                              )}
-                                          />
-                                          <div style={{ fontSize: 12, color: "red" }}>
-                                              {/*{errors.clientError}*/}
-                                          </div>
-                                          <br />
-                                          <Button color="primary" type="submit">
-                                              Update
-                                          </Button>
-                                          <Button
-                                              color="secondary"
-                                              onClick={handleCancel}
-                                          >
-                                              Cancel
-                                          </Button>
-                                      </FormControl>
+                        {editOwnerMode ? (
+                          <form name="User" onSubmit={handleAcSubmit}>
+                            {users && !usersQueryLoading && !usersQueryError && (
+                              <FormControl>
+                                <Autocomplete
+                                  id="user"
+                                  name="user"
+                                  options={users.User}
+                                  getOptionLabel={(option) =>
+                                    option.first_name + " " + option.last_name
+                                  }
+                                  style={{ width: 250 }}
+                                  onChange={handleAcChange}
+                                  renderInput={(params) => (
+                                    <TextField
+                                      {...params}
+                                      label="User"
+                                      variant="outlined"
+                                      data-validators="isRequired"
+                                      required={true}
+                                    />
                                   )}
-                              </form>
-                          ) : (
-                              <span
-                                  onDoubleClick={event => {
-                                      event.preventDefault();
-                                      if (!engaged) {
-                                          setEditOwnerMode(!editOwnerMode);
-                                          setEngaged(true);
-                                      } else setEditOwnerMode(editOwnerMode);
-                                  }}
-                              >
-                                owner:{" "}
-                                        {owner && owner.first_name
-                                            ? owner.first_name + " " + owner.last_name
-                                            : "no owner"}
-                              </span>
-                          )}
+                                />
+                                <div style={{ fontSize: 12, color: "red" }}>
+                                  {/*{errors.clientError}*/}
+                                </div>
+                                <br />
+                                <Button color="primary" type="submit">
+                                  Update
+                                </Button>
+                                <Button
+                                  color="secondary"
+                                  onClick={handleCancel}
+                                >
+                                  Cancel
+                                </Button>
+                              </FormControl>
+                            )}
+                          </form>
+                        ) : (
+                          <span
+                            onDoubleClick={(event) => {
+                              event.preventDefault();
+                              if (!engaged) {
+                                setEditOwnerMode(!editOwnerMode);
+                                setEngaged(true);
+                              } else setEditOwnerMode(editOwnerMode);
+                            }}
+                          >
+                            owner:{" "}
+                            {owner && owner.first_name
+                              ? owner.first_name + " " + owner.last_name
+                              : "no owner"}
+                          </span>
+                        )}
                       </Typography>
                       <Typography
-                          variant="body2"
-                          color="textSecondary"
-                          component="div">
-                      <span>
-                        created at: {created_at && created_at.formatted
-                          ? created_at.formatted
-                          : "no date yet"}
-                      </span>
+                        variant="body2"
+                        color="textSecondary"
+                        component="div"
+                      >
+                        <span>
+                          created at:{" "}
+                          {created_at && created_at.formatted
+                            ? created_at.formatted
+                            : "no date yet"}
+                        </span>
                       </Typography>
-
                     </CardContent>
                   </Card>
                 )
@@ -640,7 +654,7 @@ function UserEdit(props) {
               md={12}
               style={{
                 border: "2px solid blue",
-                margin: "2px"
+                margin: "2px",
               }}
             >
               Follows
@@ -654,7 +668,7 @@ function UserEdit(props) {
                   md={12}
                   style={{
                     border: "2px solid blue",
-                    margin: "2px"
+                    margin: "2px",
                   }}
                 >
                   {/*<Card key={"userOwner"}>*/}
@@ -686,86 +700,84 @@ function UserEdit(props) {
                   {/*))}*/}
                   {/*</Card>*/}
                 </Grid>
-
               </>
             ))}
           </Grid>
           <Grid item md={4}>
-              <Grid
+            <Grid
+              item
+              md={12}
+              style={{
+                border: "2px solid blue",
+                margin: "2px",
+              }}
+            >
+              Teams, Contacts, Listing
+            </Grid>
+
+            {data.User.map(({ contacts }) => (
+              <>
+                <Grid
+                  key={"listing"}
                   item
                   md={12}
                   style={{
-                      border: "2px solid blue",
-                      margin: "2px"
+                    border: "2px solid blue",
+                    margin: "2px",
                   }}
-              >
-                  Teams, Contacts, Listing
-              </Grid>
+                >
+                  {/*<Card key={"contacts"}>*/}
+                  {/*<CardActions>*/}
+                  {/*<CardHeader title="Listings" />*/}
+                  {/*<Button*/}
+                  {/*onClick={callListingDialog}*/}
+                  {/*size="small"*/}
+                  {/*size="small"*/}
+                  {/*color="primary"*/}
+                  {/*>*/}
+                  {/*Add*/}
+                  {/*</Button>*/}
+                  {/*</CardActions>*/}
 
-              {data.User.map(({ contacts }) => (
-                  <>
-                      <Grid
-                          key={"listing"}
-                          item
-                          md={12}
-                          style={{
-                              border: "2px solid blue",
-                              margin: "2px"
-                          }}
-                      >
-                          {/*<Card key={"contacts"}>*/}
-                          {/*<CardActions>*/}
-                          {/*<CardHeader title="Listings" />*/}
-                          {/*<Button*/}
-                          {/*onClick={callListingDialog}*/}
-                          {/*size="small"*/}
-                          {/*size="small"*/}
-                          {/*color="primary"*/}
-                          {/*>*/}
-                          {/*Add*/}
-                          {/*</Button>*/}
-                          {/*</CardActions>*/}
-
-                          {/*<Divider />*/}
-                          {/*{listings.map(listing => (*/}
-                          {/*<CardContent key={"ls_" + listing.id}>*/}
-                          {/*<Typography key={"tp_" + listing.id}>*/}
-                          {/*<Link*/}
-                          {/*key={"link_" + listing.id}*/}
-                          {/*className="edit-link"*/}
-                          {/*to={"/listings/" + listing.id}*/}
-                          {/*>*/}
-                          {/*{listing.name}*/}
-                          {/*</Link>*/}
-                          {/*</Typography>*/}
-                          {/*</CardContent>*/}
-                          {/*))}*/}
-                          {/*</Card>*/}
-                      </Grid>
-
-                  </>
-              ))}
+                  {/*<Divider />*/}
+                  {/*{listings.map(listing => (*/}
+                  {/*<CardContent key={"ls_" + listing.id}>*/}
+                  {/*<Typography key={"tp_" + listing.id}>*/}
+                  {/*<Link*/}
+                  {/*key={"link_" + listing.id}*/}
+                  {/*className="edit-link"*/}
+                  {/*to={"/listings/" + listing.id}*/}
+                  {/*>*/}
+                  {/*{listing.name}*/}
+                  {/*</Link>*/}
+                  {/*</Typography>*/}
+                  {/*</CardContent>*/}
+                  {/*))}*/}
+                  {/*</Card>*/}
+                </Grid>
+              </>
+            ))}
           </Grid>
         </Grid>
       )}
-        <ChangeAddressDialog
-            key={"changeAddress"}
-            isOpen={openAddressDialogComponent}
-            handleClose={handleCloseAddressDialogComponent}
-            unitId={params["uid"]}
-            title="Address"
-            refetch={refetch}
-            label="User"
-        ></ChangeAddressDialog>
+      <ChangeAddressDialog
+        key={"changeAddress"}
+        isOpen={openAddressDialogComponent}
+        handleClose={handleCloseAddressDialogComponent}
+        unitId={params["uid"]}
+        title="Address"
+        refetch={refetch}
+        label="User"
+      ></ChangeAddressDialog>
 
-        <AddListingDialog
-            key={"addListing"}
-            isOpen={openDialogListingComponent}
-            handleClose={handleCloseListingDialogComponent}
-            userId={params["uid"]}
-            title="Listing"
-            refetch={refetch}
-        ></AddListingDialog>
+      <AddListingDialog
+        key={"addListing"}
+        isOpen={openDialogListingComponent}
+        handleClose={handleCloseListingDialogComponent}
+        userId={params["uid"]}
+        title="Listing"
+        refetch={refetch}
+      ></AddListingDialog>
     </>
   );
 }

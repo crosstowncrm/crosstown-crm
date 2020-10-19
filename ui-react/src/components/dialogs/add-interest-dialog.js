@@ -8,7 +8,7 @@ import DialogContentText from "@material-ui/core/DialogContentText";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import FormControl from "@material-ui/core/FormControl";
 import Autocomplete from "@material-ui/lab/Autocomplete";
-import { useMutation, useQuery } from "@apollo/react-hooks/lib/index";
+import { useMutation, useQuery } from "@apollo/client";
 import gql from "graphql-tag";
 
 const GET_PROPERTIES = gql`
@@ -37,7 +37,7 @@ export default function AddInterestDialog({
   handleClose,
   contactId,
   refetch,
-  title
+  title,
 }) {
   const [formData, updateFormData] = React.useState({ from: contactId });
   const [errors, setErrors] = React.useState({});
@@ -45,42 +45,42 @@ export default function AddInterestDialog({
   const {
     loading: propertiesQueryLoading,
     data: properties,
-    error: propertiesQueryError
+    error: propertiesQueryError,
   } = useQuery(GET_PROPERTIES, {
     variables: {
-      orderBy: "name_asc"
-    }
+      orderBy: "name_asc",
+    },
   });
 
   const handleChange = (e, value) => {
     updateFormData({
       ...formData,
-      ["to"]: value.id
+      ["to"]: value.id,
     });
   };
 
-  const validate = values => {
+  const validate = (values) => {
     let propertyError = "";
     if (!values.to) {
       propertyError = "Required";
     }
     if (propertyError) {
       setErrors({
-        propertyError
+        propertyError,
       });
       return false;
     }
     return true;
   };
 
-  const handleSubmit = e => {
+  const handleSubmit = (e) => {
     e.preventDefault();
     const isValid = validate(formData);
 
     if (isValid) {
       console.log(formData);
       interestAdd({
-        variables: formData
+        variables: formData,
       });
       updateFormData({ from: contactId });
       handleClose();
@@ -89,9 +89,9 @@ export default function AddInterestDialog({
 
   const [
     interestAdd,
-    { loading: iaMutationLoading, error: iaMutationError }
+    { loading: iaMutationLoading, error: iaMutationError },
   ] = useMutation(INTEREST_ADD, {
-    update: refetch
+    update: refetch,
   });
 
   return (
@@ -110,10 +110,10 @@ export default function AddInterestDialog({
                 id="property"
                 name="property"
                 options={properties.Property}
-                getOptionLabel={option => option.name}
+                getOptionLabel={(option) => option.name}
                 style={{ width: 300 }}
                 onChange={handleChange}
-                renderInput={params => (
+                renderInput={(params) => (
                   <TextField
                     {...params}
                     label="Company"

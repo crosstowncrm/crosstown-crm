@@ -1,6 +1,6 @@
 import React from "react";
 import { withStyles } from "@material-ui/core/styles/index";
-import { useMutation } from "@apollo/react-hooks/lib/index";
+import { useMutation } from "@apollo/client";
 
 import gql from "graphql-tag";
 import { Link } from "react-router-dom";
@@ -8,10 +8,10 @@ import Button from "@material-ui/core/Button";
 
 import multiStep from "../../../multiStep/multiStep";
 
-const styles = theme => ({
+const styles = (theme) => ({
   root: {
-    maxWidth: "100%"
-  }
+    maxWidth: "100%",
+  },
 });
 
 const GET_CONTACTS = gql`
@@ -111,10 +111,10 @@ function StepSubmit(props) {
 
   const [
     createNewContact,
-    { loading: cncMutationLoading, error: cncQMutationError }
+    { loading: cncMutationLoading, error: cncQMutationError },
   ] = useMutation(CREATE_NEW_CONTACT, {});
 
-  const createContact = event => {
+  const createContact = (event) => {
     if (multiStep.isValid() === true) {
       createNewContact({
         variables: multiStep.getData(),
@@ -125,13 +125,13 @@ function StepSubmit(props) {
               first: 10,
               offset: 0,
               orderByMe: `node.first_name asc`,
-              filter: "*"
-            }
+              filter: "*",
+            },
           },
           {
-            query: GET_CONTACTS_COUNT
-          }
-        ]
+            query: GET_CONTACTS_COUNT,
+          },
+        ],
       });
       multiStep.clear();
     } else {

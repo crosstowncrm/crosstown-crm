@@ -1,22 +1,8 @@
 import React from "react";
 import { makeStyles } from "@material-ui/core/styles";
-
 import CustomAppBar from "./components/menus/custom-appbar";
-
-import {
-  BrowserRouter as Router,
-  Switch,
-  Route
-} from "react-router-dom";
-
-import {
-  AppBar,
-  Toolbar,
-  Typography,
-  IconButton,
-  CssBaseline} from "@material-ui/core";
-
-
+import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
+import { CssBaseline } from "@material-ui/core";
 
 import Login from "./components/Login";
 import UserList from "./components/users/UserList";
@@ -25,6 +11,11 @@ import UserCreate from "./components/users/create-user.component";
 import ContactList from "./components/contacts/ContactList";
 import ContactData from "./components/contacts/edit-contact.component";
 import ContactCreate from "./components/contacts/create-contact.component";
+
+import TaskList from "./components/tasks/TaskList";
+import TaskData from "./components/tasks/edit-task.component";
+import TaskCreate from "./components/tasks/create-task.component";
+
 import CompanyCreate from "./components/companies/create-company.component";
 import CompanyList from "./components/companies/CompanyList";
 import ActivityList from "./components/activities/ActivityList";
@@ -43,17 +34,16 @@ import DealsList from "./components/deals/DealsList";
 import DealData from "./components/deals/edit-deal.component";
 import { ProtectedRoute } from "./auth/protected.route";
 
-const useStyles = makeStyles(theme => ({
-    content: {
-        flexGrow: 1,
-        height: "100vh",
-        overflow: "auto",
-        paddingTop: 100
-    },
+const useStyles = makeStyles((theme) => ({
+  content: {
+    flexGrow: 1,
+    height: "100vh",
+    overflow: "auto",
+    paddingTop: 100,
+  },
 }));
 
 export default function App() {
-
   const classes = useStyles();
 
   return (
@@ -61,10 +51,7 @@ export default function App() {
       <React.Fragment>
         <CssBaseline />
         <div className={classes.root}>
-
-        <CustomAppBar>
-        </CustomAppBar>
-
+          <CustomAppBar></CustomAppBar>
           <main className={classes.content}>
             <Switch>
               <ProtectedRoute exact path="/" component={PropertyList} />
@@ -81,15 +68,22 @@ export default function App() {
                 path="/contact/create"
                 component={ContactCreate}
               />
+              <ProtectedRoute exact path="/tasks" component={TaskList} />
+              <ProtectedRoute exact path="/tasks/:uid" component={TaskData} />
+              <ProtectedRoute
+                exact
+                path="/task/create"
+                component={TaskCreate}
+              />
               <ProtectedRoute
                 exact
                 path="/user/create"
                 component={UserCreate}
               />
               <ProtectedRoute
-                  exact
-                  path="/company/create"
-                  component={CompanyCreate}
+                exact
+                path="/company/create"
+                component={CompanyCreate}
               />
               <ProtectedRoute exact path="/clients" component={ClientList} />
               <ProtectedRoute exact path="/activity" component={ActivityList} />
@@ -110,9 +104,9 @@ export default function App() {
                 component={PropertyData}
               />
               <ProtectedRoute
-                  exact
-                  path="/property/create"
-                  component={PropertyCreate}
+                exact
+                path="/property/create"
+                component={PropertyCreate}
               />
               <ProtectedRoute exact path="/listings" component={ListingList} />
               <ProtectedRoute

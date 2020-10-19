@@ -1,6 +1,6 @@
 import React from "react";
 import { withStyles } from "@material-ui/core/styles/index";
-import { useMutation } from "@apollo/react-hooks/lib/index";
+import { useMutation } from "@apollo/client";
 
 import gql from "graphql-tag";
 import { Link } from "react-router-dom";
@@ -8,44 +8,44 @@ import Button from "@material-ui/core/Button";
 
 import multiStep from "../../../multiStep/multiStep";
 
-const styles = theme => ({
+const styles = (theme) => ({
   root: {
-    maxWidth: "100%"
-  }
+    maxWidth: "100%",
+  },
 });
 
 const GET_COMPANIES = gql`
-    query companiesPaginateQuery(
+  query companiesPaginateQuery(
     $first: Int
     $offset: Int
     $orderByMe: String
     $filter: String
+  ) {
+    company(
+      first: $first
+      offset: $offset
+      orderByMe: $orderByMe
+      filter: $filter
     ) {
-        company(
-            first: $first
-            offset: $offset
-            orderByMe: $orderByMe
-            filter: $filter
-        ) {
-            id
-            name
-            employees_num
-            lead_status
-            phone
-            created_at {
-                formatted
-            }
-            owner {
-                first_name
-                last_name
-            }
-        }
+      id
+      name
+      employees_num
+      lead_status
+      phone
+      created_at {
+        formatted
+      }
+      owner {
+        first_name
+        last_name
+      }
     }
+  }
 `;
 const GET_COMPANIES_COUNT = gql`
-    query companiesCountQuery {
-        getCompanyCount
-    }
+  query companiesCountQuery {
+    getCompanyCount
+  }
 `;
 
 function StepSubmit() {
@@ -70,7 +70,7 @@ function StepSubmit() {
       $email_domain: String
       $address: Addressik
     ) {
-        createCompany(
+      createCompany(
         address: $address
         name: $name
         email: $email
@@ -95,10 +95,10 @@ function StepSubmit() {
 
   const [
     createNewCompany,
-    { loading: cncMutationLoading, error: cncQMutationError }
+    { loading: cncMutationLoading, error: cncQMutationError },
   ] = useMutation(CREATE_NEW_COMPANY, {});
 
-  const createCompany = event => {
+  const createCompany = (event) => {
     if (multiStep.validateComp() === true) {
       createNewCompany({
         variables: multiStep.getData(),
@@ -109,13 +109,13 @@ function StepSubmit() {
               first: 10,
               offset: 0,
               orderByMe: `node.name asc`,
-              filter: "*"
-            }
+              filter: "*",
+            },
           },
           {
-            query: GET_COMPANIES_COUNT
-          }
-        ]
+            query: GET_COMPANIES_COUNT,
+          },
+        ],
       });
       multiStep.clear();
     } else {

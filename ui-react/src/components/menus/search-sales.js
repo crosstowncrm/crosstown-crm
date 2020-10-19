@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import MenuItem from "@material-ui/core/MenuItem";
 import { ListItemIcon } from "@material-ui/core";
 import AccountCircle from "@material-ui/icons/AccountCircle";
+import CloudCircleIcon from "@material-ui/icons/CloudCircle";
 
 import { ListAlt as ListAltIcon } from "@material-ui/icons";
 
@@ -29,7 +30,7 @@ export default function SalesMenus({ isOpen, handleClose, anchorEl }) {
       <Link to={"/tasks"} onClick={handleClose}>
         <MenuItem primary={"Tasks"}>
           <ListItemIcon>
-            <ListAltIcon />
+            <CloudCircleIcon />
           </ListItemIcon>
           <p>Tasks</p>
         </MenuItem>

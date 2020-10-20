@@ -21,7 +21,7 @@ import Autocomplete from "@material-ui/lab/Autocomplete";
 import FormControl from "@material-ui/core/FormControl";
 
 import { CardHeader, Divider } from "@material-ui/core";
-import { useMutation } from "@apollo/client";
+import { useMutation } from "@apollo/react-hooks/lib/index";
 
 const styles = (theme) => ({
   root: {

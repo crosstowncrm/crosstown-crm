@@ -2,9 +2,10 @@ import React from "react";
 import gql from "graphql-tag";
 import "../../UserList.css";
 import { withStyles } from "@material-ui/core/styles";
-import { useMutation, useQuery } from "@apollo/client";
+import { useMutation, useQuery } from "@apollo/react-hooks/lib/index";
 import { Typography, TextField, Button, Dialog } from "@material-ui/core";
 
+import { Link } from "react-router-dom";
 import Grid from "@material-ui/core/Grid";
 import DialogActions from "@material-ui/core/DialogActions";
 import DialogContent from "@material-ui/core/DialogContent";
@@ -434,7 +435,7 @@ function DealsList(props) {
                   id="client"
                   name="client"
                   options={clients.client}
-                  getOptionLabel={(option) => option.id}
+                  getOptionLabel={(option) => option.name}
                   style={{ width: 300 }}
                   onChange={handleChange}
                   renderInput={(params) => (

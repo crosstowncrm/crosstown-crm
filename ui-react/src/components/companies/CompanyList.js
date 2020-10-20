@@ -6,7 +6,7 @@ import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 import Checkbox from "@material-ui/core/Checkbox";
 import Paper from "@material-ui/core/Paper";
-import { useQuery } from "@apollo/client";
+import { useQuery } from "@apollo/react-hooks";
 import gql from "graphql-tag";
 import "../../UserList.css";
 import { withStyles } from "@material-ui/core/styles";
@@ -14,7 +14,7 @@ import { Link } from "react-router-dom";
 import Button from "@material-ui/core/Button";
 import TablePagination from "@material-ui/core/TablePagination";
 import { TableSortLabel, Typography, TextField } from "@material-ui/core";
-import { useMutation } from "@apollo/client";
+import { useMutation } from "@apollo/react-hooks/lib/index";
 
 import DeleteCompanyDialog from "../dialogs/delete-company-dialog";
 
@@ -90,12 +90,7 @@ const UPDATE_COMPANY = gql`
 `;
 
 const headCells = [
-  {
-    id: "node.name",
-    numeric: false,
-    disablePadding: false,
-    label: "Name",
-  },
+  { id: "node.name", numeric: false, disablePadding: false, label: "Name" },
   {
     id: "node.employees_num",
     numeric: false,
@@ -272,7 +267,14 @@ function CompanyList(props) {
     updateCompany,
     { loading: cndMutationLoading, error: cndQMutationError },
   ] = useMutation(UPDATE_COMPANY, {
-    update: () => refetch(),
+    update: (proxy, { data: { updateCompany } }) => {
+      const number = data.company.findIndex((x) => x.id === updateCompany.id);
+      data.company[number][field] = fieldValue;
+      proxy.writeQuery({
+        query: GET_COMPANIES,
+        data: { data: data },
+      });
+    },
   });
 
   return (

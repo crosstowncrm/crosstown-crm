@@ -1,7 +1,13 @@
 import React from "react";
-
+import Menu from "@material-ui/core/Menu";
+import { Link } from "react-router-dom";
+import MenuItem from "@material-ui/core/MenuItem";
 import { IconButton, ListItemIcon } from "@material-ui/core";
 import AccountCircle from "@material-ui/icons/AccountCircle";
+import BusinessIcon from "@material-ui/icons/Business";
+import HowToRegIcon from "@material-ui/icons/HowToReg";
+import DirectionsRunIcon from "@material-ui/icons/DirectionsRun";
+import TransferWithinAStationIcon from "@material-ui/icons/TransferWithinAStation";
 
 import ClientMenus from "./search-account";
 import PropertyMenus from "./search-property";
@@ -11,7 +17,7 @@ import MarketingMenus from "./search-marketing";
 import SupportMenus from "./search-support";
 import { makeStyles } from "@material-ui/core/styles/index";
 
-import { AppBar, Toolbar, Typography } from "@material-ui/core";
+import { AppBar, Toolbar, Typography, CssBaseline } from "@material-ui/core";
 
 import {
   People as PeopleIcon,
@@ -176,6 +182,7 @@ export default function CustomAppBar() {
 
   const classes = useStyles();
 
+  const menuId = "account-menu";
   return (
     <>
       <ClientMenus

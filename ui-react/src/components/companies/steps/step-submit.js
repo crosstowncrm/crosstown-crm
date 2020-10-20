@@ -1,6 +1,6 @@
 import React from "react";
 import { withStyles } from "@material-ui/core/styles/index";
-import { useMutation } from "@apollo/client";
+import { useMutation } from "@apollo/react-hooks/lib/index";
 
 import gql from "graphql-tag";
 import { Link } from "react-router-dom";

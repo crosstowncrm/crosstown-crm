@@ -4,7 +4,7 @@ import { withStyles } from "@material-ui/core/styles";
 import { Link } from "react-router-dom";
 import Button from "@material-ui/core/Button";
 import DeleteContactDialog from "../dialogs/delete-contact-dialog";
-import { useMutation, useQuery } from "@apollo/client";
+import { useMutation, useQuery } from "@apollo/react-hooks/lib/index";
 import TablePagination from "@material-ui/core/TablePagination";
 
 import {
@@ -217,6 +217,17 @@ function ContactList(props) {
     }));
   };
 
+  // const [readArticle, { loading2, error2 }] = useMutation(READ_ARTICLE);
+
+  // const handleClick = event => {
+  //     readArticle({
+  //         variables: {
+  //             reader_id: localStorage.getItem('userId'),
+  //             article_id: event.target.getAttribute("artid")
+  //         }
+  //     });
+  // };
+
   const handleChange = (event) => {
     event.preventDefault();
     setField(event.target.id);
@@ -248,7 +259,14 @@ function ContactList(props) {
     updateContact,
     { loading: cndMutationLoading, error: cndQMutationError },
   ] = useMutation(UPDATE_CONTACT, {
-    update: () => refetch(),
+    update: (proxy, { data: { updateContact } }) => {
+      const number = data.contact.findIndex((x) => x.id === updateContact.id);
+      data.contact[number][field] = fieldValue;
+      proxy.writeQuery({
+        query: GET_CONTACTS,
+        data: { data: data },
+      });
+    },
   });
 
   return (

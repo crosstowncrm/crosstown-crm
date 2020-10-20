@@ -1,8 +1,17 @@
 import React from "react";
 import { makeStyles } from "@material-ui/core/styles";
+
 import CustomAppBar from "./components/menus/custom-appbar";
+
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
-import { CssBaseline } from "@material-ui/core";
+
+import {
+  AppBar,
+  Toolbar,
+  Typography,
+  IconButton,
+  CssBaseline,
+} from "@material-ui/core";
 
 import Login from "./components/Login";
 import UserList from "./components/users/UserList";
@@ -11,11 +20,6 @@ import UserCreate from "./components/users/create-user.component";
 import ContactList from "./components/contacts/ContactList";
 import ContactData from "./components/contacts/edit-contact.component";
 import ContactCreate from "./components/contacts/create-contact.component";
-
-import TaskList from "./components/tasks/TaskList";
-import TaskData from "./components/tasks/edit-task.component";
-import TaskCreate from "./components/tasks/create-task.component";
-
 import CompanyCreate from "./components/companies/create-company.component";
 import CompanyList from "./components/companies/CompanyList";
 import ActivityList from "./components/activities/ActivityList";
@@ -52,6 +56,7 @@ export default function App() {
         <CssBaseline />
         <div className={classes.root}>
           <CustomAppBar></CustomAppBar>
+
           <main className={classes.content}>
             <Switch>
               <ProtectedRoute exact path="/" component={PropertyList} />
@@ -67,13 +72,6 @@ export default function App() {
                 exact
                 path="/contact/create"
                 component={ContactCreate}
-              />
-              <ProtectedRoute exact path="/tasks" component={TaskList} />
-              <ProtectedRoute exact path="/tasks/:uid" component={TaskData} />
-              <ProtectedRoute
-                exact
-                path="/task/create"
-                component={TaskCreate}
               />
               <ProtectedRoute
                 exact

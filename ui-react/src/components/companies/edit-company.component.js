@@ -102,7 +102,7 @@ const GET_COMPANY = gql`
       phone
       sessions_num
       time_zone
-      mailed {
+      mailed(filter: { action: true }) {
         timestamp {
           formatted
         }
@@ -118,6 +118,16 @@ const GET_COMPANY = gql`
 const CompanyEdit = (props) => {
   const { classes } = props;
   const params = props.match.params;
+  const [
+    openAddressDialogComponent,
+    setOpenAddressDialogComponent,
+  ] = React.useState(false);
+  const handleCloseAddressDialogComponent = () => {
+    setOpenAddressDialogComponent(false);
+  };
+  const callAddressDialog = () => {
+    setOpenAddressDialogComponent(true);
+  };
 
   const { loading, data, error, refetch } = useQuery(GET_COMPANY, {
     variables: {

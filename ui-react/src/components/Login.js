@@ -20,26 +20,26 @@ import auth from "../auth/auth.js";
 const LOGIN_USER = gql`
   query loginUser($name: String, $pswd: String) {
     loginUser(name: $name, pswd: $pswd) {
-        userId
-        token
+      userId
+      token
     }
   }
 `;
-const styles = theme => ({
+const styles = (theme) => ({
   root: {
     maxWidth: 700,
     marginTop: theme.spacing(3),
     overflowX: "auto",
-    margin: "auto"
+    margin: "auto",
   },
   table: {
-    minWidth: 700
+    minWidth: 700,
   },
   textField: {
     marginLeft: theme.spacing(1),
     marginRight: theme.spacing(1),
-    minWidth: 300
-  }
+    minWidth: 300,
+  },
 });
 
 function Login(props) {
@@ -70,7 +70,7 @@ function Login(props) {
     e.preventDefault();
     try {
       await loginUser({
-        variables: { name: e.target.login.value, pswd: e.target.pswd.value }
+        variables: { name: e.target.login.value, pswd: e.target.pswd.value },
       });
     } catch (e) {
       console.error(e);
@@ -112,7 +112,7 @@ function Login(props) {
               <CardActions style={{ justifyContent: "space-between" }}>
                 <Button>Forgot password</Button>
                 <Button type="submit" color="primary">
-                  Sign in
+                  Sign in here
                 </Button>
               </CardActions>
             </form>

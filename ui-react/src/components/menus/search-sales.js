@@ -25,22 +25,6 @@ export default function SalesMenus({ isOpen, handleClose, anchorEl }) {
           <p>Deals</p>
         </MenuItem>
       </Link>
-      <Link to={"/deals"} onClick={handleClose}>
-        <MenuItem primary={"Deals"}>
-          <ListItemIcon>
-            <AccountCircle />
-          </ListItemIcon>
-          <p>Deals</p>
-        </MenuItem>
-      </Link>
-      <Link to={"/deals"} onClick={handleClose}>
-        <MenuItem primary={"Deals"}>
-          <ListItemIcon>
-            <AccountCircle />
-          </ListItemIcon>
-          <p>Deals</p>
-        </MenuItem>
-      </Link>
 
       <Link to={"/"} onClick={handleClose}>
         <MenuItem primary={"Tasks"}>

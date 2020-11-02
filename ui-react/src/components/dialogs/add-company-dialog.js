@@ -8,7 +8,7 @@ import DialogContentText from "@material-ui/core/DialogContentText";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import FormControl from "@material-ui/core/FormControl";
 import Autocomplete from "@material-ui/lab/Autocomplete";
-import { useMutation, useQuery } from "@apollo/react-hooks/lib/index";
+import { useMutation, useQuery } from "@apollo/client";
 import gql from "graphql-tag";
 
 const GET_COMPANIES = gql`

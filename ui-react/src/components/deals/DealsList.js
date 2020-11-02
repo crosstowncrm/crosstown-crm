@@ -2,10 +2,9 @@ import React from "react";
 import gql from "graphql-tag";
 import "../../UserList.css";
 import { withStyles } from "@material-ui/core/styles";
-import { useMutation, useQuery } from "@apollo/react-hooks/lib/index";
+import { useMutation, useQuery } from "@apollo/client";
 import { Typography, TextField, Button, Dialog } from "@material-ui/core";
 
-import { Link } from "react-router-dom";
 import Grid from "@material-ui/core/Grid";
 import DialogActions from "@material-ui/core/DialogActions";
 import DialogContent from "@material-ui/core/DialogContent";

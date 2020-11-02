@@ -14,7 +14,7 @@ import { Link } from "react-router-dom";
 import Button from "@material-ui/core/Button";
 import TablePagination from "@material-ui/core/TablePagination";
 import { TableSortLabel, Typography, TextField } from "@material-ui/core";
-import { useMutation } from "@apollo/react-hooks/lib/index";
+import { useMutation } from "@client";
 
 import DeleteCompanyDialog from "../dialogs/delete-company-dialog";
 

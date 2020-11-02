@@ -11,7 +11,7 @@ import {
 import Card from "@material-ui/core/Card";
 import CardActions from "@material-ui/core/CardActions";
 import FieldComponent from "./field-component";
-import { useMutation, useQuery } from "@apollo/react-hooks/lib/index";
+import { useMutation, useQuery } from "@apollo/client";
 import Button from "@material-ui/core/Button";
 import TextField from "@material-ui/core/TextField";
 import Autocomplete from "@material-ui/lab/Autocomplete";

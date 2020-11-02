@@ -2,7 +2,7 @@ import React from "react";
 import gql from "graphql-tag";
 import { Link } from "react-router-dom";
 import Button from "@material-ui/core/Button";
-import { useMutation, useQuery } from "@apollo/react-hooks/lib/index";
+import { useMutation, useQuery } from "@apollo/client";
 import TablePagination from "@material-ui/core/TablePagination";
 import DeleteUserDialog from "./dialogs/delete-user-dialog";
 

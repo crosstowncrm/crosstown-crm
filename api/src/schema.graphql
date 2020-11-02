@@ -1,138 +1,137 @@
 type User {
   id: ID!
-  first_name: String
-  last_name: String
-  email: String
-  phone: String
-  email_signature: String
-  pswd: String
-  created_at: Date
   address:  Address @relation(name: "HAS_ADDRESS", direction: "OUT")
-  follows: [User] @relation(name: "FOLLOWS", direction: "BOTH")
-  teams:  [Team] @relation(name: "IS_MEMBER_OF", direction: "OUT")
   contacts:  [Contact] @relation(name: "OWNS_PROSPECT", direction: "OUT")
+  created_at: Date
+  email: String
+  email_signature: String
+  first_name: String
+  follows: [User] @relation(name: "FOLLOWS", direction: "BOTH")
+  last_name: String
   listings:  [Listing] @relation(name: "IS_PRIMARY_AGENT_FOR", direction: "OUT")
   owner:  User @relation(name: "OWNS_PROSPECT", direction: "IN")
+  phone: String
+  pswd: String
+  teams:  [Team] @relation(name: "IS_MEMBER_OF", direction: "OUT")
 }
 
 type AuthData {
-    userId: ID
     token: String
     tokenExpiration: Int
+    userId: ID
 }
 
 type Deal {
     id: ID!
-    title: String
-    start_time: DateTime
-    est_date: DateTime
     amount: String
-    stage: String
-    strategy: Strategy @relation(name: "HAS_STRATEGY", direction: "OUT")
-    type: Type @relation(name: "HAS_TYPE", direction: "OUT")
-    property:  Property @relation(name: "HAS_INTEREST_IN", direction: "OUT")
     client:  Client @relation(name: "HAS_INTEREST_IN", direction: "IN")
+    est_date: DateTime
+    property:  Property @relation(name: "HAS_INTEREST_IN", direction: "OUT")
+    stage: String
+    start_time: DateTime
+    strategy: Strategy @relation(name: "HAS_STRATEGY", direction: "OUT")
+    title: String
+    type: Type @relation(name: "HAS_TYPE", direction: "OUT")
 }
 
-interface Client {
+type Client {
     id: ID!
-    name: String
+    created_at: Date
     email: String
     lead_status: String
+    name: String
+    owner:  User
     phone: String
-    created_at: Date
-    owner:  User @relation(name: "OWNS_PROSPECT", direction: "IN")
 }
 
-type Contact implements Client{
+type Contact{
 
   id: ID!
-  first_name: String
-  last_name: String
-  suffix: String
+  address:  Address @relation(name: "HAS_ADDRESS", direction: "OUT")
   birthday: String
+  companies:  [Company] @relation(name: "ASSOCIATED_WITH", direction: "OUT")
   contact_emails: [String]
+  created_at: Date
   email: String
-  phone: String
-  mobile: String
-  phone_numbers: [String]
-  linkedin_url: String
+  email_domain: String
   facebook_url: String
+  first_name: String
+  first_seen: String
   instagram_url: String
-  twitter_url: String
+  last_activity: String
+  last_modified: DateTime
+  last_name: String
+  last_seen: String
+  lead_date: String
   lead_status: String
   lead_type: String
-  lead_date: String
   lifecycle_stage: String
-  created_at: Date
-  last_modified: DateTime
-  last_activity: String
-  last_seen: String
-  first_seen: String
-  email_domain: String
-  marital_status: String
-  name: String
-  viewed: [Viewed]
-  owner:  User @relation(name: "OWNS_PROSPECT", direction: "IN")
-  address:  Address @relation(name: "HAS_ADDRESS", direction: "OUT")
-  companies:  [Company] @relation(name: "ASSOCIATED_WITH", direction: "OUT")
-  properties:  [Interest]
+  linkedin_url: String
   listings:  [Listing] @relation(name: "LISTS", direction: "OUT")
+  marital_status: String
+  mobile: String
+  owner:  User @relation(name: "OWNS_PROSPECT", direction: "IN")
+  phone: String
+  phone_numbers: [String]
+  properties:  [Interest]
   recommendations(first: Int = 300): [Article] @cypher(statement: "MATCH (article:Article), (address:Address)<-[*]-(this) WHERE distance(article.location, Point({latitude:toFloat(address.lat), longitude:toFloat(address.lng)})) < 1000000 RETURN DISTINCT article")
-#  teams: [Team] @relation(name: "BELONGS TO", direction: "OUT")
+  suffix: String
+  twitter_url: String
+  viewed: [Viewed]
 #  deals:  [Deal] @relation(name: "IS ASSOCIATED WITH", direction: "IN")
+#  teams: [Team] @relation(name: "BELONGS TO", direction: "OUT")
 }
 
-type Company implements Client{
+type Company {
   id: ID!
-  lead_status: String
-  name: String
-  email: String
-  created_at: Date
-  address:  Address @relation(name: "HAS_ADDRESS", direction: "OUT")
-  phone_numbers: [String]
-  domain_name: String
-  owner_assigned_date: String
-  parent: String
-  website_url: String
-  contacts:  [Contact] @relation(name: "ASSOCIATED_WITH", direction: "IN")
-  properties:  [Property] @relation(name: "HAS_INTEREST_IN", direction: "OUT")
-#  deals:  [Deal] @relation(name: "IS ASSOCIATED WITH", direction: "OUT")
-  listings:  [Listing] @relation(name: "LISTS", direction: "OUT")
-  #  reviews: [Review] @relation(name: "REVIEWS", direction: "IN")
   #  categories: [Category] @relation(name: "IN_CATEGORY", direction: "OUT")
-  fb_fans: [Contact] @relation(name: "FB_FANS", direction: "IN")
-  team: [Team] @relation(name: "IS_MEMBER_OF", direction: "OUT")
-  fb_page: String
-  child_companies_num: String
-  li_page: String
-  lifecycle_stage: String
-  twitter_bio: String
-  web_technologies: [String]
-  first_contact_create_date: String
-  last_seen: String
-  first_seen: String
-  year_founded: String
+  #  reviews: [Review] @relation(name: "REVIEWS", direction: "IN")
+  address:  Address @relation(name: "HAS_ADDRESS", direction: "OUT")
   annual_revenue: String
+  child_companies_num: String
+  contacted_times: String
+  contacts: [Contact] @relation(name: "ASSOCIATED_WITH", direction: "IN")
+  created_at: Date
+  description: String
+  domain_name: String
+  email: String
+  employees_num: String
+  fb_fans: [Contact] @relation(name: "FB_FANS", direction: "IN")
+  fb_page: String
+  first_contact_create_date: String
+  first_contact_created_at: String
+  first_seen: String
+  hubspot_team: String
   industry: String
   is_public: String
-  contacted_times: String
-  description: String
-  employees_num: String
-  first_contact_created_at: String
-  hubspot_team: String
   last_activity: String
   last_contacted: String
   last_modified: String
+  last_seen: String
+  lead_status: String
   li_bio: String
+  li_page: String
+  lifecycle_stage: String
+  listings:  [Listing] @relation(name: "LISTS", direction: "OUT")
+  mailed: [Mailed]
+  name: String
   owner:  User @relation(name: "OWNS_PROSPECT", direction: "IN")
   owner_assigned_at: String
+  owner_assigned_date: String
   pageviews_num: String
+  parent: String
   phone: String
+  phone_numbers: [String]
+  properties:  [Property] @relation(name: "HAS_INTEREST_IN", direction: "OUT")
   sessions_num: String
+  team: [Team] @relation(name: "IS_MEMBER_OF", direction: "OUT")
   time_zone: String
+  twitter_bio: String
   url: String
-  mailed: [Mailed]
+  web_technologies: [String]
+  website_url: String
+  year_founded: String
+#  deals:  [Deal] @relation(name: "IS ASSOCIATED WITH", direction: "OUT")
 }
 
 type Mail{
@@ -142,15 +141,27 @@ type Mail{
 }
 
 type Mailed @relation(name: "MAILS") {
-    from: Company
-    to: Mail
-    timestamp: DateTime
     action: Boolean
+    from: Company
+    timestamp: DateTime
+    to: Mail
 }
 
 type Type{
     id: ID!
     name: String
+}
+
+type Task{
+    id: ID!
+    assigned: User @relation(name: "ASSIGNED_TO", direction: "OUT")
+    associated: Client @relation(name: "ASSOCIATED_WITH", direction: "OUT")
+    created_at: DateTime
+    due_date: DateTime
+    notes: String
+    priority: String
+    title: String
+    type: String
 }
 
 type Strategy{
@@ -160,45 +171,45 @@ type Strategy{
 
 type Article {
     id: ID!
-    title: String
-    excerpt: String
+    categories: [Category] @relation(name: "IN_CATEGORY", direction: "OUT")
     content: String
-    source: String
+    event_time: DateTime
+    excerpt: String
     link: String
     location: Point
-    event_time: DateTime
-    categories: [Category] @relation(name: "IN_CATEGORY", direction: "OUT")
-    viewed: [Viewed]
-    shared: [Shared]
     opened_source: [OpenedSource]
     recommendations(first: Int = 300): [Contact] @cypher(statement: "MATCH (address:Address)<-[*]-(contact:Contact) WHERE distance(this.location, Point({latitude:toFloat(address.lat), longitude:toFloat(address.lng)})) < 1000000 RETURN DISTINCT contact")
+    shared: [Shared]
+    source: String
+    title: String
+    viewed: [Viewed]
 }
 
 type Viewed @relation(name: "VIEWED") {
-    from: Contact
-    to: Article
-    timestamp: DateTime
     action: Boolean
+    from: Contact
+    timestamp: DateTime
+    to: Article
 }
 
 type Interest @relation(name: "HAS_INTEREST_IN") {
-    from: Contact
-    to: Property
     action: Boolean
     associate: String
     event_time: DateTime
+    from: Contact
     id: String
     represents: String
     stage: String
     title: String
+    to: Property
     type: String
     value: Int
 }
 
 type OpenedSource @relation(name: "OPENED_SOURCE") {
     from: Contact
-    to: Article
     timestamp: DateTime
+    to: Article
 }
 
 type Shared @relation(name: "SHARED") {
@@ -209,25 +220,25 @@ type Shared @relation(name: "SHARED") {
 }
 
 type Category {
+    articles: [Article] @relation(name: "IN_CATEGORY", direction: "IN")
+    companies: [Company] @relation(name: "IN_CATEGORY", direction: "IN")
     id: ID!
     name: String
-    articles: [Article] @relation(name: "IN_CATEGORY", direction: "IN")
     posts: [Post] @relation(name: "IN_CATEGORY", direction: "IN")
-    companies: [Company] @relation(name: "IN_CATEGORY", direction: "IN")
 }
 
 type Post {
     id: ID!
-    title: String
-    meta: String
-    keywords: [String]
-    images: [String]
-    content: String
-    link: String
-    event_time: DateTime
-    viewed_post: [ViewedPost]
-    shared_post: [SharedPost]
     categories: [Category] @relation(name: "IN_CATEGORY", direction: "OUT")
+    content: String
+    event_time: DateTime
+    images: [String]
+    keywords: [String]
+    link: String
+    meta: String
+    shared_post: [SharedPost]
+    title: String
+    viewed_post: [ViewedPost]
 }
 
 type ViewedPost @relation(name: "VIEWED_POST") {
@@ -245,239 +256,249 @@ type SharedPost @relation(name: "SHARED_POST") {
 
 type Property {
   id: ID!
+  additional_types: [String]
+  address:  Address @relation(name: "HAS_ADDRESS", direction: "OUT")
+  companies:  [Company] @relation(name: "HAS_INTEREST_IN", direction: "IN")
+  contacts:  [Contact] @relation(name: "HAS_INTEREST_IN", direction: "IN")
+  created_at: Date
+  listings:  [Listing] @relation(name: "IS_LISTING_OF", direction: "OUT")
   name: String
+  owner: Contact @relation(name: "ASSOCIATED_WITH", direction: "IN")
   phone: String
   property_type: String
   secondary_type: String
-  additional_types: [String]
-  owner: Contact @relation(name: "ASSOCIATED_WITH", direction: "IN")
-  address:  Address @relation(name: "HAS_ADDRESS", direction: "OUT")
 #  parcels:  [Parcel] @relation(name: "INCLUDES PARCELS", direction: "OUT")
-#  structures: [Structure] @relation(name: "INCLUDES STRUCTURES", direction: "OUT")
 #  spaces:  [Space] @relation(name: "IS UNIT OF", direction: "IN")
-  contacts:  [Contact] @relation(name: "HAS_INTEREST_IN", direction: "IN")
-  companies:  [Company] @relation(name: "HAS_INTEREST_IN", direction: "IN")
-  listings:  [Listing] @relation(name: "IS_LISTING_OF", direction: "OUT")
-  created_at: Date
+#  structures: [Structure] @relation(name: "INCLUDES STRUCTURES", direction: "OUT")
 }
 
 type Listing {
   id: ID!
-  name: String
-  lease_or_sale: String
-  commission: String
-  listing_expiration: String
-  price: Int
-  priceTerms: String
-  noi: Int
-  cap_rate: Float
-  sale_conditions: [String]
-  leaseTerm: String
-  leaseType: String
-  sfAvailMin: Int
-  sfAvailMax: Int
-  use: [String]
+  added: String
+  amenities: [String]
   availableOn: String
   availableWithin: String
-  tenantName: String
-  existingBuildout: String
+  cap_rate: Float
+  commission: String
   condition: String
-  layout: String
-  privateOffices: Int
-  workStations: Int
   conferenceRooms: Int
-  numPeopleMin: Int
-  numPeopleMax: Int
-  amenities: [String]
-  spaceNotes: String
-  spaceHighlights: [String]
   description: String
-  images: [String]
   documents: [String]
+  existingBuildout: String
+  images: [String]
   last_updated: Date
-  square_footage: String
-  added: String
-  units: String
+  layout: String
+  lease_or_sale: String
+  leaseTerm: String
+  leaseType: String
+  listing_expiration: String
+  name: String
+  noi: Int
+  numPeopleMax: Int
+  numPeopleMin: Int
   parking_spaces: String
+  price: Int
+  priceTerms: String
+  privateOffices: Int
   pro_forma_noi: String
   properties:  [Property] @relation(name: "IS_LISTING_OF", direction: "IN")
-#  space:  [Space] @relation(name: "IS LISTING OF", direction: "OUT")
+  sale_conditions: [String]
+  sfAvailMax: Int
+  sfAvailMin: Int
+  spaceHighlights: [String]
+  spaceNotes: String
+  square_footage: String
+  tenantName: String
+  units: String
+  use: [String]
   user:  User @relation(name: "IS_PRIMARY_AGENT_FOR", direction: "IN")
+  workStations: Int
+#  space:  [Space] @relation(name: "IS LISTING OF", direction: "OUT")
 }
 
 type Address {
   id: ID!
+
+  lat: Float
+  lng: Float
   postal_code:String
   street_address1:String
   street_address2:String
-  lat: Float
-  lng: Float
-
-#  street_number: String
-#  street_pre_direction: String
-#  street_name: String
-#  street_suffix: String
-#  street_post_direction: String
-#  unit_type: String
-#  unit_number: String
-#  formatted_street_address: String
+#  census_tract: String
 #  city: String
+#  formatted_street_address: String
+#  house: Int
 #  state: String
+#  street_name: String
+#  street_number: String
+#  street_post_direction: String
+#  street_pre_direction: String
+#  street_suffix: String
+#  unit_number: String
+#  unit_type: String
 #  zip_code: String
 #  zip_plus_four_code: String
-#  census_tract: String
-#  house: Int
 }
 
 input Addressik {
+    lat: String
+    lng: String
     postal_code:String
     street_address1:String
     street_address2:String
-    lat: String
-    lng: String
 }
 
 type Team {
   id: ID!
+  established: Date
   name: String
   slogan: String
-  established: Date
 }
 
 type Activity {
-    contact: Contact
     actionDateList: [String]
     actions: [String]
-    objects: [String]
-    objectIds: [String]
+    contact: Contact
     last: Last
+    objectIds: [String]
+    objects: [String]
 }
 
 type Last {
-    objectId: String
     action: String
     date: String
     object: String
+    objectId: String
 }
-
 
 type Query {
 
-  client(filter: String="*"): [Client]
-    @cypher(
-        statement: "CALL db.index.fulltext.queryNodes('searchClient', $filter) YIELD node RETURN node"
-  )
+    activity:[Activity]
 
-  getClient:[Client]
+    client(filter: String="*", filter: String="*", orderByMe:String="name_asc"): [Client]
 
-  activity:[Activity]
+    company(filter: String="*", filter: String="*", orderByMe: String="owner.first_name asc", id: String):[Company]
 
-  getClientCount: Int
+    contact(filter: String="*", filter: String="*", orderByMe: String="owner.first_name asc", first: Int=10, offset: Int=0): [Contact]
+
+    getClientCount: Int
     @cypher(
         statement: "MATCH (client:Client) RETURN count(client) as client_count"
     )
 
-  getActivityCount: Int
+    getActivityCount: Int
     @cypher(
         statement: "MATCH (user:User)-[:OWNS_PROSPECT]-(contact:Contact)-[r]-(object) WHERE r.datetime IS NOT NULL RETURN count(DISTINCT contact) as activity_count"
     )
-
-  company(filter: String="*", filter: String="*", orderByMe: String="owner.first_name asc"):[Company]
 
     getCompanyCount: Int
     @cypher(
         statement: "MATCH (company:Company) RETURN count(company) as company_count"
     )
 
-  contact(filter: String="*", filter: String="*", orderByMe: String="owner.first_name asc"): [Contact]
     getContactCount: Int
     @cypher(
         statement: "MATCH (contact:Contact) RETURN count(contact) as contact_count"
     )
 
-  user(filter: String="*", filter: String="*", orderByMe: String="owner.first_name asc"): [User]
-    getUserCount: Int
+    getDealCount: Int
     @cypher(
-        statement: "MATCH (user:User) RETURN count(user) as user_count"
+        statement: "MATCH (deal:Deal) RETURN count(deal) as deal_count"
     )
 
-  interest:[Interest!]!
-    @cypher(
-        statement: "MATCH (contact:Contact)-[hii:HAS_INTEREST_IN]-(:Property) WHERE hii.id IS NOT NULL RETURN hii"
-  )
-
-
-  property(filter: String="*", filter: String="*", orderByMe: String="owner.first_name asc"): [Property!]
     getPropertyCount: Int
     @cypher(
         statement: "MATCH (property:Property) RETURN count(property) as property_count"
     )
 
-
-  getDealCount: Int
+    getTaskCount: Int
     @cypher(
-        statement: "MATCH (deal:Deal) RETURN count(deal) as deal_count"
+        statement: "MATCH (task:Task) RETURN count(task) as task_count"
     )
-  getListingCount: Int
+
+    getListingCount: Int
     @cypher(
         statement: "MATCH (listing:Listing) RETURN count(listing) as listing_count"
     )
 
-
-  usersBySubstring(substring: String): [Client]
+    getUserCount: Int
     @cypher(
-      statement: "MATCH (u:User) WHERE u.name CONTAINS $substring RETURN u"
-  )
+        statement: "MATCH (user:User) RETURN count(user) as user_count"
+    )
 
-  loginUser(name: String, pswd: String): [AuthData]
+    interest:[Interest!]!
+    @cypher(
+        statement: "MATCH (contact:Contact)-[hii:HAS_INTEREST_IN]-(:Property) WHERE hii.id IS NOT NULL RETURN hii"
+    )
 
+    loginUser(name: String, pswd: String): [AuthData]
+
+    property(filter: String="*", filter: String="*", orderByMe: String="owner.first_name asc"): [Property!]
+
+    task(filter: String="*", filter: String="*", orderByMe: String="node.title asc", offset: Int=0, first: Int=10):[Task]
+    @cypher(statement: "CALL db.index.fulltext.queryNodes('searchTask', $filter) YIELD node WITH node OPTIONAL MATCH (client:Client)<-[:ASSOCIATED_WITH]-(node)-[:ASSIGNED_TO]->(user:User) RETURN node ORDER BY $orderByMe SKIP $offset LIMIT $first"
+    )
+
+    user(filter: String="*", filter: String="*", orderByMe: String="owner.first_name asc"): [User]
+
+    usersBySubstring(substring: String): [Client]
+    @cypher(
+        statement: "MATCH (u:User) WHERE u.name CONTAINS $substring RETURN u"
+    )
 
 }
 
 type Mutation {
 
-  readArticle(reader_id: String, article_id: String ): String
-    @cypher(statement: "MATCH (contact:Contact {id: $reader_id }) MATCH (article:Article{id:$article_id}) MERGE (contact)-[read:VIEWED]->(article) RETURN id(read) as rel_id")
+    addressChange(from: ID!, postal_code: String, street_address1:String, street_address2:String, lat:String, lng:String, label:String): String
 
-  createDeal(action: Int, amount: String, client_id: String, est_date: String, living: Int, property_id: String): Deal
-    @cypher(statement: "MATCH (client:Client {id: $client_id }) MATCH (property:Property{id:$property_id}) MATCH (strategy:Strategy {id: $living }) MATCH (type:Type {id: $action }) CREATE (deal:Deal{stage: 'start', action: $action, amount: $amount, start_time: datetime(), est_date: datetime($est_date), living: $living}) MERGE (client)-[:HAS_INTEREST_IN]->(deal)-[:HAS_INTEREST_IN]->(property) MERGE (type)<-[:HAS_TYPE]-(deal)-[:HAS_STRATEGY]->(strategy) SET deal.id = toString(id(deal)) RETURN deal")
+    createCompany(address: Addressik, name: String, email: String, phone: String, mobile: String, linkedin_url: String,
+        facebook_url: String, instagram_url: String, twitter_url: String, lead_status: String, lead_type: String, lead_date: String, lifecycle_stage: String,
+        created_at: _Neo4jDateInput, last_modified: String, email_domain: String): Company
 
-  createContact(address: Addressik, first_name: String, last_name: String, suffix: String, birthday: String, email: String, phone: String, mobile: String, linkedin_url: String,
+    createContact(address: Addressik, first_name: String, last_name: String, suffix: String, birthday: String, email: String, phone: String, mobile: String, linkedin_url: String,
         facebook_url: String, instagram_url: String, twitter_url: String, lead_status: String, lead_type: String, lead_date: String, lifecycle_stage: String,
         created_at: _Neo4jDateInput, last_modified: String, email_domain: String, marital_status: String): Contact
 
-  updateContact(field: String, value: String, contactId: String): Contact
+    createDeal(action: Int, amount: String, client_id: String, est_date: String, living: Int, property_id: String): Deal
+    @cypher(statement: "MATCH (client:Client {id: $client_id }) MATCH (property:Property{id:$property_id}) MATCH (strategy:Strategy {id: $living }) MATCH (type:Type {id: $action }) CREATE (deal:Deal{stage: 'start', action: $action, amount: $amount, start_time: datetime(), est_date: datetime($est_date), living: $living}) MERGE (client)-[:HAS_INTEREST_IN]->(deal)-[:HAS_INTEREST_IN]->(property) MERGE (type)<-[:HAS_TYPE]-(deal)-[:HAS_STRATEGY]->(strategy) SET deal.id = toString(id(deal)) RETURN deal")
+
+    createProperty(address: Addressik, name: String, email: String, phone: String, mobile: String, linkedin_url: String,
+        facebook_url: String, instagram_url: String, twitter_url: String, property_type: String, lead_type: String, lead_date: String, lifecycle_stage: String,
+        created_at: _Neo4jDateInput, last_modified: String, email_domain: String): Property
+
+    createTask(type: String, priority: String, title: String, associated: String, label: String, assigned: String, notes: String, dueDate:String): Task
+
+    createUser(address: Addressik, first_name: String, last_name: String, birthday: String, email: String, phone: String, mobile: String, pswd: String, lead_type: String, lead_date: String, lifecycle_stage: String,
+        created_at: _Neo4jDateInput, last_modified: String, email_domain: String, marital_status: String): User
+
+    deleteCompany(companyId: String): String
+
+    deleteContact(contactId: String): String
+
+    deleteProperty(propertyId: String): String
+
+    deleteTask(taskId: String): String
+
+    deleteUser(userId: String): String
     
-  deleteContact(contactId: String): String
-    
-  mergeContactInterest(from: String, to: String): Interest
+    mergeContactInterest(from: String, to: String): Interest
         @cypher(statement: "MATCH (contact:Contact{id: $from}) MATCH (property:Property{id: $to}) MERGE (contact)-[hii:HAS_INTEREST_IN]->(property) RETURN hii")
 
-  createUser(address: Addressik, first_name: String, last_name: String, birthday: String, email: String, phone: String, mobile: String, pswd: String, lead_type: String, lead_date: String, lifecycle_stage: String,
-    created_at: _Neo4jDateInput, last_modified: String, email_domain: String, marital_status: String): User
+    readArticle(reader_id: String, article_id: String ): String
+    @cypher(statement: "MATCH (contact:Contact {id: $reader_id }) MATCH (article:Article{id:$article_id}) MERGE (contact)-[read:VIEWED]->(article) RETURN id(read) as rel_id")
 
-  updateUser(field: String, value: String, userId: String): User
+    updateCompany(field: String, value: String, companyId: String): Company
 
-  deleteUser(userId: String): String
+    updateContact(field: String, value: String, contactId: String): Contact
 
-  createCompany(address: Addressik, name: String, email: String, phone: String, mobile: String, linkedin_url: String,
-        facebook_url: String, instagram_url: String, twitter_url: String, lead_status: String, lead_type: String, lead_date: String, lifecycle_stage: String,
-        created_at: _Neo4jDateInput, last_modified: String, email_domain: String): Company
-  updateCompany(field: String, value: String, companyId: String): Company
+    updateData(nodeLabel: String, nodeId: String, unitId: String, label: String): String
 
-  deleteCompany(companyId: String): String
+    updateProperty(field: String, value: String, propertyId: String): Company
 
-  createProperty(address: Addressik, name: String, email: String, phone: String, mobile: String, linkedin_url: String,
-    facebook_url: String, instagram_url: String, twitter_url: String, property_type: String, lead_type: String, lead_date: String, lifecycle_stage: String,
-    created_at: _Neo4jDateInput, last_modified: String, email_domain: String): Property
+    updateTask(field: String, value: String, taskId: String): Task
 
-  updateProperty(field: String, value: String, propertyId: String): Company
-
-  deleteProperty(propertyId: String): String
-
-  updateData(nodeLabel: String, nodeId: String, unitId: String, label: String): String
-
-  addressChange(from: ID!, postal_code: String, street_address1:String, street_address2:String, lat:String, lng:String, label:String): String
+    updateUser(field: String, value: String, userId: String): User
 
  }
 

@@ -2,7 +2,8 @@ import { typeDefs } from "./graphql-schema";
 import resolvers from "./resolvers";
 import { ApolloServer } from "apollo-server-express";
 import express from "express";
-import { v1 as neo4j } from "neo4j-driver";
+import neo4j from "neo4j-driver";
+
 import { makeAugmentedSchema } from "neo4j-graphql-js";
 import dotenv from "dotenv";
 // import { IsAuthenticatedDirective, HasRoleDirective, HasScopeDirective } from "graphql-auth-directives";
@@ -38,9 +39,10 @@ const schema = makeAugmentedSchema({
  * using credentials specified as environment variables
  * with fallback to defaults
  */
+
 const driver = neo4j.driver(
   process.env.NEO4J_URI || "bolt://localhost:7687",
-  neo4j.auth.basic(
+    neo4j.auth.basic(
     process.env.NEO4J_USER || "test",
     process.env.NEO4J_PASSWORD || "test"
   )

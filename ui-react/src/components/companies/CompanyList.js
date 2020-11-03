@@ -6,7 +6,7 @@ import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 import Checkbox from "@material-ui/core/Checkbox";
 import Paper from "@material-ui/core/Paper";
-import { useQuery } from "@apollo/react-hooks";
+import { useQuery } from "@apollo/client";
 import gql from "graphql-tag";
 import "../../UserList.css";
 import { withStyles } from "@material-ui/core/styles";
@@ -90,7 +90,12 @@ const UPDATE_COMPANY = gql`
 `;
 
 const headCells = [
-  { id: "node.name", numeric: false, disablePadding: false, label: "Name" },
+  {
+    id: "node.name",
+    numeric: false,
+    disablePadding: false,
+    label: "Name",
+  },
   {
     id: "node.employees_num",
     numeric: false,
@@ -267,14 +272,7 @@ function CompanyList(props) {
     updateCompany,
     { loading: cndMutationLoading, error: cndQMutationError },
   ] = useMutation(UPDATE_COMPANY, {
-    update: (proxy, { data: { updateCompany } }) => {
-      const number = data.company.findIndex((x) => x.id === updateCompany.id);
-      data.company[number][field] = fieldValue;
-      proxy.writeQuery({
-        query: GET_COMPANIES,
-        data: { data: data },
-      });
-    },
+    update: () => refetch(),
   });
 
   return (

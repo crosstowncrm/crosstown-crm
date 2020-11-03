@@ -1,0 +1,78 @@
+query company($id: ID) {
+  Company(id: $id) {
+    id
+    name
+    created_at {
+      formatted
+    }
+    domain_name
+    owner_assigned_date
+    address {
+      id
+      street_address1
+    }
+    phone_numbers
+    parent
+    website_url
+    contacts {
+      id
+      first_name
+      last_name
+    }
+    properties {
+      id
+      name
+    }
+    listings {
+      id
+      name
+    }
+    fb_fans {
+      id
+      first_name
+    }
+    team {
+      id
+      name
+    }
+    fb_page
+    child_companies_num
+    li_page
+    lifecycle_stage
+    last_contacted
+    twitter_bio
+    #      web_technologies
+    first_contact_create_date
+    last_seen
+    first_seen
+    year_founded
+    description
+    annual_revenue
+    industry
+    is_public
+    contacted_times
+    employees_num
+    first_contact_created_at
+    last_activity
+    last_modified
+    li_bio
+    owner {
+      first_name
+      last_name
+    }
+    owner_assigned_at
+    pageviews_num
+    phone
+    sessions_num
+    time_zone
+    mailed(filter: { action: true }) {
+      timestamp {
+        formatted
+      }
+      Mail {
+        id
+        msgs
+      }
+    }
+  }
+}

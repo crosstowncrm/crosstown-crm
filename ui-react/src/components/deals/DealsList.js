@@ -434,7 +434,7 @@ function DealsList(props) {
                   id="client"
                   name="client"
                   options={clients.client}
-                  getOptionLabel={(option) => option.name}
+                  getOptionLabel={(option) => option.id}
                   style={{ width: 300 }}
                   onChange={handleChange}
                   renderInput={(params) => (

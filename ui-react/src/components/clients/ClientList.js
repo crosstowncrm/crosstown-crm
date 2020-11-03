@@ -77,21 +77,47 @@ const GET_CLIENTS_COUNT = gql`
 `;
 
 const headCells = [
-  { id: "name", numeric: false, disablePadding: false, label: "Name" },
-  { id: "email", numeric: false, disablePadding: false, label: "Email" },
-  { id: "status", numeric: false, disablePadding: false, label: "Lead Status" },
-  { id: "phone", numeric: false, disablePadding: false, label: "Phone Number" },
+  {
+    id: "name",
+    numeric: false,
+    disablePadding: false,
+    label: "Name",
+    sortable: true,
+  },
+  {
+    id: "email",
+    numeric: false,
+    disablePadding: false,
+    label: "Email",
+    sortable: true,
+  },
+  {
+    id: "status",
+    numeric: false,
+    disablePadding: false,
+    label: "Lead Status",
+    sortable: true,
+  },
+  {
+    id: "phone",
+    numeric: false,
+    disablePadding: false,
+    label: "Phone Number",
+    sortable: true,
+  },
   {
     id: "created",
     numeric: false,
     disablePadding: false,
     label: "Create Date",
+    sortable: true,
   },
   {
-    id: "owner",
+    id: "owner.name",
     numeric: false,
     disablePadding: false,
     label: "Contact Owner",
+    sortable: false,
   },
 ];
 

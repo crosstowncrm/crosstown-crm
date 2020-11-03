@@ -84,7 +84,7 @@ const GET_CONTACT = gql`
         first_name
         last_name
       }
-      viewed(filter: { action: true }) {
+      viewed {
         timestamp {
           formatted
         }

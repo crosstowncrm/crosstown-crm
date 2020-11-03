@@ -9,7 +9,7 @@ class MultiStep {
   }
 
   saveData(formData) {
-    if (formData.value.constructor.name !== "Object") {
+    if (formData.value && formData.value.constructor.name !== "Object") {
       this.data = { ...this.data, [formData.name]: formData.value };
     } else {
       const name = Object.keys(formData.value)[0];
@@ -68,6 +68,33 @@ class MultiStep {
     }
 
     if (companyNameError || companyStreetAddressError) {
+      return false;
+    }
+    this.errors = {};
+    return true;
+  };
+
+  validateTask = () => {
+    let taskNameError = "";
+    let taskAssignedError = "";
+    let taskAssociatedError = "";
+    console.log(this.data);
+    if (!this.data.title) {
+      taskNameError = "Required";
+      this.errors = { ...this.errors, ["title"]: taskNameError };
+    }
+
+    if (!this.data.associated) {
+      taskAssociatedError = "Required";
+      this.errors = { ...this.errors, ["associated"]: taskAssociatedError };
+    }
+
+    if (!this.data.assigned) {
+      taskAssignedError = "Required";
+      this.errors = { ...this.errors, ["assigned"]: taskAssignedError };
+    }
+
+    if (taskNameError || taskAssociatedError || taskAssignedError) {
       return false;
     }
     this.errors = {};

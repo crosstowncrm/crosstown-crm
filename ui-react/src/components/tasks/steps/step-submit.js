@@ -37,13 +37,7 @@ const GET_TASKS = gql`
       }
       associated {
         id
-        ... on Contact {
-          first_name
-          last_name
-        }
-        ... on Company {
-          name
-        }
+        name
       }
       created_at {
         formatted

@@ -54,16 +54,16 @@ const useStyles = makeStyles((theme) => ({
 const taskTypes = ["Mail", "Call", "To-Do"];
 const taskPriorities = ["High", "Low", "Flash"];
 const GET_CLIENTS = gql`
-  query clientsPaginateQuery($orderBy: [_ClientOrdering]) {
-    Client(orderBy: $orderBy) {
+  query clientsPaginateQuery(
+    $first: Int
+    $offset: Int
+    $orderBy: [_ClientOrdering]
+    $filter: String
+  ) {
+    client(first: $first, offset: $offset, orderBy: $orderBy, filter: $filter) {
       id
-      ... on Contact {
-        first_name
-        last_name
-      }
-      ... on Company {
-        name
-      }
+      name
+      typename
     }
   }
 `;
@@ -101,6 +101,7 @@ function TaskData() {
   };
 
   const handleAcChange = (event, value) => {
+    console.log(value);
     event.preventDefault();
     const name = event.target.id.split("-")[0];
     multiStep.saveData({
@@ -111,7 +112,7 @@ function TaskData() {
     if (name === "associated") {
       multiStep.saveData({
         name: "label",
-        value: value.__typename,
+        value: value.typename,
       });
     }
 
@@ -158,6 +159,8 @@ function TaskData() {
   const { loading, data, error } = useQuery(GET_CLIENTS, {
     variables: {
       orderBy: "name_asc",
+      first: 10,
+      offset: 0,
     },
   });
 
@@ -241,16 +244,12 @@ function TaskData() {
             <FormControl className={classes.textField}>
               <Autocomplete
                 defaultValue={
-                  data.Client[multiStep.getData()["associated_ind"]]
+                  data.client[multiStep.getData()["associated_ind"]]
                 }
                 id="associated"
                 name="client"
-                options={data.Client}
-                getOptionLabel={(option) =>
-                  option.name
-                    ? option.name
-                    : option.first_name + " " + option.last_name
-                }
+                options={data.client}
+                getOptionLabel={(option) => option.name}
                 style={{ width: 300 }}
                 onChange={handleAcChange}
                 renderInput={(params) => (

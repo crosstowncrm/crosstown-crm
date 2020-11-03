@@ -22,7 +22,6 @@ const resolvers = {
                     return resData;
                 }
             );
-            console.log("return");
             return user;
         },
 
@@ -34,6 +33,7 @@ const resolvers = {
             ORDER BY (CASE WHEN 'Company' IN labels(node) THEN node.name ELSE node.first_name END) ASC
             SKIP ${offset}
             LIMIT ${first};`;
+
             return await session.run(cypherQuery).then(
                 result => {
                     const resData = result.records.map(
@@ -42,9 +42,11 @@ const resolvers = {
                             const client = record.get('node').properties;
                             const {id, email, lead_status, phone, created_at} = client;
                             let {name} = client;
+                            let typename = "Company";
                             if(!name){
                                 const {first_name, last_name} =  client;
                                 name = `${first_name} ${last_name}`;
+                                typename = "Contact";
                             }
                             return {
                                 id: id,
@@ -56,7 +58,8 @@ const resolvers = {
                                 owner: owner===null? null: {
                                     first_name: owner.first_name,
                                     last_name: owner.last_name
-                                }
+                                },
+                                typename: typename
                             };
                         }
                     );
@@ -159,14 +162,12 @@ const resolvers = {
             )
         },
         contact:async (_, {filter, orderByMe, first, offset}, ctx)=>{
-            console.log(orderByMe);
             let session = ctx.driver.session();
             const cypherQuery = `CALL db.index.fulltext.queryNodes('searchingContact', '${filter}') YIELD node 
             WITH node OPTIONAL MATCH (node)<-[:OWNS_PROSPECT]-(owner:User) RETURN node, owner 
             ORDER BY ${orderByMe} 
             SKIP ${offset}
             LIMIT ${first};`;
-            console.log(cypherQuery);
             return await session.run(cypherQuery).then(
                 result => {
                     const resData = result.records.map(

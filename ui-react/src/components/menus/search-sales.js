@@ -32,7 +32,7 @@ export default function SalesMenus({ isOpen, handleClose, anchorEl }) {
           <ListItemIcon>
             <CloudCircleIcon />
           </ListItemIcon>
-          <p>Taskssss</p>
+          <p>Tasks</p>
         </MenuItem>
       </Link>
 

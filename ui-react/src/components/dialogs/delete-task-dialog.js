@@ -29,7 +29,7 @@ export default function DeleteTaskDialog({
     deleteTask,
     { loading: duMutationLoading, error: duMutationError },
   ] = useMutation(DELETE_TASK, {
-    update: refetch,
+    update: () => refetch(),
   });
 
   return (

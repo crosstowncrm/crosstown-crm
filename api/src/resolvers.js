@@ -99,6 +99,43 @@ const resolvers = {
                 }
             )
         },
+        getTask:async (_, {id}, ctx)=>{
+            let session = ctx.driver.session();
+            const cypherQuery = `MATCH (user:User)<-[:ASSIGNED_TO]-(node:Task{id:"${id}"})-[:ASSOCIATED_WITH]->(client) RETURN node, user, client 
+            LIMIT 1;`;
+            return await session.run(cypherQuery).then(
+                result => {
+                    const resData = result.records.map(
+                        record => {
+                            const user =  record.get('user') === null?null:record.get('user').properties;
+                            let {id:clientId, name:clientName, first_name:clientFN, last_name:clientLN, phone:clientPhone} =  record.get('client').properties;
+                            let {id, title, type, priority, notes, created_at, due_date} =  record.get('node').properties;
+                            return {
+                                id: id,
+                                title: title,
+                                type: type,
+                                priority: priority,
+                                notes: notes,
+                                created_at: {formatted: created_at.toString()},
+                                due_date: {formatted: due_date.toString()},
+                                assigned: user===null? null: {
+                                    id:user.id,
+                                    first_name: user.first_name,
+                                    last_name: user.last_name
+                                },
+                                associated: {
+                                    id: clientId,
+                                    name: clientName? clientName:`${clientFN} ${clientLN}`,
+                                    typename: clientName? `company`:`contact`,
+                                    phone: clientPhone
+                                }
+                            };
+                        }
+                    );
+                    return resData;
+                }
+            )
+        },
         property:async (_, {filter, orderByMe, first, offset}, ctx)=>{
             let session = ctx.driver.session();
             const cypherQuery = `CALL db.index.fulltext.queryNodes('searchProperty', '${filter}') YIELD node 

@@ -546,3 +546,4 @@ function TaskList(props) {
 }
 
 export default withStyles(styles)(TaskList);
+//set Contacts and Companies as Clients through creating process

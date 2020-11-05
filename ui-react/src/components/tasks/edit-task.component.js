@@ -29,7 +29,7 @@ const styles = (theme) => ({
 
 const GET_TASK = gql`
   query taskQuery($id: ID) {
-    Task(id: $id) {
+    getTask(id: $id) {
       id
       assigned {
         id
@@ -39,6 +39,8 @@ const GET_TASK = gql`
       associated {
         id
         name
+        typename
+        phone
       }
       created_at {
         formatted
@@ -235,7 +237,7 @@ function TaskEdit(props) {
                 margin: "2px",
               }}
             >
-              {data.Task.map(
+              {data.getTask.map(
                 ({
                   id,
                   assigned,

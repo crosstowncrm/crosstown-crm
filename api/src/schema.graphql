@@ -412,6 +412,9 @@ type Query {
         statement: "MATCH (property:Property) RETURN count(property) as property_count"
     )
 
+    getTask(id:ID): [Task]
+
+
     getTaskCount: Int
     @cypher(
         statement: "MATCH (task:Task) RETURN count(task) as task_count"

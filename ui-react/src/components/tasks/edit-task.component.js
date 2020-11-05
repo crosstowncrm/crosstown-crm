@@ -106,6 +106,7 @@ function TaskEdit(props) {
   const [field, setField] = React.useState(false);
   const [fieldValue, setFieldValue] = React.useState(false);
   const [engaged, setEngaged] = React.useState(false);
+  const [isEditMode, setIsEditMode] = React.useState({});
 
   const callDialog = () => {
     setOpenDialogComponent(true);
@@ -117,17 +118,6 @@ function TaskEdit(props) {
 
   const handleCloseAddressDialogComponent = () => {
     setOpenAddressDialogComponent(false);
-  };
-
-  const setAllFalse = () => {
-    setField(false);
-    setFieldValue(false);
-    editTitleMode(false);
-    setEditTypeMode(false);
-    setEditPriorityMode(false);
-    setEditNotesMode(false);
-    setEditDueDateMode(false);
-    setEngaged(false);
   };
 
   const { loading, data, error, refetch } = useQuery(GET_TASK, {
@@ -148,7 +138,7 @@ function TaskEdit(props) {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    if (!!field && fieldValue !== data.Task[0][field]) {
+    if (!!field && fieldValue !== data.getTask[0][field]) {
       updateTask({
         variables: {
           field: "task." + field,
@@ -157,7 +147,8 @@ function TaskEdit(props) {
         },
       });
     }
-    setAllFalse();
+    setIsEditMode({});
+    setEngaged(false);
   };
 
   const handleAcSubmit = (event) => {
@@ -171,7 +162,7 @@ function TaskEdit(props) {
       },
       update: refetch,
     });
-    setAllFalse();
+    setIsEditMode({});
   };
 
   const handleChange = (event) => {
@@ -188,7 +179,8 @@ function TaskEdit(props) {
 
   const handleCancel = (event) => {
     event.preventDefault();
-    setAllFalse();
+    setIsEditMode({});
+    setEngaged(false);
   };
 
   const [
@@ -240,8 +232,6 @@ function TaskEdit(props) {
               {data.getTask.map(
                 ({
                   id,
-                  assigned,
-                  associated,
                   created_at,
                   due_date,
                   notes,
@@ -285,8 +275,7 @@ function TaskEdit(props) {
                         color="textSecondary"
                         component="div"
                       >
-                        {" "}
-                        {editTitleMode ? (
+                        {isEditMode["title"] ? (
                           <form onSubmit={handleSubmit}>
                             <TextField
                               label="Title"
@@ -309,9 +298,9 @@ function TaskEdit(props) {
                             onDoubleClick={(event) => {
                               event.preventDefault();
                               if (!engaged) {
-                                setEditTitleMode(!editTitleMode);
+                                setIsEditMode({ title: true });
                                 setEngaged(true);
-                              } else setEditTitleMode(editTitleMode);
+                              } else setIsEditMode({ title: false });
                             }}
                           >
                             Title: {title}
@@ -323,7 +312,7 @@ function TaskEdit(props) {
                         color="textSecondary"
                         component="div"
                       >
-                        {editTypeMode ? (
+                        {isEditMode["type"] ? (
                           <form onSubmit={handleSubmit}>
                             <TextField
                               label="Type"
@@ -346,9 +335,9 @@ function TaskEdit(props) {
                             onDoubleClick={(event) => {
                               event.preventDefault();
                               if (!engaged) {
-                                setEditTypeMode(!editTypeMode);
+                                setIsEditMode({ type: true });
                                 setEngaged(true);
-                              } else setEditTypeMode(editTypeMode);
+                              } else setIsEditMode({ type: true });
                             }}
                           >
                             Type: {type}
@@ -360,7 +349,7 @@ function TaskEdit(props) {
                         color="textSecondary"
                         component="div"
                       >
-                        {editPriorityMode ? (
+                        {isEditMode["priority"] ? (
                           <form onSubmit={handleSubmit}>
                             <TextField
                               label="priority"
@@ -382,9 +371,9 @@ function TaskEdit(props) {
                             onDoubleClick={(event) => {
                               event.preventDefault();
                               if (!engaged) {
-                                setEditPriorityMode(!editPriorityMode);
+                                setIsEditMode({ priority: true });
                                 setEngaged(true);
-                              } else setEditPriorityMode(editPriorityMode);
+                              } else setIsEditMode({ priority: false });
                             }}
                           >
                             Priority: {priority}
@@ -396,7 +385,7 @@ function TaskEdit(props) {
                         color="textSecondary"
                         component="div"
                       >
-                        {editNotesMode ? (
+                        {isEditMode["notes"] ? (
                           <form onSubmit={handleSubmit}>
                             <TextField
                               label="notes"
@@ -418,9 +407,9 @@ function TaskEdit(props) {
                             onDoubleClick={(event) => {
                               event.preventDefault();
                               if (!engaged) {
-                                setEditNotesMode(!editNotesMode);
+                                setIsEditMode({ notes: true });
                                 setEngaged(true);
-                              } else setEditNotesMode(editNotesMode);
+                              } else setIsEditMode({ notes: false });
                             }}
                           >
                             notes: {notes}
@@ -432,7 +421,7 @@ function TaskEdit(props) {
                         color="textSecondary"
                         component="div"
                       >
-                        {editDueDateMode ? (
+                        {isEditMode["due_date"] ? (
                           <form onSubmit={handleSubmit}>
                             <TextField
                               type="date"
@@ -459,9 +448,9 @@ function TaskEdit(props) {
                             onDoubleClick={(event) => {
                               event.preventDefault();
                               if (!engaged) {
-                                setEditDueDateMode(!editDueDateMode);
+                                setIsEditMode({ due_date: true });
                                 setEngaged(true);
-                              } else setEditDueDateMode(editDueDateMode);
+                              } else setIsEditMode({ due_date: false });
                             }}
                           >
                             due_date: {due_date.formatted}
@@ -474,24 +463,6 @@ function TaskEdit(props) {
                         component="div"
                       >
                         <span>created_at: {created_at.formatted}</span>
-                      </Typography>
-                      <Typography
-                        variant="body2"
-                        color="textSecondary"
-                        component="p"
-                      >
-                        <span>associated:</span>
-                        <span>{associated.name}</span>
-                      </Typography>
-                      <Typography
-                        variant="body2"
-                        color="textSecondary"
-                        component="p"
-                      >
-                        <span>assigned:</span>
-                        <span>
-                          {assigned.first_name} {assigned.last_name}
-                        </span>
                       </Typography>
                     </CardContent>
                   </Card>
@@ -509,6 +480,51 @@ function TaskEdit(props) {
               }}
             >
               Activity
+            </Grid>
+          </Grid>
+          <Grid item md={3}>
+            <Grid
+              item
+              md={12}
+              style={{
+                border: "2px solid blue",
+                margin: "2px",
+              }}
+            >
+              Assigned, Associated
+            </Grid>
+            <Grid
+              item
+              md={12}
+              style={{
+                border: "2px solid blue",
+                margin: "2px",
+              }}
+            >
+              {data.getTask.map(({ id, assigned, associated }) => (
+                <Card key={`card-${id}`}>
+                  <CardContent>
+                    <Typography
+                      variant="body2"
+                      color="textSecondary"
+                      component="p"
+                    >
+                      <span>associated:</span>
+                      <span>{associated.name}</span>
+                    </Typography>
+                    <Typography
+                      variant="body2"
+                      color="textSecondary"
+                      component="p"
+                    >
+                      <span>assigned:</span>
+                      <span>
+                        {assigned.first_name} {assigned.last_name}
+                      </span>
+                    </Typography>
+                  </CardContent>
+                </Card>
+              ))}
             </Grid>
           </Grid>
         </Grid>

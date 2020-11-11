@@ -64,22 +64,6 @@ const UPDATE_TASK = gql`
   }
 `;
 
-const UPDATE_DATA = gql`
-  mutation updateData(
-    $nodeLabel: String
-    $nodeId: String
-    $taskId: String
-    $label: String
-  ) {
-    updateData(
-      nodeLabel: $nodeLabel
-      nodeId: $nodeId
-      unitId: $taskId
-      label: $label
-    )
-  }
-`;
-
 const GET_USERS = gql`
   query User {
     User {
@@ -93,11 +77,6 @@ const GET_USERS = gql`
 function TaskEdit(props) {
   const { classes } = props;
   const params = props.match.params;
-  const [editTitleMode, setEditTitleMode] = React.useState(false);
-  const [editTypeMode, setEditTypeMode] = React.useState(false);
-  const [editPriorityMode, setEditPriorityMode] = React.useState(false);
-  const [editNotesMode, setEditNotesMode] = React.useState(false);
-  const [editDueDateMode, setEditDueDateMode] = React.useState(false);
   const [openDialogComponent, setOpenDialogComponent] = React.useState(false);
   const [
     openAddressDialogComponent,
@@ -107,10 +86,6 @@ function TaskEdit(props) {
   const [fieldValue, setFieldValue] = React.useState(false);
   const [engaged, setEngaged] = React.useState(false);
   const [isEditMode, setIsEditMode] = React.useState({});
-
-  const callDialog = () => {
-    setOpenDialogComponent(true);
-  };
 
   const handleCloseDialogComponent = () => {
     setOpenDialogComponent(false);
@@ -123,16 +98,6 @@ function TaskEdit(props) {
   const { loading, data, error, refetch } = useQuery(GET_TASK, {
     variables: {
       id: params["uid"],
-    },
-  });
-
-  const {
-    loading: usersQueryLoading,
-    data: users,
-    error: usersQueryError,
-  } = useQuery(GET_USERS, {
-    variables: {
-      orderBy: "first_name_asc",
     },
   });
 
@@ -151,30 +116,10 @@ function TaskEdit(props) {
     setEngaged(false);
   };
 
-  const handleAcSubmit = (event) => {
-    event.preventDefault();
-    updateData({
-      variables: {
-        nodeLabel: event.target.name,
-        nodeId: fieldValue,
-        taskId: params["uid"],
-        label: "Task",
-      },
-      update: refetch,
-    });
-    setIsEditMode({});
-  };
-
   const handleChange = (event) => {
     event.preventDefault();
     setField(event.target.id);
     setFieldValue(event.target.value);
-  };
-
-  const handleAcChange = (event, value) => {
-    event.preventDefault();
-    setField("id");
-    setFieldValue(value.id);
   };
 
   const handleCancel = (event) => {
@@ -189,11 +134,6 @@ function TaskEdit(props) {
   ] = useMutation(UPDATE_TASK, {
     update: () => refetch(),
   });
-
-  const [
-    updateData,
-    { loading: undMutationLoading, error: undQMutationError },
-  ] = useMutation(UPDATE_DATA, {});
 
   return (
     <>

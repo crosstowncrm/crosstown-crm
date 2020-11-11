@@ -101,6 +101,21 @@ class MultiStep {
     return true;
   };
 
+  validateRole = () => {
+    let roleNameError = "";
+
+    if (!this.data.name) {
+      roleNameError = "Required";
+      this.errors = { ...this.errors, ["name"]: roleNameError };
+    }
+
+    if (roleNameError) {
+      return false;
+    }
+    this.errors = {};
+    return true;
+  };
+
   isValid = () => {
     return this.validate();
   };

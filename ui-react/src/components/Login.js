@@ -95,9 +95,6 @@ function Login(props) {
                   required
                   name="login"
                   id="login"
-                  // inputRef={input => (this.emailInput = input)}
-                  // error={this.state.email.error}
-                  // helperText={this.state.email.helperText}
                 />
                 <TextField
                   label="Enter your password"
@@ -106,7 +103,6 @@ function Login(props) {
                   type="password"
                   name="pswd"
                   id="pswd"
-                  // inputRef={input => (this.passwordInput = input)}
                 />
               </CardContent>
               <CardActions style={{ justifyContent: "space-between" }}>

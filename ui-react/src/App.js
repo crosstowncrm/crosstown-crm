@@ -16,6 +16,10 @@ import TaskList from "./components/tasks/TaskList";
 import TaskData from "./components/tasks/edit-task.component";
 import TaskCreate from "./components/tasks/create-task.component";
 
+import RoleList from "./components/roles/RoleList";
+import RoleData from "./components/roles/edit-role.component";
+import RoleCreate from "./components/roles/create-role.component";
+
 import CompanyCreate from "./components/companies/create-company.component";
 import CompanyList from "./components/companies/CompanyList";
 import ActivityList from "./components/activities/ActivityList";
@@ -74,6 +78,13 @@ export default function App() {
                 exact
                 path="/task/create"
                 component={TaskCreate}
+              />
+              <ProtectedRoute exact path="/roles" component={RoleList} />
+              <ProtectedRoute exact path="/roles/:uid" component={RoleData} />
+              <ProtectedRoute
+                exact
+                path="/role/create"
+                component={RoleCreate}
               />
               <ProtectedRoute
                 exact

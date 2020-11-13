@@ -101,7 +101,6 @@ function TaskData() {
   };
 
   const handleAcChange = (event, value) => {
-    console.log(value);
     event.preventDefault();
     const name = event.target.id.split("-")[0];
     multiStep.saveData({

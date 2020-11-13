@@ -30,7 +30,7 @@ export default function DeleteUserDialog({
     deleteUser,
     { loading: duMutationLoading, error: duMutationError },
   ] = useMutation(DELETE_USER, {
-    update: refetch,
+    update: () => refetch(),
   });
 
   return (

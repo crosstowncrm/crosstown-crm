@@ -29,7 +29,7 @@ export default function DeleteCompanyDialog({
     deleteCompany,
     { loading: duMutationLoading, error: duMutationError },
   ] = useMutation(DELETE_COMPANY, {
-    update: refetch,
+    update: () => refetch(),
   });
 
   return (

@@ -29,7 +29,7 @@ export default function DeleteContactDialog({
     deleteContact,
     { loading: duMutationLoading, error: duMutationError },
   ] = useMutation(DELETE_CONTACT, {
-    update: refetch,
+    update: () => refetch(),
   });
 
   return (

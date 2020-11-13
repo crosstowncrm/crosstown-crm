@@ -262,7 +262,7 @@ function ContactEdit(props) {
         contactId: params["uid"],
         label: "Contact",
       },
-      update: refetch,
+      update: () => refetch(),
     });
     setAllFalse();
   };

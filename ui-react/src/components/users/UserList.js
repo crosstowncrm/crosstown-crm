@@ -82,6 +82,10 @@ const GET_USERS = gql`
         first_name
         last_name
       }
+      role {
+        id
+        name
+      }
     }
   }
 `;
@@ -105,6 +109,12 @@ const headCells = [
     numeric: false,
     disablePadding: false,
     label: "Name",
+  },
+  {
+    id: "role.name",
+    numeric: false,
+    disablePadding: false,
+    label: "User's Role",
   },
   {
     id: "node.email",
@@ -323,6 +333,7 @@ const UserList = (props) => {
                   phone,
                   created_at,
                   owner,
+                  role,
                 },
                 index
               ) => {
@@ -364,7 +375,7 @@ const UserList = (props) => {
                         </>
                       )}
                     </TableCell>
-
+                    <TableCell>{role ? role.name : "no role"}</TableCell>
                     <TableCell align="left" className={classes.tableCell}>
                       {isEditMode["email"] &&
                       isEditMode["email"]["id"] === id ? (
@@ -478,7 +489,6 @@ const UserList = (props) => {
                         ? `${owner.first_name} ${owner.last_name}`
                         : "no owner"}
                     </TableCell>
-
                     <TableCell>
                       {created_at && created_at.formatted
                         ? created_at.formatted

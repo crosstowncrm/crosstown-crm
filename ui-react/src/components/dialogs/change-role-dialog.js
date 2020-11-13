@@ -5,33 +5,17 @@ import DialogActions from "@material-ui/core/DialogActions";
 import DialogContent from "@material-ui/core/DialogContent";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import { useMutation } from "@apollo/client";
-import ContactAddress from "../contacts/steps/step-contact-address";
+import ContactRole from "../users/steps/step-contact-role";
 import multiStep from "../../multiStep/multiStep";
 import gql from "graphql-tag";
 
-const ADDRESS_CHANGE = gql`
-  mutation addressChange(
-    $from: ID!
-    $postal_code: String
-    $street_address1: String
-    $street_address2: String
-    $lat: String
-    $lng: String
-    $label: String
-  ) {
-    addressChange(
-      from: $from
-      postal_code: $postal_code
-      street_address1: $street_address1
-      street_address2: $street_address2
-      lat: $lat
-      lng: $lng
-      label: $label
-    )
+const ROLE_CHANGE = gql`
+  mutation roleChange($from: ID!, $name: String, $label: String) {
+    roleChange(from: $from, name: $name, label: $label)
   }
 `;
 
-export default function ChangeAddressDialog({
+export default function ChangeRoleDialog({
   isOpen,
   handleClose,
   unitId,
@@ -41,13 +25,13 @@ export default function ChangeAddressDialog({
   const [errors, setErrors] = React.useState({});
 
   const validate = (values) => {
-    let listingError = "";
-    if (!values.street_address1) {
-      listingError = "Required";
+    let nameError = "";
+    if (!values.name) {
+      nameError = "Required";
     }
-    if (listingError) {
+    if (nameError) {
       setErrors({
-        listingError,
+        nameError,
       });
       return false;
     }
@@ -57,18 +41,17 @@ export default function ChangeAddressDialog({
   const handleSubmit = (e) => {
     e.preventDefault();
     multiStep.saveData({
-      name: "address",
+      name: "role",
       value: { from: unitId },
     });
     multiStep.saveData({
-      name: "address",
+      name: "role",
       value: { label: label },
     });
-    const formData = multiStep.getData()["address"];
+    const formData = multiStep.getData()["role"];
     const isValid = validate(formData);
-
     if (isValid) {
-      addressChange({
+      roleChange({
         variables: formData,
       });
       multiStep.clear();
@@ -77,22 +60,18 @@ export default function ChangeAddressDialog({
   };
 
   const [
-    addressChange,
+    roleChange,
     { loading: acMutationLoading, error: acMutationError },
-  ] = useMutation(ADDRESS_CHANGE, {
+  ] = useMutation(ROLE_CHANGE, {
     update: () => refetch(),
   });
 
   return (
     <div>
-      <Dialog
-        open={isOpen}
-        onClose={handleClose}
-        aria-labelledby="edit-apartment"
-      >
-        <DialogTitle id="edit-apartment">Contact's Address Data</DialogTitle>
+      <Dialog open={isOpen} onClose={handleClose} aria-labelledby="edit-role">
+        <DialogTitle id="edit-role">Contact's Role Data</DialogTitle>
         <DialogContent>
-          <ContactAddress />
+          <ContactRole />
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose} color="secondary">

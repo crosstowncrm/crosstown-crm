@@ -83,7 +83,7 @@ export default function AddListingDialog({
     addressChange,
     { loading: acMutationLoading, error: acMutationError },
   ] = useMutation(ADDRESS_CHANGE, {
-    update: refetch,
+    update: () => refetch(),
   });
 
   return (

@@ -15,6 +15,8 @@ import Avatar from "@material-ui/core/Avatar";
 import TextField from "@material-ui/core/TextField";
 
 import ChangeAddressDialog from "../dialogs/change-address-dialog";
+import ChangeRoleDialog from "../dialogs/change-role-dialog";
+
 import AddListingDialog from "../dialogs/add-listing-dialog";
 
 import Autocomplete from "@material-ui/lab/Autocomplete";
@@ -57,6 +59,10 @@ const GET_USER = gql`
         first_name
         last_name
       }
+      role {
+        id
+        name
+      }
     }
   }
 `;
@@ -96,7 +102,6 @@ const GET_USERS = gql`
 `;
 
 function UserEdit(props) {
-  const { classes } = props;
   const params = props.match.params;
   const [editLNMode, setEditLNMode] = React.useState(false);
   const [editMailMode, setEditMailMode] = React.useState(false);
@@ -107,12 +112,14 @@ function UserEdit(props) {
   const [editPhoneMode, setEditPhoneMode] = React.useState(false);
   const [editPswdMode, setEditPswdMode] = React.useState(false);
   const [editOwnerMode, setEditOwnerMode] = React.useState(false);
-
-  const [openDialogComponent, setOpenDialogComponent] = React.useState(false);
+  const [editRoleMode, setEditRoleMode] = React.useState(false);
   const [
     openAddressDialogComponent,
     setOpenAddressDialogComponent,
   ] = React.useState(false);
+  const [openRoleDialogComponent, setOpenRoleDialogComponent] = React.useState(
+    false
+  );
   const [
     openDialogInterestComponent,
     setOpenInterestDialogComponent,
@@ -122,12 +129,12 @@ function UserEdit(props) {
     setOpenListingDialogComponent,
   ] = React.useState(false);
 
-  const callDialog = () => {
-    setOpenDialogComponent(true);
-  };
-
   const callAddressDialog = () => {
     setOpenAddressDialogComponent(true);
+  };
+
+  const callRoleDialog = () => {
+    setOpenRoleDialogComponent(true);
   };
 
   const callInterestDialog = () => {
@@ -138,12 +145,12 @@ function UserEdit(props) {
     setOpenListingDialogComponent(true);
   };
 
-  const handleCloseDialogComponent = () => {
-    setOpenDialogComponent(false);
-  };
-
   const handleCloseAddressDialogComponent = () => {
     setOpenAddressDialogComponent(false);
+  };
+
+  const handleCloseRoleDialogComponent = () => {
+    setOpenRoleDialogComponent(false);
   };
 
   const handleCloseInterestDialogComponent = () => {
@@ -169,6 +176,7 @@ function UserEdit(props) {
     setEditMailSignatureMode(false);
     setEditPswdMode(false);
     setEditOwnerMode(false);
+    setEditRoleMode(false);
   };
 
   const { loading, data, error, refetch } = useQuery(GET_USER, {
@@ -210,7 +218,7 @@ function UserEdit(props) {
         userId: params["uid"],
         label: "User",
       },
-      update: refetch,
+      update: () => refetch(),
     });
     setAllFalse();
   };
@@ -248,7 +256,7 @@ function UserEdit(props) {
   const [
     updateData,
     { loading: undMutationLoading, error: undQMutationError },
-  ] = useMutation(UPDATE_DATA, {});
+  ] = useMutation(UPDATE_DATA);
 
   return (
     <>
@@ -296,6 +304,7 @@ function UserEdit(props) {
                   email_signature,
                   address,
                   owner,
+                  role,
                 }) => (
                   <Card key={`card-${id}`}>
                     <CardContent>
@@ -401,6 +410,35 @@ function UserEdit(props) {
                             }}
                           >
                             Last name: {last_name}
+                          </span>
+                        )}
+                      </Typography>
+                      <Typography
+                        variant="body2"
+                        color="textSecondary"
+                        component="div"
+                      >
+                        {editRoleMode ? (
+                          <form onSubmit={handleSubmit}>
+                            <TextField
+                              label="role"
+                              onChange={handleChange}
+                              id="role"
+                              defaultValue={role.name}
+                              size="small"
+                            />
+
+                            <br />
+                            <Button color="primary" type="submit">
+                              Update
+                            </Button>
+                            <Button color="secondary" onClick={handleCancel}>
+                              Cancel
+                            </Button>
+                          </form>
+                        ) : (
+                          <span onDoubleClick={callRoleDialog}>
+                            role: {role !== null ? role.name : "no role"}
                           </span>
                         )}
                       </Typography>
@@ -769,6 +807,16 @@ function UserEdit(props) {
         refetch={refetch}
         label="User"
       ></ChangeAddressDialog>
+
+      <ChangeRoleDialog
+        key={"changeRole"}
+        isOpen={openRoleDialogComponent}
+        handleClose={handleCloseRoleDialogComponent}
+        unitId={params["uid"]}
+        title="Role"
+        refetch={refetch}
+        label="User"
+      ></ChangeRoleDialog>
 
       <AddListingDialog
         key={"addListing"}

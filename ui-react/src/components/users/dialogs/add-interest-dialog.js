@@ -91,7 +91,7 @@ export default function AddInterestDialog({
     interestAdd,
     { loading: iaMutationLoading, error: iaMutationError },
   ] = useMutation(INTEREST_ADD, {
-    update: refetch,
+    update: () => refetch(),
   });
 
   return (

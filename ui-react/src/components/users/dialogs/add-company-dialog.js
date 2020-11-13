@@ -98,7 +98,7 @@ export default function AddCompanyDialog({
     associationAdd,
     { loading: aaMutationLoading, error: aaMutationError },
   ] = useMutation(ASSOCIATION_ADD, {
-    update: refetch,
+    update: () => refetch(),
   });
 
   return (

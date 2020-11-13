@@ -149,7 +149,7 @@ export default function GridCompanyComponent({
           value: fieldValue,
           companyId: companies[0]["id"],
         },
-        update: refetch,
+        update: () => refetch(),
       });
     }
     setAllFalse();
@@ -164,7 +164,7 @@ export default function GridCompanyComponent({
         companyId: companyId,
         label: "Company",
       },
-      update: refetch,
+      update: () => refetch(),
     });
     setAllFalse();
   };

@@ -279,8 +279,8 @@ type Property {
 
 type Role {
     id: ID!
-    name: String
     assigned: User @relation(name: "HAS_ROLE", direction: "IN")
+    name: String
 }
 
 type Strategy {
@@ -326,6 +326,7 @@ type User {
   owner:  User @relation(name: "OWNS_PROSPECT", direction: "IN")
   phone: String
   pswd: String
+  role: Role @relation(name: "HAS_ROLE", direction: "OUT")
   teams: [Team] @relation(name: "IS_MEMBER_OF", direction: "OUT")
 }
 
@@ -470,6 +471,8 @@ type Query {
 type Mutation {
 
     addressChange(from: ID!, postal_code: String, street_address1:String, street_address2:String, lat:String, lng:String, label:String): String
+
+    roleChange(from: ID!, name: String, label:String): String
 
     createCompany(address: Addressik, name: String, email: String, phone: String, mobile: String, linkedin_url: String,
         facebook_url: String, instagram_url: String, twitter_url: String, lead_status: String, lead_type: String, lead_date: String, lifecycle_stage: String,

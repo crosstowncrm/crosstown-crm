@@ -29,7 +29,7 @@ export default function DeletePropertyDialog({
     deleteProperty,
     { loading: duMutationLoading, error: duMutationError },
   ] = useMutation(DELETE_PROPERTY, {
-    update: refetch,
+    update: () => refetch(),
   });
 
   return (

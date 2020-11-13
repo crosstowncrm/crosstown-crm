@@ -96,7 +96,7 @@ export default function AddListingDialog({
     associationAdd,
     { loading: laMutationLoading, error: laMutationError },
   ] = useMutation(LISTING_ADD, {
-    update: refetch,
+    update: () => refetch(),
   });
 
   return (

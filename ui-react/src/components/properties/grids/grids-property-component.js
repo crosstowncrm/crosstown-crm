@@ -149,7 +149,7 @@ export default function GridPropertyComponent({
           value: fieldValue,
           propertyId: properties[0]["id"],
         },
-        update: refetch,
+        update: () => refetch(),
       });
     }
     setAllFalse();
@@ -164,7 +164,7 @@ export default function GridPropertyComponent({
         propertyId: propertyId,
         label: "Property",
       },
-      update: refetch,
+      update: () => refetch(),
     });
     setAllFalse();
   };

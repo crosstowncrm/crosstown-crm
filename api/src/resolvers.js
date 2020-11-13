@@ -197,7 +197,7 @@ const resolvers = {
         user:async (_, {filter, orderByMe, first, offset}, ctx)=>{
             let session = ctx.driver.session();
             const cypherQuery = `CALL db.index.fulltext.queryNodes('searchingUser', '${filter}') YIELD node 
-            WITH node OPTIONAL MATCH (node)<-[:OWNS_PROSPECT]-(owner:User) RETURN node, owner 
+            WITH node OPTIONAL MATCH (node)<-[:OWNS_PROSPECT]-(owner:User) OPTIONAL MATCH (node)-[:HAS_ROLE]-(role:Role) RETURN node, owner, role 
             ORDER BY ${orderByMe} 
             SKIP ${offset} 
             LIMIT ${first};`;
@@ -206,7 +206,8 @@ const resolvers = {
                     const resData = result.records.map(
                         record => {
                             const owner =  record.get('owner') === null?null:record.get('owner').properties;
-                            let {id, first_name, last_name, email, pswd, phone, created_at} =  record.get('node').properties;
+                            const {id, first_name, last_name, email, pswd, phone, created_at} =  record.get('node').properties;
+                            const role =  record.get('role') === null?null:record.get('role').properties;
                             return {
                                 id: id,
                                 first_name: first_name,
@@ -216,8 +217,13 @@ const resolvers = {
                                 phone: phone,
                                 created_at: {formatted: created_at?created_at.toString():""},
                                 owner: owner===null? null: {
+                                    id: owner.id,
                                     first_name: owner.first_name,
                                     last_name: owner.last_name
+                                },
+                                role: role===null? null: {
+                                    id: role.id,
+                                    name: role.name
                                 }
                             };
                         }
@@ -355,6 +361,18 @@ const resolvers = {
                 }
             )
         },
+
+        roleChange:async (_, {from, name, label}, ctx)=>{
+            let session = ctx.driver.session();
+            const cypherQuery = `MATCH (unit:${label} {id: "${from}"}) OPTIONAL MATCH (:Role)<-[r:HAS_ROLE]-(unit) DELETE r WITH unit MERGE (role:Role{name: "${name}"}) MERGE (unit)-[rel:HAS_ROLE]->(role) SET role.id=toString(id(role)) RETURN id(rel) as rel_id LIMIT 1`;
+            return await session.run(cypherQuery).then(
+                result => {
+                    const resData = result.records[0]?result.records[0].get('rel_id').toString():null;
+                    return resData;
+                }
+            )
+        },
+
         createContact:async (_, params, ctx)=>{
             const {address} = params;
             delete params.address;
@@ -552,7 +570,7 @@ const resolvers = {
         },
         createRole:async (_, {name}, ctx)=>{
             let session = ctx.driver.session();
-            const cypherQuery = `CREATE (role:Role{name: "${name}"}) SET role.id=toString(id(role)) RETURN role LIMIT 1`;
+            const cypherQuery = `MERGE (role:Role{name: "${name}"}) SET role.id=toString(id(role)) RETURN role LIMIT 1`;
             return await session.run(cypherQuery).then(
                 result => {
                     return result.records[0].get('role').properties;

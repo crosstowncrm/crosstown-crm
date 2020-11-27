@@ -6,7 +6,6 @@ import neo4j from "neo4j-driver";
 
 import { makeAugmentedSchema } from "neo4j-graphql-js";
 import dotenv from "dotenv";
-// import { IsAuthenticatedDirective, HasRoleDirective, HasScopeDirective } from "graphql-auth-directives";
 
 // set environment variables from ../.env
 dotenv.config();
@@ -24,10 +23,11 @@ const app = express();
 const schema = makeAugmentedSchema({
   typeDefs,
   config: {
-      auth:{
-          isAuthenticated: true
-      }
-    },
+    auth: {
+        // hasRole: true,
+        hasScope: true
+    }
+  },
   resolvers,
   printErrors: true, // optional
   allowUndefinedInResolve: true,

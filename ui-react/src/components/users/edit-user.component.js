@@ -32,8 +32,8 @@ const styles = (theme) => ({
 });
 
 const GET_USER = gql`
-  query userQuery($id: ID) {
-    User(id: $id) {
+  query getUserForEdit($id: String) {
+    getUserById(id: $id) {
       id
       first_name
       last_name
@@ -93,7 +93,7 @@ const UPDATE_DATA = gql`
 
 const GET_USERS = gql`
   query userQuery {
-    User {
+    user {
       id
       first_name
       last_name
@@ -292,10 +292,10 @@ function UserEdit(props) {
                 margin: "2px",
               }}
             >
-              {data.User.map(
+              {[data.getUserById].map(
                 ({
-                  first_name,
                   id,
+                  first_name,
                   last_name,
                   email,
                   phone,
@@ -698,7 +698,7 @@ function UserEdit(props) {
               Follows
             </Grid>
 
-            {data.User.map(({ owner }) => (
+            {[data.getUserById].map(({ owner }) => (
               <>
                 <Grid
                   key={"listing"}
@@ -753,7 +753,7 @@ function UserEdit(props) {
               Teams, Contacts, Listing
             </Grid>
 
-            {data.User.map(({ contacts }) => (
+            {[data.getUserById].map(({ contacts }) => (
               <>
                 <Grid
                   key={"listing"}

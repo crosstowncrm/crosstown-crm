@@ -27,20 +27,24 @@ const GET_USERS = gql`
       orderByMe: $orderByMe
       filter: $filter
     ) {
-      id
-      first_name
-      last_name
-      email
-      pswd
-      phone
-      created_at {
-        formatted
-      }
-      owner {
+        id
         first_name
         last_name
+        email
+        pswd
+        phone
+        created_at {
+          formatted
+        }
+        owner {
+          first_name
+          last_name
+        }
+        role {
+            id
+            name
+        }
       }
-    }
   }
 `;
 

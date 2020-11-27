@@ -31,8 +31,8 @@ const styles = (theme) => ({
 });
 
 const GET_CONTACT = gql`
-  query userQuery($id: ID) {
-    Contact(id: $id) {
+  query getContactById($id: ID) {
+    getContactById(id: $id) {
       id
       first_name
       last_name
@@ -122,8 +122,8 @@ const UPDATE_DATA = gql`
 `;
 
 const GET_USERS = gql`
-  query User {
-    User {
+  query getUsers {
+    user {
       id
       first_name
       last_name
@@ -151,18 +151,9 @@ function ContactEdit(props) {
   const [editMSMode, setEditMSMode] = React.useState(false);
   const [editOwnerMode, setEditOwnerMode] = React.useState(false);
   const [openDialogComponent, setOpenDialogComponent] = React.useState(false);
-  const [
-    openAddressDialogComponent,
-    setOpenAddressDialogComponent,
-  ] = React.useState(false);
-  const [
-    openDialogInterestComponent,
-    setOpenInterestDialogComponent,
-  ] = React.useState(false);
-  const [
-    openDialogListingComponent,
-    setOpenListingDialogComponent,
-  ] = React.useState(false);
+  const [openAddressDialogComponent, setOpenAddressDialogComponent] = React.useState(false);
+  const [openDialogInterestComponent, setOpenInterestDialogComponent] = React.useState(false);
+  const [openDialogListingComponent, setOpenListingDialogComponent] = React.useState(false);
 
   const callDialog = () => {
     setOpenDialogComponent(true);
@@ -336,7 +327,7 @@ function ContactEdit(props) {
                 margin: "2px",
               }}
             >
-              {data.Contact.map(
+              {data.getContactById.map(
                 ({
                   first_name,
                   id,
@@ -988,7 +979,7 @@ function ContactEdit(props) {
                                 <Autocomplete
                                   id="user"
                                   name="user"
-                                  options={users.User}
+                                  options={users.user}
                                   getOptionLabel={(option) =>
                                     option.first_name + " " + option.last_name
                                   }

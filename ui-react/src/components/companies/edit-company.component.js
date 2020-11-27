@@ -33,8 +33,8 @@ const styles = (theme) => ({
 });
 
 const GET_COMPANY = gql`
-  query company($id: ID) {
-    Company(id: $id) {
+  query getCompanyById($id: String) {
+    getCompanyById(id: $id) {
       id
       name
       created_at {
@@ -143,7 +143,7 @@ const CompanyEdit = (props) => {
           <Grid item md={3}>
             <GridNameComponent title={"About"}></GridNameComponent>
             <GridCompanyComponent
-              companies={data.Company}
+              companies={data.company}
               refetch={refetch}
               companyId={params["uid"]}
             ></GridCompanyComponent>
@@ -158,7 +158,7 @@ const CompanyEdit = (props) => {
                 margin: "2px",
               }}
             >
-              {data.Company.map(({ mailed }) =>
+              {data.company.map(({ mailed }) =>
                 mailed.map(({ Mail, timestamp }) => (
                   <Card key={`ard${Mail.id}`}>
                     <CardHeader
@@ -204,7 +204,7 @@ const CompanyEdit = (props) => {
               <Card key={`card`}>
                 <CardHeader title="Contact" />
                 <Divider />
-                {data.Company.map(({ contacts }) =>
+                {data.company.map(({ contacts }) =>
                   contacts.map(({ id, first_name, last_name }) => (
                     <CardContent key={`cd_${id}`}>
                       <Typography key={`tp_${id}`}>

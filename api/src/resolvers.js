@@ -1,29 +1,28 @@
 import { neo4jgraphql } from "neo4j-graphql-js";
 import  jwt  from "jsonwebtoken";
+
 const resolvers = {
 
     Query: {
 
         loginUser: async (_, {name, pswd}, ctx)=>{
             let session = ctx.driver.session();
-
-            const cypherQuery = `MATCH (user:User {last_name: "${name}", pswd: "${pswd}"}) RETURN user LIMIT 1;`;
-            const user = await session.run(cypherQuery).then(
+            const cypherQuery = `MATCH (user:User {last_name: "${name}", pswd: "${pswd}"}) OPTIONAL MATCH (user)-[:HAS_ROLE]-(role:Role) RETURN user, role LIMIT 1;`;
+            return await session.run(cypherQuery).then(
                 result => {
                     const resData = result.records.map(
                         record => {
-                            let {id} =  record.get('user').properties;
+                            let {id} = record.get('user').properties;
+                            let {name:roleName} = record.get('role')?record.get('role').properties:null;
                             return {
                                 userId: id,
-                                token: jwt.sign({userId:id}, process.env.JWT_SECRET||"crying_robocop", {expiresIn:'1h'}),
-                                tokenExpiration: 1
+                                token: jwt.sign({userId:id, scopes: [roleName]}, process.env.JWT_SECRET ||"crying_robocop", {expiresIn:'1h'}),
                             }
                         }
                     );
                     return resData;
                 }
             );
-            return user;
         },
 
         client:async (_, {filter, first, offset}, ctx)=>{
@@ -196,6 +195,9 @@ const resolvers = {
         },
         user:async (_, {filter, orderByMe, first, offset}, ctx)=>{
             let session = ctx.driver.session();
+
+            if(!first) first = 10;
+            if(!offset) offset = 0;
             const cypherQuery = `CALL db.index.fulltext.queryNodes('searchingUser', '${filter}') YIELD node 
             WITH node OPTIONAL MATCH (node)<-[:OWNS_PROSPECT]-(owner:User) OPTIONAL MATCH (node)-[:HAS_ROLE]-(role:Role) RETURN node, owner, role 
             ORDER BY ${orderByMe} 
@@ -232,7 +234,7 @@ const resolvers = {
                 }
             )
         },
-        contact:async (_, {filter, orderByMe, first, offset}, ctx)=>{
+        contact: async (_, {filter, orderByMe, first, offset}, ctx)=>{
             let session = ctx.driver.session();
             const cypherQuery = `CALL db.index.fulltext.queryNodes('searchingContact', '${filter}') YIELD node 
             WITH node OPTIONAL MATCH (node)<-[:OWNS_PROSPECT]-(owner:User) RETURN node, owner 
@@ -434,7 +436,7 @@ const resolvers = {
             }
             set.push(`user.id = toString(id(user))`);
 
-            const cypherQuery = `MATCH (owner:User{id:"1"}) MERGE (address:Address{postal_code: "${address.postal_code?address.postal_code:""}", street_address1: "${address.street_address1}", street_address2: "${address.street_address2?address.street_address2:""}"}) ON CREATE SET address.lat = "${address.lat?address.lat:""}", address.lng = "${address.lng?address.lng:""}" CREATE (user:User) SET ` + set.toString() + ` SET user.created_at=date(), user.last_modified=datetime(), address.id=toString(id(address)) MERGE (owner)-[:OWNS_PROSPECT]->(user) MERGE (user)-[:HAS_ADDRESS]->(address) RETURN user LIMIT 1`;
+            const cypherQuery = `MATCH (owner:User{id:"1"}) MERGE (role:Role{name:"agent"}) MERGE (address:Address{postal_code: "${address.postal_code?address.postal_code:""}", street_address1: "${address.street_address1}", street_address2: "${address.street_address2?address.street_address2:""}"}) ON CREATE SET address.lat = "${address.lat?address.lat:""}", address.lng = "${address.lng?address.lng:""}" CREATE (user:User) SET ` + set.toString() + ` SET user.created_at=date(), user.last_modified=datetime(), address.id=toString(id(address)) MERGE (owner)-[:OWNS_PROSPECT]->(user) MERGE (user)-[:HAS_ADDRESS]->(address) MERGE (user)-[:HAS_ROLE]->(role) RETURN user LIMIT 1`;
             return await session.run(cypherQuery).then(
                 result => {
                     return result.records[0].get('user').properties;

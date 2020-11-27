@@ -1,3 +1,5 @@
+directive @hasScope(scopes: [String]) on OBJECT | FIELD_DEFINITION
+
 type Activity {
     actionDateList: [String]
     actions: [String]
@@ -11,9 +13,9 @@ type Address {
     id: ID!
     lat: Float
     lng: Float
-    postal_code:String
-    street_address1:String
-    street_address2:String
+    postal_code: String
+    street_address1: String
+    street_address2: String
     #  census_tract: String
     #  city: String
     #  formatted_street_address: String
@@ -312,7 +314,7 @@ type Type {
     name: String
 }
 
-type User {
+type User{
   id: ID!
   address: Address @relation(name: "HAS_ADDRESS", direction: "OUT")
   contacts: [Contact] @relation(name: "OWNS_PROSPECT", direction: "OUT")
@@ -379,89 +381,119 @@ type ViewedPost @relation(name: "VIEWED_POST") {
 
 type Query {
 
-    activity:[Activity]
+    activity(first: Int=10, offset: Int=0): [Activity] @hasScope(scopes: ["admin", "teamlead", "agent"])
 
-    client(filter: String="*", filter: String="*", orderByMe:String="name_asc"): [Client]
+    client(filter: String="*", filter: String="*", orderByMe:String="name_asc", first: Int=10, offset: Int=0): [Client] @hasScope(scopes: ["admin", "teamlead", "agent"])
 
-    company(filter: String="*", filter: String="*", orderByMe: String="owner.first_name asc", id: String):[Company]
+    company(filter: String="*", filter: String="*", orderByMe: String="owner.first_name asc", id: String, first: Int=10, offset: Int=0):[Company] @hasScope(scopes: ["admin", "teamlead"])
 
-    contact(filter: String="*", filter: String="*", orderByMe: String="owner.first_name asc", first: Int=10, offset: Int=0): [Contact]
+    contact(filter: String="*", filter: String="*", orderByMe: String="owner.first_name asc", first: Int=10, offset: Int=0): [Contact] @hasScope(scopes: ["admin", "teamlead", "agent"])
 
-    getClientCount: Int
+    getCompanyById(id:String): Company @hasScope(scopes: ["admin", "teamlead", "agent"])
     @cypher(
-        statement: "MATCH (client:Client) RETURN count(client) as client_count"
+        statement: "MATCH (company:Company{id:$id}) RETURN company LIMIT 1"
     )
 
-    getActivityCount: Int
+    getContactById(id:String): Contact @hasScope(scopes: ["admin", "teamlead", "agent"])
+    @cypher(
+        statement: "MATCH (contact:Contact{id: $id}) RETURN contact LIMIT 1"
+    )
+
+    getDealById(id:String): Deal @hasScope(scopes: ["admin", "teamlead", "agent"])
+    @cypher(
+        statement: "MATCH (deal:Deal{id:$id}) RETURN deal LIMIT 1"
+    )
+
+    getPropertyById(id:String): Property @hasScope(scopes: ["admin", "teamlead", "agent"])
+    @cypher(
+        statement: "MATCH (property:Property{id:$id}) RETURN property LIMIT 1"
+    )
+
+    getTaskById(id:String): Task @hasScope(scopes: ["admin", "teamlead", "agent"])
+    @cypher(
+        statement: "MATCH (task:Task{id:$id}) RETURN task LIMIT 1"
+    )
+
+    getUserById(id:String): User @hasScope(scopes: ["admin", "teamlead", "agent"])
+    @cypher(
+        statement: "MATCH (user:User{id:$id}) RETURN user LIMIT 1"
+    )
+
+    getActivityCount: Int @hasScope(scopes: ["admin", "teamlead", "agent"])
     @cypher(
         statement: "MATCH (user:User)-[:OWNS_PROSPECT]-(contact:Contact)-[r]-(object) WHERE r.datetime IS NOT NULL RETURN count(DISTINCT contact) as activity_count"
     )
 
-    getCompanyCount: Int
+    getClientCount: Int @hasScope(scopes: ["admin", "teamlead", "agent"])
+    @cypher(
+        statement: "MATCH (client:Client) RETURN count(client) as client_count"
+    )
+
+    getCompanyCount: Int @hasScope(scopes: ["admin", "teamlead", "agent"])
     @cypher(
         statement: "MATCH (company:Company) RETURN count(company) as company_count"
     )
 
-    getContactCount: Int
+    getContactCount: Int @hasScope(scopes: ["admin", "teamlead", "agent"])
     @cypher(
         statement: "MATCH (contact:Contact) RETURN count(contact) as contact_count"
     )
 
-    getDealCount: Int
+    getDealCount: Int @hasScope(scopes: ["admin", "teamlead", "agent"])
     @cypher(
         statement: "MATCH (deal:Deal) RETURN count(deal) as deal_count"
     )
 
-    getPropertyCount: Int
+    getPropertyCount: Int @hasScope(scopes: ["admin", "teamlead", "agent"])
     @cypher(
         statement: "MATCH (property:Property) RETURN count(property) as property_count"
     )
 
-    getTask(id:ID): [Task]
+    getTask(id:ID): [Task] @hasScope(scopes: ["admin", "teamlead", "agent"])
 
-    getTaskCount: Int
+    getTaskCount: Int @hasScope(scopes: ["admin", "teamlead", "agent"])
     @cypher(
         statement: "MATCH (task:Task) RETURN count(task) as task_count"
     )
 
-    getRole(id:ID): [Role]
+    getRole(id:ID): [Role] @hasScope(scopes: ["admin", "teamlead", "agent"])
 
-    getRoleCount: Int
+    getRoleCount: Int @hasScope(scopes: ["admin", "teamlead", "agent"])
     @cypher(
         statement: "MATCH (role:Role) RETURN count(role) as role_count"
     )
 
-    getListingCount: Int
+    getListingCount: Int @hasScope(scopes: ["admin", "teamlead", "agent"])
     @cypher(
         statement: "MATCH (listing:Listing) RETURN count(listing) as listing_count"
     )
 
-    getUserCount: Int
+    getUserCount: Int @hasScope(scopes: ["admin", "teamlead", "agent"])
     @cypher(
         statement: "MATCH (user:User) RETURN count(user) as user_count"
     )
 
-    interest:[Interest!]!
+    interest:[Interest!]! @hasScope(scopes: ["admin", "teamlead", "agent"])
     @cypher(
         statement: "MATCH (contact:Contact)-[hii:HAS_INTEREST_IN]-(:Property) WHERE hii.id IS NOT NULL RETURN hii"
     )
 
     loginUser(name: String, pswd: String): [AuthData]
 
-    property(filter: String="*", filter: String="*", orderByMe: String="owner.first_name asc"): [Property!]
+    property(filter: String="*", filter: String="*", orderByMe: String="owner.first_name asc"): [Property!] @hasScope(scopes: ["admin", "teamlead", "agent"])
 
-    task(filter: String="*", filter: String="*", orderByMe: String="node.title asc", offset: Int=0, first: Int=10):[Task]
-    @cypher(statement: "CALL db.index.fulltext.queryNodes('searchTask', $filter) YIELD node WITH node OPTIONAL MATCH (client:Client)<-[:ASSOCIATED_WITH]-(node)-[:ASSIGNED_TO]->(user:User) RETURN node ORDER BY $orderByMe SKIP $offset LIMIT $first"
-    )
-
-    role(filter: String="*", filter: String="*", orderByMe: String="node.title asc", offset: Int=0, first: Int=10):[Role]
+    role(filter: String="*", filter: String="*", orderByMe: String="node.title asc", offset: Int=0, first: Int=10):[Role] @hasScope(scopes: ["admin", "teamlead", "agent"])
     @cypher(
         statement: "CALL db.index.fulltext.queryNodes('searchRole', $filter) YIELD node RETURN node ORDER BY $orderByMe SKIP $offset LIMIT $first"
     )
 
-    user(filter: String="*", filter: String="*", orderByMe: String="owner.first_name asc"): [User]
+    task(filter: String="*", filter: String="*", orderByMe: String="node.title asc", offset: Int=0, first: Int=10):[Task] @hasScope(scopes: ["admin", "teamlead", "agent"])
+    @cypher(statement: "CALL db.index.fulltext.queryNodes('searchTask', $filter) YIELD node WITH node OPTIONAL MATCH (client:Client)<-[:ASSOCIATED_WITH]-(node)-[:ASSIGNED_TO]->(user:User) RETURN node ORDER BY $orderByMe SKIP $offset LIMIT $first"
+    )
 
-    usersBySubstring(substring: String): [Client]
+    user(filter: String="*", filter: String="*", orderByMe: String="owner.first_name asc", offset: Int=0, first: Int=10): [User] @hasScope(scopes: ["admin"])
+
+    usersBySubstring(substring: String): [Client] @hasScope(scopes: ["admin", "teamlead", "agent"])
     @cypher(
         statement: "MATCH (u:User) WHERE u.name CONTAINS $substring RETURN u"
     )
@@ -470,9 +502,7 @@ type Query {
 
 type Mutation {
 
-    addressChange(from: ID!, postal_code: String, street_address1:String, street_address2:String, lat:String, lng:String, label:String): String
-
-    roleChange(from: ID!, name: String, label:String): String
+    addressChange(from: ID!, postal_code: String, street_address1:String, street_address2:String, lat:String, lng:String, label:String): String  @hasScope(scopes: ["admin", "teamlead", "agent"])
 
     createCompany(address: Addressik, name: String, email: String, phone: String, mobile: String, linkedin_url: String,
         facebook_url: String, instagram_url: String, twitter_url: String, lead_status: String, lead_type: String, lead_date: String, lifecycle_stage: String,
@@ -489,44 +519,46 @@ type Mutation {
         facebook_url: String, instagram_url: String, twitter_url: String, property_type: String, lead_type: String, lead_date: String, lifecycle_stage: String,
         created_at: _Neo4jDateInput, last_modified: String, email_domain: String): Property
 
-    createRole(name: String): Role
+    createRole(name: String): Role @hasScope(scopes: ["admin", "teamlead", "agent"])
 
-    createTask(type: String, priority: String, title: String, associated: String, label: String, assigned: String, notes: String, dueDate:String): Task
+    createTask(type: String, priority: String, title: String, associated: String, label: String, assigned: String, notes: String, dueDate:String): Task @hasScope(scopes: ["admin", "teamlead", "agent"])
 
     createUser(address: Addressik, first_name: String, last_name: String, birthday: String, email: String, phone: String, mobile: String, pswd: String, lead_type: String, lead_date: String, lifecycle_stage: String,
-        created_at: _Neo4jDateInput, last_modified: String, email_domain: String, marital_status: String): User
+        created_at: _Neo4jDateInput, last_modified: String, email_domain: String, marital_status: String): User @hasScope(scopes: ["admin", "teamlead", "agent"])
 
-    deleteCompany(companyId: String): String
+    deleteCompany(companyId: String): String @hasScope(scopes: ["admin", "teamlead", "agent"])
 
-    deleteContact(contactId: String): String
+    deleteContact(contactId: String): String @hasScope(scopes: ["admin", "teamlead", "agent"])
 
-    deleteProperty(propertyId: String): String
+    deleteProperty(propertyId: String): String @hasScope(scopes: ["admin", "teamlead", "agent"])
 
-    deleteRole(roleId: String): String
+    deleteRole(roleId: String): String @hasScope(scopes: ["admin", "teamlead", "agent"])
 
-    deleteTask(taskId: String): String
+    deleteTask(taskId: String): String @hasScope(scopes: ["admin", "teamlead", "agent"])
 
-    deleteUser(userId: String): String
+    deleteUser(userId: String): String @hasScope(scopes: ["admin", "teamlead", "agent"])
     
-    mergeContactInterest(from: String, to: String): Interest
+    mergeContactInterest(from: String, to: String): Interest @hasScope(scopes: ["admin", "teamlead", "agent"])
         @cypher(statement: "MATCH (contact:Contact{id: $from}) MATCH (property:Property{id: $to}) MERGE (contact)-[hii:HAS_INTEREST_IN]->(property) RETURN hii")
 
-    readArticle(reader_id: String, article_id: String ): String
+    readArticle(reader_id: String, article_id: String ): String @hasScope(scopes: ["admin", "teamlead", "agent"])
     @cypher(statement: "MATCH (contact:Contact {id: $reader_id }) MATCH (article:Article{id:$article_id}) MERGE (contact)-[read:VIEWED]->(article) RETURN id(read) as rel_id")
 
-    updateCompany(field: String, value: String, companyId: String): Company
+    roleChange(from: ID!, name: String, label:String): String @hasScope(scopes: ["admin", "teamlead", "agent"])
 
-    updateContact(field: String, value: String, contactId: String): Contact
+    updateCompany(field: String, value: String, companyId: String): Company @hasScope(scopes: ["admin", "teamlead", "agent"])
 
-    updateData(nodeLabel: String, nodeId: String, unitId: String, label: String): String
+    updateContact(field: String, value: String, contactId: String): Contact @hasScope(scopes: ["admin", "teamlead", "agent"])
 
-    updateProperty(field: String, value: String, propertyId: String): Company
+    updateData(nodeLabel: String, nodeId: String, unitId: String, label: String): String @hasScope(scopes: ["admin", "teamlead", "agent"])
 
-    updateRole(field: String, value: String, roleId: String): Role
+    updateProperty(field: String, value: String, propertyId: String): Company @hasScope(scopes: ["admin", "teamlead", "agent"])
 
-    updateTask(field: String, value: String, taskId: String): Task
+    updateRole(field: String, value: String, roleId: String): Role @hasScope(scopes: ["admin", "teamlead", "agent"])
 
-    updateUser(field: String, value: String, userId: String): User
+    updateTask(field: String, value: String, taskId: String): Task @hasScope(scopes: ["admin", "teamlead", "agent"])
+
+    updateUser(field: String, value: String, userId: String): User @hasScope(scopes: ["admin", "teamlead", "agent"])
 
  }
 

@@ -8,11 +8,7 @@ import { ApolloProvider } from "@apollo/react-hooks";
 import auth from "./auth/auth.js";
 import { InMemoryCache } from "@apollo/client";
 
-const cache = new InMemoryCache({
-  possibleTypes: {
-    Clients: ["Contact", "Company"],
-  },
-});
+const cache = new InMemoryCache({});
 
 const token = auth.getToken();
 

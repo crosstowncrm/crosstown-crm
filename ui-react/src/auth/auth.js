@@ -2,23 +2,22 @@ import React from "react";
 
 const auth =()=> {
 
-    let inMemoryJWT = null;
-
-    const getToken = () => sessionStorage.getItem("inMemoryJWT");
+    const getToken = () => localStorage.getItem("inMemoryJWT");
 
     const setToken = (token) => {
-        sessionStorage.setItem("inMemoryJWT", token);
+        localStorage.setItem("inMemoryJWT", token);
         return true;
     };
 
     const ereaseToken = () => {
-        sessionStorage.setItem("inMemoryJWT", null);
+        localStorage.setItem("inMemoryJWT", null);
         return true;
-    }
+    };
 
     const isAuth = () => {
-        return sessionStorage.getItem("inMemoryJWT") !== null? true : false
-    }
+        let inMemoryJWT = localStorage.getItem("inMemoryJWT");
+        return inMemoryJWT!=="null" && inMemoryJWT!==null? true : false
+    };
 
     return {
         setToken, getToken, ereaseToken, isAuth

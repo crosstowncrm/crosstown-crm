@@ -42,9 +42,10 @@ const styles = (theme) => ({
   },
 });
 
-function Login(props) {
-  const { classes } = props;
+function Login() {
+
   const [loginUser, lu] = useLazyQuery(LOGIN_USER);
+
   if (lu.loading) {
     return "Loading...";
   }
@@ -64,6 +65,7 @@ function Login(props) {
     if (data.length === 0) {
       return <Redirect to="/error" />;
     }
+
   }
 
   async function handleSubmit(e) {
@@ -85,11 +87,11 @@ function Login(props) {
             <form onSubmit={handleSubmit}>
               <CardHeader
                 title="Sign in"
-                subheader="to continue to Crosstown"
+                subheader="to continue with Crosstown"
               />
               <CardContent>
                 <TextField
-                  label="Enter your login"
+                  label="Enter login"
                   fullWidth
                   autoFocus
                   required
@@ -97,7 +99,7 @@ function Login(props) {
                   id="login"
                 />
                 <TextField
-                  label="Enter your password"
+                  label="Enter password"
                   fullWidth
                   required
                   type="password"

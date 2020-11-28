@@ -16,7 +16,7 @@ const resolvers = {
                             let {name:roleName} = record.get('role')?record.get('role').properties:null;
                             return {
                                 userId: id,
-                                token: jwt.sign({userId:id, scopes: [roleName]}, process.env.JWT_SECRET ||"crying_robocop", {expiresIn:'1h'}),
+                                token: jwt.sign({userId:id, scopes: [roleName]}, process.env.JWT_SECRET ||"crying_robocop", {expiresIn:'5h'}),
                             }
                         }
                     );

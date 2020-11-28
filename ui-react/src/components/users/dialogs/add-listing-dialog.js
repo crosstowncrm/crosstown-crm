@@ -17,7 +17,7 @@ const GET_LISTINGS = gql`
     $offset: Int
     $orderBy: [_ListingOrdering]
   ) {
-    Listing(first: $first, offset: $offset, orderBy: $orderBy) {
+    listing(first: $first, offset: $offset, orderBy: $orderBy) {
       id
       name
     }

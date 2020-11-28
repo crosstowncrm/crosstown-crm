@@ -12,12 +12,12 @@ import { useMutation, useQuery } from "@apollo/client";
 import gql from "graphql-tag";
 
 const GET_LISTINGS = gql`
-  query listingPaginateQuery(
+  query listingsForUsers(
     $first: Int
     $offset: Int
     $orderBy: [_ListingOrdering]
   ) {
-    Listing(first: $first, offset: $offset, orderBy: $orderBy) {
+    listings(first: $first, offset: $offset, orderBy: $orderBy) {
       id
       name
     }

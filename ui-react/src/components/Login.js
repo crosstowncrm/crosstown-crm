@@ -60,6 +60,7 @@ function Login() {
       auth.setToken(data[0].token);
       const path = "/users/" + data[0].userId;
       return <Redirect to={path} />;
+
     }
 
     if (data.length === 0) {

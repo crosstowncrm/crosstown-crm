@@ -10,7 +10,7 @@ const auth =()=> {
     };
 
     const ereaseToken = () => {
-        localStorage.setItem("inMemoryJWT", null);
+        localStorage.removeItem("inMemoryJWT");
         return true;
     };
 

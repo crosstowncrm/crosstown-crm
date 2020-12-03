@@ -9,14 +9,15 @@ import auth from "./auth/auth.js";
 import { InMemoryCache } from "@apollo/client";
 
 const cache = new InMemoryCache({});
-
-const token = auth.getToken();
-
 const client = new ApolloClient({
   uri: process.env.REACT_APP_GRAPHQL_URI,
   cache: cache,
-  headers: {
-    authorization: token ? "Bearer " + token : "",
+  request: (operation) => {
+      operation.setContext({
+          headers: {
+              authorization: auth.getToken(),
+          },
+      });
   },
 });
 

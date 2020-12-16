@@ -4,8 +4,7 @@ import { withStyles } from "@material-ui/core/styles/index";
 import TextField from "@material-ui/core/TextField";
 import multiStep from "../../../multiStep/multiStep";
 import Autocomplete from "@material-ui/lab/Autocomplete";
-import { useQuery } from "@apollo/react-hooks/index";
-import gql from "graphql-tag";
+import { useQuery, gql } from "@apollo/client";
 
 const styles = (theme) => ({
   root: {

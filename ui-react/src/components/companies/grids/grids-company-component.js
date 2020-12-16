@@ -11,13 +11,12 @@ import {
 import Card from "@material-ui/core/Card";
 import CardActions from "@material-ui/core/CardActions";
 import FieldComponent from "./field-component";
-import { useMutation, useQuery } from "@apollo/client";
+import { useMutation, useQuery, gql } from "@apollo/client";
 import Button from "@material-ui/core/Button";
 import TextField from "@material-ui/core/TextField";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import FormControl from "@material-ui/core/FormControl";
 import ChangeAddressDialog from "../../dialogs/change-address-dialog";
-import gql from "graphql-tag";
 
 const UPDATE_COMPANY = gql`
   mutation updateCompany($field: String, $value: String, $companyId: String) {
@@ -294,7 +293,6 @@ export default function GridCompanyComponent({
                   ) : (
                     <span
                       onDoubleClick={(event) => {
-                        console.log("working...");
                         event.preventDefault();
                         if (!engaged) {
                           setEditCAMode(!editCAMode);
@@ -393,7 +391,7 @@ export default function GridCompanyComponent({
                           <Autocomplete
                             id="user"
                             name="user"
-                            options={users.User}
+                            options={users.user}
                             getOptionLabel={(option) =>
                               option.first_name + " " + option.last_name
                             }

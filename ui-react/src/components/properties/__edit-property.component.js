@@ -1,6 +1,5 @@
 import React from "react";
-import { useQuery } from "@apollo/react-hooks";
-import gql from "graphql-tag";
+import { useQuery, gql } from "@apollo/client";
 import "../../UserList.css";
 import { withStyles } from "@material-ui/core/styles";
 import { Link } from "react-router-dom";
@@ -12,24 +11,24 @@ import {
   TableHead,
   TableRow,
   Paper,
-  Typography
+  Typography,
 } from "@material-ui/core";
 
-const styles = theme => ({
+const styles = (theme) => ({
   root: {
     maxWidth: 700,
     marginTop: theme.spacing(3),
     overflowX: "auto",
-    margin: "auto"
+    margin: "auto",
   },
   table: {
-    minWidth: 700
+    minWidth: 700,
   },
   textField: {
     marginLeft: theme.spacing(1),
     marginRight: theme.spacing(1),
-    minWidth: 300
-  }
+    minWidth: 300,
+  },
 });
 
 const GET_PROPERTY = gql`
@@ -40,19 +39,19 @@ const GET_PROPERTY = gql`
       property_type
       secondary_type
       additional_types
-      address{
+      address {
         id
         street_address1
       }
-      contacts{
+      contacts {
         id
         first_name
       }
-      companies{
+      companies {
         id
         name
       }
-      listings{
+      listings {
         id
         name
       }
@@ -66,8 +65,8 @@ function PropertyEdit(props) {
 
   const { loading, data, error } = useQuery(GET_PROPERTY, {
     variables: {
-      id: params["uid"]
-    }
+      id: params["uid"],
+    },
   });
 
   return (
@@ -94,46 +93,57 @@ function PropertyEdit(props) {
             </TableRow>
           </TableHead>
           <TableBody>
-            {data.Property.map(n => {
+            {data.Property.map((n) => {
               return (
                 <TableRow key={n.id}>
                   <TableCell>{n.name}</TableCell>
                   <TableCell>{n.property_type}</TableCell>
                   <TableCell>{n.secondary_type}</TableCell>
                   <TableCell>{n.additional_types}</TableCell>
-                  <TableCell>{n.address ? n.address.street_address1: "no data"}</TableCell>
                   <TableCell>
-                      <ul>
-                          {n.contacts.map(contact => (
-                              <p key={contact.id}>
-                                  <Link className="edit-link" to={"/contacts/" + contact.id}>
-                                      {contact.first_name}
-                                  </Link>
-                              </p>
-                          ))}
-                      </ul>
+                    {n.address ? n.address.street_address1 : "no data"}
                   </TableCell>
                   <TableCell>
-                      <ul>
-                          {n.companies.map(company => (
-                              <p key={company.id}>
-                                  <Link className="edit-link" to={"/companies/" + company.id}>
-                                      {company.name}
-                                  </Link>
-                              </p>
-                          ))}
-                      </ul>
+                    <ul>
+                      {n.contacts.map((contact) => (
+                        <p key={contact.id}>
+                          <Link
+                            className="edit-link"
+                            to={"/contacts/" + contact.id}
+                          >
+                            {contact.first_name}
+                          </Link>
+                        </p>
+                      ))}
+                    </ul>
                   </TableCell>
                   <TableCell>
-                      <ul>
-                          {n.listings.map(listing => (
-                              <p key={listing.id}>
-                                  <Link className="edit-link" to={"/listings/" + listing.id}>
-                                      {listing.name}
-                                  </Link>
-                              </p>
-                          ))}
-                      </ul>
+                    <ul>
+                      {n.companies.map((company) => (
+                        <p key={company.id}>
+                          <Link
+                            className="edit-link"
+                            to={"/companies/" + company.id}
+                          >
+                            {company.name}
+                          </Link>
+                        </p>
+                      ))}
+                    </ul>
+                  </TableCell>
+                  <TableCell>
+                    <ul>
+                      {n.listings.map((listing) => (
+                        <p key={listing.id}>
+                          <Link
+                            className="edit-link"
+                            to={"/listings/" + listing.id}
+                          >
+                            {listing.name}
+                          </Link>
+                        </p>
+                      ))}
+                    </ul>
                   </TableCell>
                 </TableRow>
               );

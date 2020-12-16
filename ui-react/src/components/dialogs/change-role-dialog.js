@@ -4,10 +4,9 @@ import Dialog from "@material-ui/core/Dialog";
 import DialogActions from "@material-ui/core/DialogActions";
 import DialogContent from "@material-ui/core/DialogContent";
 import DialogTitle from "@material-ui/core/DialogTitle";
-import { useMutation } from "@apollo/client";
+import { useMutation, gql } from "@apollo/client";
 import ContactRole from "../users/steps/step-contact-role";
 import multiStep from "../../multiStep/multiStep";
-import gql from "graphql-tag";
 
 const ROLE_CHANGE = gql`
   mutation roleChange($from: ID!, $name: String, $label: String) {

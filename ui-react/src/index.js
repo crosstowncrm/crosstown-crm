@@ -3,22 +3,31 @@ import ReactDOM from "react-dom";
 import "./index.css";
 import App from "./App";
 import registerServiceWorker from "./registerServiceWorker";
-import ApolloClient from "apollo-boost";
-import { ApolloProvider } from "@apollo/react-hooks";
 import auth from "./auth/auth.js";
-import { InMemoryCache } from "@apollo/client";
+import { setContext } from "@apollo/client/link/context";
+import {
+  ApolloProvider,
+  ApolloClient,
+  InMemoryCache,
+  HttpLink,
+} from "@apollo/client";
 
 const cache = new InMemoryCache({});
+const httpLink = new HttpLink({ uri: process.env.REACT_APP_GRAPHQL_URI });
+const authLink = setContext((_, { headers, ...context }) => {
+  const token = auth.getToken();
+  return {
+    headers: {
+      ...headers,
+      ...(token ? { authorization: `Bearer ${token}` } : {}),
+    },
+    ...context,
+  };
+});
+
 const client = new ApolloClient({
-  uri: process.env.REACT_APP_GRAPHQL_URI,
   cache: cache,
-  request: (operation) => {
-      operation.setContext({
-          headers: {
-              authorization: auth.getToken(),
-          },
-      });
-  },
+  link: authLink.concat(httpLink),
 });
 
 const Main = () => (

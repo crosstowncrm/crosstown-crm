@@ -36,9 +36,14 @@
     "now-build": "react-scripts build"
   },
   "devDependencies": {
+    "@editorjs/editorjs": "^2.19.0",
+    "@editorjs/header": "^2.6.1",
+    "@editorjs/list": "^1.6.1",
+    "@editorjs/paragraph": "^2.8.0",
     "http-proxy-middleware": "^1.0.5",
     "husky": "^4.3.0",
-    "lint-staged": "^10.4.0"
+    "lint-staged": "^10.4.0",
+    "react-editor-js": "^1.7.0"
   },
   "husky": {
     "hooks": {

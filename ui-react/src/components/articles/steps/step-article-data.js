@@ -1,10 +1,35 @@
 import React from "react";
 import { makeStyles } from "@material-ui/core/styles/index";
 import TextField from "@material-ui/core/TextField";
+import EditorJS from "@editorjs/editorjs";
+import Header from "@editorjs/header";
+import List from "@editorjs/list";
 import { Link } from "react-router-dom";
 import Button from "@material-ui/core/Button";
 import multiStep from "../../../multiStep/multiStep";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
+
+// const editor = new EditorJS({
+//     holderId: 'editorjs',
+//     tools: {
+//         header: Header,
+//         list: List,
+//         data: {
+//             time: 1556098174501,
+//             blocks: [
+//                 {
+//                     type: "header",
+//                     data: {
+//                         text: "Editor.js",
+//                         level: 2
+//                     }
+//                 },
+//
+//             ]
+//         }
+//     },});
+
+// console.log(editor);
 
 const useStyles = makeStyles((theme) => ({
   button: {
@@ -38,7 +63,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function RoleData() {
+function ArticleData() {
   const [errors, setErrors] = React.useState(multiStep.getErrors());
   const classes = useStyles();
   const handleChange = (event) => {
@@ -68,13 +93,16 @@ function RoleData() {
           </div>
         </div>
       </div>
-
-      <Link variant="body2" color="primary" to="/roles">
+      <div class="container">
+        {/*<div id="editorjs">*/}
+        {/*</div>*/}
+      </div>
+      <Link variant="body2" color="primary" to="/articles">
         <Button color="primary" type="button">
-          Back to Roles
+          Back to Articles
         </Button>
       </Link>
     </div>
   );
 }
-export default RoleData;
+export default ArticleData;

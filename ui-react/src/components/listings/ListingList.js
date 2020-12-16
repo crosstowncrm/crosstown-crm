@@ -1,6 +1,5 @@
 import React from "react";
-import { useQuery } from "@apollo/react-hooks";
-import gql from "graphql-tag";
+import { useQuery, gql } from "@apollo/client";
 import "../../UserList.css";
 import { withStyles } from "@material-ui/core/styles";
 import { Link } from "react-router-dom";
@@ -15,24 +14,24 @@ import {
   Paper,
   TableSortLabel,
   Typography,
-  TextField
+  TextField,
 } from "@material-ui/core";
 
-const styles = theme => ({
+const styles = (theme) => ({
   root: {
     maxWidth: 700,
     marginTop: theme.spacing(3),
     overflowX: "auto",
-    margin: "auto"
+    margin: "auto",
   },
   table: {
-    minWidth: 700
+    minWidth: 700,
   },
   textField: {
     marginLeft: theme.spacing(1),
     marginRight: theme.spacing(1),
-    minWidth: 300
-  }
+    minWidth: 300,
+  },
 });
 
 const GET_LISTINGS = gql`
@@ -79,11 +78,11 @@ function ListingList(props) {
       first: rowsPerPage,
       offset: rowsPerPage * page,
       orderBy: orderBy + "_" + order,
-      filter: getFilter()
-    }
+      filter: getFilter(),
+    },
   });
 
-  const handleSortRequest = property => {
+  const handleSortRequest = (property) => {
     const newOrderBy = property;
     let newOrder = "desc";
 
@@ -95,11 +94,11 @@ function ListingList(props) {
     setOrderBy(newOrderBy);
   };
 
-  const handleFilterChange = filterName => event => {
+  const handleFilterChange = (filterName) => (event) => {
     const val = event.target.value;
-    setFilterState(oldFilterState => ({
+    setFilterState((oldFilterState) => ({
       ...oldFilterState,
-      [filterName]: val
+      [filterName]: val,
     }));
   };
 
@@ -107,7 +106,7 @@ function ListingList(props) {
     setPage(newPage);
   };
 
-  const handleChangeRowsPerPage = event => {
+  const handleChangeRowsPerPage = (event) => {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
   };
@@ -115,7 +114,7 @@ function ListingList(props) {
   const {
     loading: listingsCountQueryLoading,
     data: listingsCount,
-    error: listingsCountQueryError
+    error: listingsCountQueryError,
   } = useQuery(GET_LISTINGS_COUNT);
 
   return (
@@ -133,7 +132,7 @@ function ListingList(props) {
         variant="outlined"
         type="text"
         InputProps={{
-          className: classes.input
+          className: classes.input,
         }}
       />
       {loading && !error && <p>Loading...</p>}
@@ -160,7 +159,7 @@ function ListingList(props) {
             </TableRow>
           </TableHead>
           <TableBody>
-            {data.Listing.map(n => {
+            {data.listings.map((n) => {
               return (
                 <TableRow key={n.id}>
                   <TableCell>

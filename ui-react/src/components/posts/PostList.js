@@ -1,6 +1,5 @@
 import React from "react";
-import { useQuery } from "@apollo/react-hooks";
-import gql from "graphql-tag";
+import { useQuery, gql } from "@apollo/client";
 import "../../UserList.css";
 import { withStyles } from "@material-ui/core/styles";
 import { Link } from "react-router-dom";
@@ -16,21 +15,21 @@ import {
   Typography,
 } from "@material-ui/core";
 
-const styles = theme => ({
+const styles = (theme) => ({
   root: {
     maxWidth: 700,
     marginTop: theme.spacing(3),
     overflowX: "auto",
-    margin: "auto"
+    margin: "auto",
   },
   table: {
-    minWidth: 700
+    minWidth: 700,
   },
   textField: {
     marginLeft: theme.spacing(1),
     marginRight: theme.spacing(1),
-    minWidth: 300
-  }
+    minWidth: 300,
+  },
 });
 
 const GET_POST = gql`
@@ -42,8 +41,8 @@ const GET_POST = gql`
     Post(first: $first, offset: $offset, orderBy: $orderBy) {
       id
       title
-      event_time{
-          formatted
+      event_time {
+        formatted
       }
     }
   }
@@ -56,11 +55,11 @@ function PostList(props) {
 
   const { loading, data, error } = useQuery(GET_POST, {
     variables: {
-      orderBy: orderBy + "_" + order
-    }
+      orderBy: orderBy + "_" + order,
+    },
   });
 
-  const handleSortRequest = property => {
+  const handleSortRequest = (property) => {
     const newOrderBy = property;
     let newOrder = "desc";
 
@@ -102,14 +101,14 @@ function PostList(props) {
             </TableRow>
           </TableHead>
           <TableBody>
-            {data.Post.map(post => {
+            {data.Post.map((post) => {
               return (
                 <TableRow key={post.id}>
-                    <TableCell>
-                      <Link className="edit-link" to={"/posts/" + post.id}>
-                        {post.title}
-                      </Link>
-                    </TableCell>
+                  <TableCell>
+                    <Link className="edit-link" to={"/posts/" + post.id}>
+                      {post.title}
+                    </Link>
+                  </TableCell>
                 </TableRow>
               );
             })}

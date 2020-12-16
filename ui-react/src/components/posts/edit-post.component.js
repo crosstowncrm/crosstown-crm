@@ -1,6 +1,5 @@
 import React from "react";
-import { useQuery } from "@apollo/react-hooks";
-import gql from "graphql-tag";
+import { useQuery, gql } from "@apollo/client";
 import "../../UserList.css";
 import { withStyles } from "@material-ui/core/styles";
 import { Link } from "react-router-dom";
@@ -12,24 +11,24 @@ import {
   TableHead,
   TableRow,
   Paper,
-  Typography
+  Typography,
 } from "@material-ui/core";
 
-const styles = theme => ({
+const styles = (theme) => ({
   root: {
     maxWidth: 700,
     marginTop: theme.spacing(3),
     overflowX: "auto",
-    margin: "auto"
+    margin: "auto",
   },
   table: {
-    minWidth: 700
+    minWidth: 700,
   },
   textField: {
     marginLeft: theme.spacing(1),
     marginRight: theme.spacing(1),
-    minWidth: 300
-  }
+    minWidth: 300,
+  },
 });
 
 const GET_POST = gql`
@@ -41,30 +40,30 @@ const GET_POST = gql`
       keywords
       content
       link
-      event_time{
-          formatted
+      event_time {
+        formatted
       }
       viewed_post {
-          timestamp {
-              formatted
-          }
-          Contact {
-              id
-              first_name
-          }
+        timestamp {
+          formatted
+        }
+        Contact {
+          id
+          first_name
+        }
       }
       shared_post {
-          timestamp {
-              formatted
-          }
-          Contact {
-              id
-              first_name
-          }
+        timestamp {
+          formatted
+        }
+        Contact {
+          id
+          first_name
+        }
       }
       categories {
-          id
-          name
+        id
+        name
       }
     }
   }
@@ -75,8 +74,8 @@ function PostEdit(props) {
   const params = props.match.params;
   const { loading, data, error } = useQuery(GET_POST, {
     variables: {
-      id: params["uid"]
-    }
+      id: params["uid"],
+    },
   });
 
   return (
@@ -105,7 +104,7 @@ function PostEdit(props) {
             </TableRow>
           </TableHead>
           <TableBody>
-            {data.Post.map(post => {
+            {data.Post.map((post) => {
               return (
                 <TableRow key={post.id}>
                   <TableCell>{post.title}</TableCell>
@@ -115,32 +114,43 @@ function PostEdit(props) {
                   <TableCell>{post.event_time.formatted}</TableCell>
                   {/*<TableCell>*/}
                   {/*{post.images.map(image => (*/}
-                      {/*{image}*/}
+                  {/*{image}*/}
                   {/*))}*/}
                   {/*</TableCell>*/}
                   <TableCell>{post.link}</TableCell>
                   <TableCell>
-                    {post.viewed_post.map(viewed => (
-                        <Link  key={viewed.Contact.id} className="edit-link" to={"/contacts/" + viewed.Contact.id}>
-                            {viewed.Contact.first_name} {viewed.timestamp.formatted}
-                        </Link>
+                    {post.viewed_post.map((viewed) => (
+                      <Link
+                        key={viewed.Contact.id}
+                        className="edit-link"
+                        to={"/contacts/" + viewed.Contact.id}
+                      >
+                        {viewed.Contact.first_name} {viewed.timestamp.formatted}
+                      </Link>
                     ))}
                   </TableCell>
                   <TableCell>
-                    {post.shared_post.map(shared => (
-                         <Link  key={shared.Contact.id} className="edit-link" to={"/contacts/" + shared.Contact.id}>
-                             {shared.Contact.first_name} {shared.timestamp.formatted}
-                         </Link>
+                    {post.shared_post.map((shared) => (
+                      <Link
+                        key={shared.Contact.id}
+                        className="edit-link"
+                        to={"/contacts/" + shared.Contact.id}
+                      >
+                        {shared.Contact.first_name} {shared.timestamp.formatted}
+                      </Link>
                     ))}
                   </TableCell>
                   <TableCell>
-                    {post.categories.map(category => (
-                        <Link key={category.id} className="edit-link" to={"/categories/" + category.id}>
-                            {category.name}
-                        </Link>
+                    {post.categories.map((category) => (
+                      <Link
+                        key={category.id}
+                        className="edit-link"
+                        to={"/categories/" + category.id}
+                      >
+                        {category.name}
+                      </Link>
                     ))}
-                    </TableCell>
-
+                  </TableCell>
                 </TableRow>
               );
             })}

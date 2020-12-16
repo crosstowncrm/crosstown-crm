@@ -8,8 +8,7 @@ import DialogContentText from "@material-ui/core/DialogContentText";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import FormControl from "@material-ui/core/FormControl";
 import Autocomplete from "@material-ui/lab/Autocomplete";
-import { useMutation, useQuery } from "@apollo/client";
-import gql from "graphql-tag";
+import { useMutation, useQuery, gql } from "@apollo/client";
 
 const GET_LISTINGS = gql`
   query listingsForUsers(
@@ -57,7 +56,6 @@ export default function AddListingDialog({
   });
 
   const handleChange = (e, value) => {
-    console.log(value);
     updateFormData({
       ...formData,
       ["to"]: value.id,
@@ -83,7 +81,6 @@ export default function AddListingDialog({
     const isValid = validate(formData);
 
     if (isValid) {
-      console.log(formData);
       associationAdd({
         variables: formData,
       });
@@ -114,7 +111,7 @@ export default function AddListingDialog({
               <Autocomplete
                 id="company"
                 name="company"
-                options={listings.Listing}
+                options={listings.listings}
                 getOptionLabel={(option) => option.name}
                 style={{ width: 300 }}
                 onChange={handleChange}

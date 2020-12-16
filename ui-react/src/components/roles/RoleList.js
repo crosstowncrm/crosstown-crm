@@ -1,10 +1,9 @@
 import React from "react";
-import gql from "graphql-tag";
 import { withStyles } from "@material-ui/core/styles";
 import { Link } from "react-router-dom";
 import Button from "@material-ui/core/Button";
 import DeleteRoleDialog from "../dialogs/delete-role-dialog";
-import { useMutation, useQuery } from "@apollo/client";
+import { useMutation, useQuery, gql } from "@apollo/client";
 import TablePagination from "@material-ui/core/TablePagination";
 
 import {
@@ -169,7 +168,6 @@ function RoleList(props) {
     event.preventDefault();
     setField(event.target.id);
     setFieldValue(event.target.value);
-    console.log(event.target.id, event.target.value);
   };
 
   const handleCancel = (event) => {

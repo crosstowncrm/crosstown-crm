@@ -1,8 +1,7 @@
 import React from "react";
 import { withStyles } from "@material-ui/core/styles/index";
-import { useMutation } from "@apollo/client";
+import { useMutation, gql } from "@apollo/client";
 
-import gql from "graphql-tag";
 import { Link } from "react-router-dom";
 import Button from "@material-ui/core/Button";
 
@@ -27,24 +26,24 @@ const GET_USERS = gql`
       orderByMe: $orderByMe
       filter: $filter
     ) {
-        id
+      id
+      first_name
+      last_name
+      email
+      pswd
+      phone
+      created_at {
+        formatted
+      }
+      owner {
         first_name
         last_name
-        email
-        pswd
-        phone
-        created_at {
-          formatted
-        }
-        owner {
-          first_name
-          last_name
-        }
-        role {
-            id
-            name
-        }
       }
+      role {
+        id
+        name
+      }
+    }
   }
 `;
 

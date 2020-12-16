@@ -1,6 +1,5 @@
 import React from "react";
-import { useQuery } from "@apollo/react-hooks";
-import gql from "graphql-tag";
+import { useQuery, gql } from "@apollo/client";
 import "../../UserList.css";
 import { withStyles } from "@material-ui/core/styles";
 import { Link } from "react-router-dom";
@@ -151,9 +150,18 @@ function ContactEdit(props) {
   const [editMSMode, setEditMSMode] = React.useState(false);
   const [editOwnerMode, setEditOwnerMode] = React.useState(false);
   const [openDialogComponent, setOpenDialogComponent] = React.useState(false);
-  const [openAddressDialogComponent, setOpenAddressDialogComponent] = React.useState(false);
-  const [openDialogInterestComponent, setOpenInterestDialogComponent] = React.useState(false);
-  const [openDialogListingComponent, setOpenListingDialogComponent] = React.useState(false);
+  const [
+    openAddressDialogComponent,
+    setOpenAddressDialogComponent,
+  ] = React.useState(false);
+  const [
+    openDialogInterestComponent,
+    setOpenInterestDialogComponent,
+  ] = React.useState(false);
+  const [
+    openDialogListingComponent,
+    setOpenListingDialogComponent,
+  ] = React.useState(false);
 
   const callDialog = () => {
     setOpenDialogComponent(true);

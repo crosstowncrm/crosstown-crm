@@ -1,10 +1,9 @@
 import React from "react";
-import gql from "graphql-tag";
 import { withStyles } from "@material-ui/core/styles";
 import { Link } from "react-router-dom";
 import Button from "@material-ui/core/Button";
 import DeleteContactDialog from "../dialogs/delete-contact-dialog";
-import { useMutation, useQuery } from "@apollo/client";
+import { useMutation, useQuery, gql } from "@apollo/client";
 import TablePagination from "@material-ui/core/TablePagination";
 
 import {

@@ -42,16 +42,23 @@ input Addressik {
 
 type Article {
     id: ID!
+    author: String
     categories: [Category] @relation(name: "IN_CATEGORY", direction: "OUT")
     content: String
     event_time: DateTime
     excerpt: String
+    headline: String
+    lat: String
     link: String
+    lng: String
     location: Point
     opened_source: [OpenedSource]
-    recommendations(first: Int = 300): [Contact] @cypher(statement: "MATCH (address:Address)<-[*]-(contact:Contact) WHERE distance(this.location, Point({latitude:toFloat(address.lat), longitude:toFloat(address.lng)})) < 1000000 RETURN DISTINCT contact")
+    published: DateTime
+    recommendationTo(first: Int = 300): [Contact] @cypher(statement: "MATCH (address:Address)<-[*]-(contact:Contact) WHERE distance(this.location, Point({latitude:toFloat(address.lat), longitude:toFloat(address.lng)})) < 1000000 RETURN DISTINCT contact")
     shared: [Shared]
-    source: String
+    source_name: String
+    summary_description: String
+    tags: [String]
     title: String
     viewed: [Viewed]
 }
@@ -509,6 +516,9 @@ type Mutation {
 
     addressChange(from: ID!, postal_code: String, street_address1:String, street_address2:String, lat:String, lng:String, label:String): String  @hasScope(scopes: ["admin", "teamlead", "agent"])
 
+    createArticle( author: String, categories: String, content: String, event_time: DateTime, excerpt: String, headline: String, lat: String, link: String,
+        lng: String, location: Point, opened_source: String, published: DateTime, source_name: String, summary_description: String, tags: [String], title: String, viewed: String ): Article @hasScope(scopes: ["admin", "teamlead", "agent"])
+
     createCompany(address: Addressik, name: String, email: String, phone: String, mobile: String, linkedin_url: String,
         facebook_url: String, instagram_url: String, twitter_url: String, lead_status: String, lead_type: String, lead_date: String, lifecycle_stage: String,
         created_at: _Neo4jDateInput, last_modified: String, email_domain: String): Company
@@ -518,7 +528,7 @@ type Mutation {
         created_at: _Neo4jDateInput, last_modified: String, email_domain: String, marital_status: String): Contact
 
     createDeal(action: Int, amount: String, client_id: String, est_date: String, living: Int, property_id: String): Deal
-    @cypher(statement: "MATCH (client:Client {id: $client_id }) MATCH (property:Property{id:$property_id}) MATCH (strategy:Strategy {id: $living }) MATCH (type:Type {id: $action }) CREATE (deal:Deal{stage: 'start', action: $action, amount: $amount, start_time: datetime(), est_date: datetime($est_date), living: $living}) MERGE (client)-[:HAS_INTEREST_IN]->(deal)-[:HAS_INTEREST_IN]->(property) MERGE (type)<-[:HAS_TYPE]-(deal)-[:HAS_STRATEGY]->(strategy) SET deal.id = toString(id(deal)) RETURN deal")
+        @cypher(statement: "MATCH (client:Client {id: $client_id }) MATCH (property:Property{id:$property_id}) MATCH (strategy:Strategy {id: $living }) MATCH (type:Type {id: $action }) CREATE (deal:Deal{stage: 'start', action: $action, amount: $amount, start_time: datetime(), est_date: datetime($est_date), living: $living}) MERGE (client)-[:HAS_INTEREST_IN]->(deal)-[:HAS_INTEREST_IN]->(property) MERGE (type)<-[:HAS_TYPE]-(deal)-[:HAS_STRATEGY]->(strategy) SET deal.id = toString(id(deal)) RETURN deal")
 
     createProperty(address: Addressik, name: String, email: String, phone: String, mobile: String, linkedin_url: String,
         facebook_url: String, instagram_url: String, twitter_url: String, property_type: String, lead_type: String, lead_date: String, lifecycle_stage: String,
@@ -531,6 +541,8 @@ type Mutation {
     createUser(address: Addressik, first_name: String, last_name: String, birthday: String, email: String, phone: String, mobile: String, pswd: String, lead_type: String, lead_date: String, lifecycle_stage: String,
         created_at: _Neo4jDateInput, last_modified: String, email_domain: String, marital_status: String): User @hasScope(scopes: ["admin", "teamlead", "agent"])
 
+    deleteArticle(articleId: String): String @hasScope(scopes: ["admin", "teamlead", "agent"])
+    
     deleteCompany(companyId: String): String @hasScope(scopes: ["admin", "teamlead", "agent"])
 
     deleteContact(contactId: String): String @hasScope(scopes: ["admin", "teamlead", "agent"])
@@ -547,9 +559,11 @@ type Mutation {
         @cypher(statement: "MATCH (contact:Contact{id: $from}) MATCH (property:Property{id: $to}) MERGE (contact)-[hii:HAS_INTEREST_IN]->(property) RETURN hii")
 
     readArticle(reader_id: String, article_id: String ): String @hasScope(scopes: ["admin", "teamlead", "agent"])
-    @cypher(statement: "MATCH (contact:Contact {id: $reader_id }) MATCH (article:Article{id:$article_id}) MERGE (contact)-[read:VIEWED]->(article) RETURN id(read) as rel_id")
+        @cypher(statement: "MATCH (contact:Contact {id: $reader_id }) MATCH (article:Article{id:$article_id}) MERGE (contact)-[read:VIEWED]->(article) RETURN id(read) as rel_id")
 
     roleChange(from: ID!, name: String, label:String): String @hasScope(scopes: ["admin", "teamlead", "agent"])
+
+    updateArticle(field: String, value: String, articleId: String): Article @hasScope(scopes: ["admin", "teamlead", "agent"])
 
     updateCompany(field: String, value: String, companyId: String): Company @hasScope(scopes: ["admin", "teamlead", "agent"])
 

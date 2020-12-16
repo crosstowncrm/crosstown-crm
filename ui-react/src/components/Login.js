@@ -6,9 +6,8 @@ import CardContent from "@material-ui/core/CardContent";
 import CardActions from "@material-ui/core/CardActions";
 import TextField from "@material-ui/core/TextField";
 
-import { useLazyQuery } from "@apollo/react-hooks";
+import { useLazyQuery, gql } from "@apollo/client";
 import { Redirect } from "react-router-dom";
-import gql from "graphql-tag";
 
 import ResponsiveCard from "../responsive/ResponsiveCard.js";
 import ResponsiveContainerGrid from "../responsive/ResponsiveContainerGrid.js";
@@ -43,7 +42,6 @@ const styles = (theme) => ({
 });
 
 function Login() {
-
   const [loginUser, lu] = useLazyQuery(LOGIN_USER);
 
   if (lu.loading) {
@@ -60,13 +58,11 @@ function Login() {
       auth.setToken(data[0].token);
       const path = "/users/" + data[0].userId;
       return <Redirect to={path} />;
-
     }
 
     if (data.length === 0) {
       return <Redirect to="/error" />;
     }
-
   }
 
   async function handleSubmit(e) {

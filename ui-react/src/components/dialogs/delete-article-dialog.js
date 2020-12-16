@@ -5,29 +5,30 @@ import DialogActions from "@material-ui/core/DialogActions";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import { useMutation, gql } from "@apollo/client";
 
-const DELETE_PROPERTY = gql`
-  mutation deleteProperty($propertyId: String) {
-    deleteProperty(propertyId: $propertyId)
+const DELETE_ARTICLE = gql`
+  mutation deleteArticle($articleId: String) {
+    deleteArticle(articleId: $articleId)
   }
 `;
 
-export default function DeletePropertyDialog({
+export default function DeleteArticleDialog({
   isOpen,
   handleClose,
-  propertyId,
+  articleId,
   refetch,
 }) {
   const handleSubmit = (e) => {
     e.preventDefault();
-    deleteProperty({
-      variables: { propertyId: propertyId },
+    deleteArticle({
+      variables: { articleId: articleId },
     });
     handleClose();
   };
+
   const [
-    deleteProperty,
+    deleteArticle,
     { loading: duMutationLoading, error: duMutationError },
-  ] = useMutation(DELETE_PROPERTY, {
+  ] = useMutation(DELETE_ARTICLE, {
     update: () => refetch(),
   });
 

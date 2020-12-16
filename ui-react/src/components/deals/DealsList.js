@@ -1,8 +1,7 @@
 import React from "react";
-import gql from "graphql-tag";
 import "../../UserList.css";
 import { withStyles } from "@material-ui/core/styles";
-import { useMutation, useQuery } from "@apollo/client";
+import { useMutation, useQuery, gql } from "@apollo/client";
 import { Typography, TextField, Button, Dialog } from "@material-ui/core";
 
 import Grid from "@material-ui/core/Grid";

@@ -8,8 +8,7 @@ import DialogContentText from "@material-ui/core/DialogContentText";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import FormControl from "@material-ui/core/FormControl";
 import Autocomplete from "@material-ui/lab/Autocomplete";
-import { useMutation, useQuery } from "@apollo/client";
-import gql from "graphql-tag";
+import { useMutation, useQuery, gql } from "@apollo/client";
 
 const GET_PROPERTIES = gql`
   query propertiesPaginateQuery(
@@ -78,7 +77,6 @@ export default function AddInterestDialog({
     const isValid = validate(formData);
 
     if (isValid) {
-      console.log(formData);
       interestAdd({
         variables: formData,
       });

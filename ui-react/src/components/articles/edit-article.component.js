@@ -1,186 +1,256 @@
 import React from "react";
-import { useQuery, useMutation } from "@apollo/client";
-import gql from "graphql-tag";
-import "../../UserList.css";
+import { useQuery, gql } from "@apollo/client";
 import { withStyles } from "@material-ui/core/styles";
-import { Link } from "react-router-dom";
 
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableRow,
-  Paper,
-  Typography,
-} from "@material-ui/core";
+import { Grid } from "@material-ui/core";
+import Card from "@material-ui/core/Card";
+
+import CardContent from "@material-ui/core/CardContent";
+import Button from "@material-ui/core/Button";
+import Typography from "@material-ui/core/Typography";
+import Avatar from "@material-ui/core/Avatar";
+import TextField from "@material-ui/core/TextField";
+
+import { Divider } from "@material-ui/core";
+import { useMutation } from "@apollo/client";
 
 const styles = (theme) => ({
   root: {
-    maxWidth: 700,
-    marginTop: theme.spacing(3),
-    overflowX: "auto",
-    margin: "auto",
-  },
-  table: {
-    minWidth: 700,
-  },
-  textField: {
-    marginLeft: theme.spacing(1),
-    marginRight: theme.spacing(1),
-    minWidth: 300,
+    maxWidth: "100%",
   },
 });
 
 const GET_ARTICLE = gql`
-  query userQuery($id: ID) {
-    Article(id: $id) {
+  query articleQuery($id: ID) {
+    getArticle(id: $id) {
       id
-      title
-      excerpt
-      content
-      source
-      link
-      event_time {
-        formatted
-      }
-      categories {
+      name
+      assigned {
         id
-        name
-      }
-      viewed {
-        timestamp {
-          formatted
-        }
-        Contact {
-          id
-          first_name
-        }
-      }
-      shared {
-        timestamp {
-          formatted
-        }
-        Contact {
-          id
-          first_name
-        }
-      }
-      opened_source {
-        timestamp {
-          formatted
-        }
-        Contact {
-          id
-          first_name
-        }
+        first_name
+        last_name
       }
     }
   }
 `;
 
+const UPDATE_ARTICLE = gql`
+  mutation updateArticle($field: String, $value: String, $articleId: String) {
+    updateArticle(field: $field, value: $value, articleId: $articleId) {
+      id
+    }
+  }
+`;
+
+const GET_USERS = gql`
+  query User {
+    User {
+      id
+      first_name
+      last_name
+    }
+  }
+`;
+
 function ArticleEdit(props) {
-  const { classes } = props;
   const params = props.match.params;
-  const { loading, data, error } = useQuery(GET_ARTICLE, {
+  const [openDialogComponent, setOpenDialogComponent] = React.useState(false);
+  const [
+    openAddressDialogComponent,
+    setOpenAddressDialogComponent,
+  ] = React.useState(false);
+  const [field, setField] = React.useState(false);
+  const [fieldValue, setFieldValue] = React.useState(false);
+  const [engaged, setEngaged] = React.useState(false);
+  const [isEditMode, setIsEditMode] = React.useState({});
+
+  const handleCloseDialogComponent = () => {
+    setOpenDialogComponent(false);
+  };
+
+  const handleCloseAddressDialogComponent = () => {
+    setOpenAddressDialogComponent(false);
+  };
+
+  const { loading, data, error, refetch } = useQuery(GET_ARTICLE, {
     variables: {
       id: params["uid"],
     },
   });
 
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    if (!!field && fieldValue !== data.getArticle[0][field]) {
+      updateArticle({
+        variables: {
+          field: "article." + field,
+          value: fieldValue,
+          articleId: params["uid"],
+        },
+      });
+    }
+    setIsEditMode({});
+    setEngaged(false);
+  };
+
+  const handleChange = (event) => {
+    event.preventDefault();
+    setField(event.target.id);
+    setFieldValue(event.target.value);
+  };
+
+  const handleCancel = (event) => {
+    event.preventDefault();
+    setIsEditMode({});
+    setEngaged(false);
+  };
+
+  const [
+    updateArticle,
+    { loading: cndMutationLoading, error: cndQMutationError },
+  ] = useMutation(UPDATE_ARTICLE, {
+    update: () => refetch(),
+  });
+
   return (
-    <Paper className={classes.root}>
-      <Typography variant="h2" gutterBottom>
-        Article Edit
-      </Typography>
+    <>
       {loading && !error && <p>Loading...</p>}
       {error && !loading && <p>Error</p>}
 
       {data && !loading && !error && (
-        <Table className={classes.table}>
-          <TableHead>
-            <TableRow>
-              <TableCell key="title">title</TableCell>
-              <TableCell key="excerpt">excerpt</TableCell>
-              <TableCell key="content">content</TableCell>
-              <TableCell key="source">source</TableCell>
-              <TableCell key="link">link</TableCell>
-              <TableCell key="categories">categories</TableCell>
-              <TableCell key="viewed">viewed</TableCell>
-              <TableCell key="shared">shared</TableCell>
-              <TableCell key="opened_source">opened source</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {data.Article.map((article) => {
-              return (
-                <TableRow key={article.id}>
-                  <TableCell>
-                    {article.title ? article.title : "no data"}
-                  </TableCell>
-                  <TableCell>
-                    {article.excerpt ? article.excerpt : "no data"}
-                  </TableCell>
-                  <TableCell>
-                    {article.content ? article.content : "no data"}
-                  </TableCell>
-                  <TableCell>
-                    {article.source ? article.source : "no data"}
-                  </TableCell>
-                  <TableCell>
-                    {article.link ? article.link : "no data"}
-                  </TableCell>
-                  <TableCell>
-                    {article.categories.map((category) => (
-                      <Link
-                        key={category.id}
-                        className="edit-link"
-                        to={"/categories/" + category.id}
-                      >
-                        {category.name}
-                      </Link>
-                    ))}
-                  </TableCell>
-                  <TableCell>
-                    {article.viewed.map((viewed) => (
-                      <Link
-                        key={viewed.Contact.id}
-                        className="edit-link"
-                        to={"/contacts/" + viewed.Contact.id}
-                      >
-                        {viewed.Contact.first_name} {viewed.timestamp.formatted}
-                      </Link>
-                    ))}
-                  </TableCell>
-                  <TableCell>
-                    {article.shared.map((shared) => (
-                      <Link
-                        key={shared.Contact.id}
-                        className="edit-link"
-                        to={"/contacts/" + shared.Contact.id}
-                      >
-                        {shared.Contact.first_name} {shared.timestamp.formatted}
-                      </Link>
-                    ))}
-                  </TableCell>
-                  <TableCell>
-                    {article.opened_source.map((opened) => (
-                      <Link
-                        key={opened.Contact.id}
-                        className="edit-link"
-                        to={"/contacts/" + opened.Contact.id}
-                      >
-                        {opened.Contact.first_name} {opened.timestamp.formatted}
-                      </Link>
-                    ))}
-                  </TableCell>
-                </TableRow>
-              );
-            })}
-          </TableBody>
-        </Table>
+        <Grid
+          container
+          spacing={2}
+          style={{
+            border: "3px solid blue",
+            margin: "12px",
+            width: "98%",
+          }}
+        >
+          <Grid item md={3}>
+            <Grid
+              item
+              md={12}
+              style={{
+                border: "2px solid blue",
+                margin: "2px",
+              }}
+            >
+              About
+            </Grid>
+            <Grid
+              item
+              md={12}
+              style={{
+                border: "2px solid blue",
+                margin: "2px",
+              }}
+            >
+              {data.getArticle.map(({ id, name }) => (
+                <Card key={`card-${id}`}>
+                  <CardContent>
+                    <Avatar>***</Avatar>
+                    <Typography gutterBottom variant="h5" component="h2">
+                      {name ? name : "no data"}
+                    </Typography>
+                  </CardContent>
+                  <Divider />
+                  <CardContent>
+                    <Typography
+                      variant="body2"
+                      color="textSecondary"
+                      component="div"
+                    >
+                      {isEditMode["name"] ? (
+                        <form onSubmit={handleSubmit}>
+                          <TextField
+                            label="Name"
+                            onClick={handleChange}
+                            onChange={handleChange}
+                            id="name"
+                            defaultValue={name}
+                            size="small"
+                          />
+                          <br />
+                          <Button color="primary" type="submit">
+                            Update
+                          </Button>
+                          <Button color="secondary" onClick={handleCancel}>
+                            Cancel
+                          </Button>
+                        </form>
+                      ) : (
+                        <span
+                          onDoubleClick={(event) => {
+                            event.preventDefault();
+                            if (!engaged) {
+                              setIsEditMode({ name: true });
+                              setEngaged(true);
+                            } else setIsEditMode({ name: false });
+                          }}
+                        >
+                          Name: {name}
+                        </span>
+                      )}
+                    </Typography>
+                  </CardContent>
+                </Card>
+              ))}
+            </Grid>
+          </Grid>
+          <Grid item md={6}>
+            <Grid
+              item
+              md={12}
+              style={{
+                border: "2px solid blue",
+                margin: "2px",
+              }}
+            >
+              Activity
+            </Grid>
+          </Grid>
+          <Grid item md={3}>
+            <Grid
+              item
+              md={12}
+              style={{
+                border: "2px solid blue",
+                margin: "2px",
+              }}
+            >
+              Assigned
+            </Grid>
+            <Grid
+              item
+              md={12}
+              style={{
+                border: "2px solid blue",
+                margin: "2px",
+              }}
+            >
+              {data.getArticle.map(({ id, assigned }) => (
+                <Card key={`card-${id}`}>
+                  <CardContent>
+                    <Typography
+                      variant="body2"
+                      color="textSecondary"
+                      component="p"
+                    >
+                      <span>
+                        {assigned !== null
+                          ? assigned.first_name + " " + assigned.last_name
+                          : "no assigned"}
+                      </span>
+                    </Typography>
+                  </CardContent>
+                </Card>
+              ))}
+            </Grid>
+          </Grid>
+        </Grid>
       )}
-    </Paper>
+    </>
   );
 }
 

@@ -1,5 +1,5 @@
 import React from "react";
-import { useQuery } from "@apollo/react-hooks";
+import { useQuery, gql } from "@apollo/client";
 import { withStyles } from "@material-ui/core/styles";
 import { Link } from "react-router-dom";
 import { Grid } from "@material-ui/core";
@@ -13,7 +13,6 @@ import GridNameComponent from "./grids/grids-name-component";
 import GridCompanyComponent from "./grids/grids-company-component";
 
 import { CardHeader, Divider } from "@material-ui/core";
-import gql from "graphql-tag";
 
 const styles = (theme) => ({
   root: {

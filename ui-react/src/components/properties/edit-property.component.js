@@ -1,84 +1,79 @@
 import React from "react";
-import { useQuery } from "@apollo/react-hooks";
+import { useQuery, gql } from "@apollo/client";
 import { withStyles } from "@material-ui/core/styles";
 import { Link } from "react-router-dom";
 import { Grid } from "@material-ui/core";
 import Card from "@material-ui/core/Card";
-import CardActions from "@material-ui/core/CardActions";
 import CardContent from "@material-ui/core/CardContent";
-import Button from "@material-ui/core/Button";
 import Typography from "@material-ui/core/Typography";
-import EmojiPeopleIcon from "@material-ui/icons/EmojiPeople";
 import GridNameComponent from "./grids/grids-name-component";
 import GridPropertyComponent from "./grids/grids-property-component";
-
 import { CardHeader, Divider } from "@material-ui/core";
-import gql from "graphql-tag";
 
-const styles = theme => ({
+const styles = (theme) => ({
   root: {
     maxWidth: 700,
     marginTop: theme.spacing(3),
     overflowX: "auto",
-    margin: "auto"
+    margin: "auto",
   },
   table: {
-    minWidth: 700
+    minWidth: 700,
   },
   textField: {
     marginLeft: theme.spacing(1),
     marginRight: theme.spacing(1),
-    minWidth: 300
-  }
+    minWidth: 300,
+  },
 });
 
 const GET_PROPERTY = gql`
-    query property($id: ID) {
+  query property($id: ID) {
     Property(id: $id) {
+      id
+      name
+      created_at {
+        formatted
+      }
+      property_type
+      address {
+        id
+        postal_code
+        street_address1
+        street_address2
+      }
+      contacts {
+        id
+        first_name
+        last_name
+      }
+      companies {
         id
         name
-        created_at {
-            formatted
-        }
-        property_type
-        address {
-            id
-            postal_code
-            street_address1
-            street_address2
-        }
-        contacts {
-            id
-            first_name
-            last_name
-        }
-        companies {
-            id
-            name
-        }
-        phone
+      }
+      phone
     }
-}`;
+  }
+`;
 
-const PropertyEdit=(props)=> {
-    const { classes } = props;
-    const params = props.match.params;
-    const [
-        openAddressDialogComponent,
-        setOpenAddressDialogComponent
-    ] = React.useState(false);
-    const handleCloseAddressDialogComponent = () => {
-        setOpenAddressDialogComponent(false);
-    };
-    const callAddressDialog = () => {
-        setOpenAddressDialogComponent(true);
-    };
-
+const PropertyEdit = (props) => {
+  const { classes } = props;
+  const params = props.match.params;
+  const [
+    openAddressDialogComponent,
+    setOpenAddressDialogComponent,
+  ] = React.useState(false);
+  const handleCloseAddressDialogComponent = () => {
+    setOpenAddressDialogComponent(false);
+  };
+  const callAddressDialog = () => {
+    setOpenAddressDialogComponent(true);
+  };
 
   const { loading, data, error, refetch } = useQuery(GET_PROPERTY, {
     variables: {
-      id: params["uid"]
-    }
+      id: params["uid"],
+    },
   });
 
   return (
@@ -93,39 +88,28 @@ const PropertyEdit=(props)=> {
           style={{
             border: "3px solid blue",
             margin: "12px",
-            width: "98%"
+            width: "98%",
           }}
         >
           <Grid item md={3}>
-            <GridNameComponent
-              title={"About"}
-            >
-            </GridNameComponent>
+            <GridNameComponent title={"About"}></GridNameComponent>
             <GridPropertyComponent
               properties={data.Property}
               refetch={refetch}
               propertyId={params["uid"]}
-            >
-            </GridPropertyComponent>
+            ></GridPropertyComponent>
           </Grid>
           <Grid item md={6}>
-            <GridNameComponent
-              title={"Activity"}
-            >
-            </GridNameComponent>
-
+            <GridNameComponent title={"Activity"}></GridNameComponent>
           </Grid>
           <Grid item md={3}>
-              <GridNameComponent
-                  title={"Associations"}
-              >
-              </GridNameComponent>
+            <GridNameComponent title={"Associations"}></GridNameComponent>
             <Grid
               item
               md={12}
               style={{
                 border: "2px solid blue",
-                margin: "2px"
+                margin: "2px",
               }}
             >
               <Card key={`card`}>
@@ -133,7 +117,6 @@ const PropertyEdit=(props)=> {
                 <Divider />
                 {data.Property.map(({ contacts }) =>
                   contacts.map(({ id, first_name, last_name }) => (
-
                     <CardContent key={`cd_${id}`}>
                       <Typography key={`tp_${id}`}>
                         <Link
@@ -152,7 +135,6 @@ const PropertyEdit=(props)=> {
           </Grid>
         </Grid>
       )}
-
     </>
   );
 };

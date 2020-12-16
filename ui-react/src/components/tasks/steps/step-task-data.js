@@ -16,8 +16,7 @@ import {
 import multiStep from "../../../multiStep/multiStep";
 
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
-import { useQuery } from "@apollo/client";
-import gql from "graphql-tag";
+import { useQuery, gql } from "@apollo/client";
 
 const useStyles = makeStyles((theme) => ({
   button: {
@@ -276,10 +275,10 @@ function TaskData() {
           {userData && !userLoading && !userError && (
             <FormControl className={classes.textField}>
               <Autocomplete
-                defaultValue={userData.User[multiStep.getData()["assigned"]]}
+                defaultValue={userData.user[multiStep.getData()["assigned"]]}
                 id="assigned"
                 name="user"
-                options={userData.User}
+                options={userData.user}
                 getOptionLabel={(option) =>
                   option.first_name + " " + option.last_name
                 }

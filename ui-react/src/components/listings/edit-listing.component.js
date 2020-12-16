@@ -1,6 +1,5 @@
 import React from "react";
-import { useQuery } from "@apollo/react-hooks";
-import gql from "graphql-tag";
+import { useQuery, gql } from "@apollo/client";
 import "../../UserList.css";
 import { withStyles } from "@material-ui/core/styles";
 import { Link } from "react-router-dom";
@@ -12,24 +11,24 @@ import {
   TableHead,
   TableRow,
   Paper,
-  Typography
+  Typography,
 } from "@material-ui/core";
 
-const styles = theme => ({
+const styles = (theme) => ({
   root: {
     maxWidth: 700,
     marginTop: theme.spacing(3),
     overflowX: "auto",
-    margin: "auto"
+    margin: "auto",
   },
   table: {
-    minWidth: 700
+    minWidth: 700,
   },
   textField: {
     marginLeft: theme.spacing(1),
     marginRight: theme.spacing(1),
-    minWidth: 300
-  }
+    minWidth: 300,
+  },
 });
 
 const GET_LISTING = gql`
@@ -42,11 +41,11 @@ const GET_LISTING = gql`
       units
       parking_spaces
       pro_forma_noi
-      properties{
+      properties {
         id
         name
       }
-      user{
+      user {
         id
         last_name
       }
@@ -60,8 +59,8 @@ function ListingEdit(props) {
 
   const { loading, data, error } = useQuery(GET_LISTING, {
     variables: {
-      id: params["uid"]
-    }
+      id: params["uid"],
+    },
   });
 
   return (
@@ -88,29 +87,32 @@ function ListingEdit(props) {
             </TableRow>
           </TableHead>
           <TableBody>
-            {data.Listing.map(n => {
+            {data.listings.map((n) => {
               return (
                 <TableRow key={n.id}>
                   <TableCell>{n.name}</TableCell>
-                    <TableCell>{n.square_footage}</TableCell>
-                    <TableCell>{n.added}</TableCell>
-                    <TableCell>{n.units}</TableCell>
-                    <TableCell>{n.parking_spaces}</TableCell>
-                    <TableCell>{n.pro_forma_noi}</TableCell>
-                    <TableCell>
-                        {n.properties.map(property => (
-                            <p key={property.id}>
-                                <Link className="edit-link" to={"/properties/" + property.id}>
-                                    {property.name}
-                                </Link>
-                            </p>
-                        ))}
-                    </TableCell>
-                    <TableCell>
-                        <Link className="edit-link" to={"/users/" + n.user.id}>
-                            {n.user.last_name}
+                  <TableCell>{n.square_footage}</TableCell>
+                  <TableCell>{n.added}</TableCell>
+                  <TableCell>{n.units}</TableCell>
+                  <TableCell>{n.parking_spaces}</TableCell>
+                  <TableCell>{n.pro_forma_noi}</TableCell>
+                  <TableCell>
+                    {n.properties.map((property) => (
+                      <p key={property.id}>
+                        <Link
+                          className="edit-link"
+                          to={"/properties/" + property.id}
+                        >
+                          {property.name}
                         </Link>
-                    </TableCell>
+                      </p>
+                    ))}
+                  </TableCell>
+                  <TableCell>
+                    <Link className="edit-link" to={"/users/" + n.user.id}>
+                      {n.user.last_name}
+                    </Link>
+                  </TableCell>
                 </TableRow>
               );
             })}

@@ -1,6 +1,5 @@
 import React from "react";
-import { useQuery } from "@apollo/react-hooks";
-import gql from "graphql-tag";
+import { useQuery, gql } from "@apollo/client";
 import "../../UserList.css";
 import { withStyles } from "@material-ui/core/styles";
 import { Link } from "react-router-dom";
@@ -197,7 +196,7 @@ function UserEdit(props) {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    if (!!field && fieldValue !== data.User[0][field]) {
+    if (!!field && fieldValue !== data.user[0][field]) {
       updateUser({
         variables: {
           field: "user." + field,
@@ -245,7 +244,7 @@ function UserEdit(props) {
     { loading: cndMutationLoading, error: cndQMutationError },
   ] = useMutation(UPDATE_USER, {
     update: (proxy, { data: { updateUser } }) => {
-      data.User[0][field] = fieldValue;
+      data.user[0][field] = fieldValue;
       proxy.writeQuery({
         query: GET_USER,
         data: { data: data },
@@ -618,7 +617,7 @@ function UserEdit(props) {
                                 <Autocomplete
                                   id="user"
                                   name="user"
-                                  options={users.User}
+                                  options={users.user}
                                   getOptionLabel={(option) =>
                                     option.first_name + " " + option.last_name
                                   }

@@ -78,7 +78,6 @@ class MultiStep {
     let taskNameError = "";
     let taskAssignedError = "";
     let taskAssociatedError = "";
-    console.log(this.data);
     if (!this.data.title) {
       taskNameError = "Required";
       this.errors = { ...this.errors, ["title"]: taskNameError };

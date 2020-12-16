@@ -1,41 +1,40 @@
 import React from "react";
-import { makeStyles } from "@material-ui/core/styles";
-import CustomAppBar from "./components/menus/custom-appbar";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
+import { makeStyles } from "@material-ui/core/styles";
 import { CssBaseline } from "@material-ui/core";
 
-import Login from "./components/Login";
-import UserList from "./components/users/UserList";
-import UserData from "./components/users/edit-user.component";
-import UserCreate from "./components/users/create-user.component";
-import ContactList from "./components/contacts/ContactList";
-import ContactData from "./components/contacts/edit-contact.component";
-import ContactCreate from "./components/contacts/create-contact.component";
+import CustomAppBar from "./components/menus/custom-appbar";
 
-import TaskList from "./components/tasks/TaskList";
-import TaskData from "./components/tasks/edit-task.component";
-import TaskCreate from "./components/tasks/create-task.component";
-
-import RoleList from "./components/roles/RoleList";
-import RoleData from "./components/roles/edit-role.component";
-import RoleCreate from "./components/roles/create-role.component";
-
-import CompanyCreate from "./components/companies/create-company.component";
-import CompanyList from "./components/companies/CompanyList";
 import ActivityList from "./components/activities/ActivityList";
-import ClientList from "./components/clients/ClientList";
-import CompanyData from "./components/companies/edit-company.component";
-import PropertyList from "./components/properties/PropertyList";
-import PropertyData from "./components/properties/edit-property.component";
-import PropertyCreate from "./components/properties/create-property.component";
-import ListingList from "./components/listings/ListingList";
-import ListingData from "./components/listings/edit-listing.component";
-import ArticleList from "./components/articles/ArticleList";
-import PostList from "./components/posts/PostList";
+import ArticleCreate from "./components/articles/create-article.component";
 import ArticleData from "./components/articles/edit-article.component";
-import PostData from "./components/posts/edit-post.component";
-import DealsList from "./components/deals/DealsList";
+import ArticleList from "./components/articles/ArticleList";
+import ClientList from "./components/clients/ClientList";
+import CompanyCreate from "./components/companies/create-company.component";
+import CompanyData from "./components/companies/edit-company.component";
+import CompanyList from "./components/companies/CompanyList";
+import ContactCreate from "./components/contacts/create-contact.component";
+import ContactData from "./components/contacts/edit-contact.component";
+import ContactList from "./components/contacts/ContactList";
 import DealData from "./components/deals/edit-deal.component";
+import DealsList from "./components/deals/DealsList";
+import ListingData from "./components/listings/edit-listing.component";
+import ListingList from "./components/listings/ListingList";
+import Login from "./components/Login";
+import PostData from "./components/posts/edit-post.component";
+import PostList from "./components/posts/PostList";
+import PropertyCreate from "./components/properties/create-property.component";
+import PropertyData from "./components/properties/edit-property.component";
+import PropertyList from "./components/properties/PropertyList";
+import RoleCreate from "./components/roles/create-role.component";
+import RoleData from "./components/roles/edit-role.component";
+import RoleList from "./components/roles/RoleList";
+import TaskCreate from "./components/tasks/create-task.component";
+import TaskData from "./components/tasks/edit-task.component";
+import TaskList from "./components/tasks/TaskList";
+import UserCreate from "./components/users/create-user.component";
+import UserData from "./components/users/edit-user.component";
+import UserList from "./components/users/UserList";
 import { ProtectedRoute } from "./auth/protected.route";
 
 const useStyles = makeStyles((theme) => ({
@@ -95,6 +94,11 @@ export default function App() {
                 exact
                 path="/company/create"
                 component={CompanyCreate}
+              />
+              <ProtectedRoute
+                exact
+                path="/article/create"
+                component={ArticleCreate}
               />
               <ProtectedRoute exact path="/clients" component={ClientList} />
               <ProtectedRoute exact path="/activity" component={ActivityList} />

@@ -240,7 +240,7 @@ function ContactEdit(props) {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    if (!!field && fieldValue !== data.Contact[0][field]) {
+    if (!!field && fieldValue !== data.getContactById[0][field]) {
       updateContact({
         variables: {
           field: "contact." + field,
@@ -288,7 +288,7 @@ function ContactEdit(props) {
     { loading: cndMutationLoading, error: cndQMutationError },
   ] = useMutation(UPDATE_CONTACT, {
     update: (proxy, { data: { updateContact } }) => {
-      data.Contact[0][field] = fieldValue;
+      data.getContactById[0][field] = fieldValue;
       proxy.writeQuery({
         query: GET_CONTACT,
         data: { data: data },
@@ -1078,7 +1078,7 @@ function ContactEdit(props) {
                 margin: "2px",
               }}
             >
-              {data.Contact.map(({ viewed }, j) =>
+              {data.getContactById.map(({ viewed }, j) =>
                 viewed.map((article, i) => (
                   <Card key={"card_" + j}>
                     <CardHeader
@@ -1125,7 +1125,7 @@ function ContactEdit(props) {
               Associations, Interests, Listings
             </Grid>
 
-            {data.Contact.map(({ companies, properties, listings }) => (
+            {data.getContactById.map(({ companies, properties, listings }) => (
               <>
                 <Grid
                   key="company"

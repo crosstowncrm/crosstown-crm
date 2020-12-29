@@ -142,7 +142,7 @@ const CompanyEdit = (props) => {
           <Grid item md={3}>
             <GridNameComponent title={"About"}></GridNameComponent>
             <GridCompanyComponent
-              companies={data.company}
+              companies={data.getCompanyById}
               refetch={refetch}
               companyId={params["uid"]}
             ></GridCompanyComponent>
@@ -157,7 +157,7 @@ const CompanyEdit = (props) => {
                 margin: "2px",
               }}
             >
-              {data.company.map(({ mailed }) =>
+              {data.getCompanyById.map(({ mailed }) =>
                 mailed.map(({ Mail, timestamp }) => (
                   <Card key={`ard${Mail.id}`}>
                     <CardHeader
@@ -203,7 +203,7 @@ const CompanyEdit = (props) => {
               <Card key={`card`}>
                 <CardHeader title="Contact" />
                 <Divider />
-                {data.company.map(({ contacts }) =>
+                {data.getCompanyById.map(({ contacts }) =>
                   contacts.map(({ id, first_name, last_name }) => (
                     <CardContent key={`cd_${id}`}>
                       <Typography key={`tp_${id}`}>

@@ -29,7 +29,7 @@ const styles = (theme) => ({
 
 const GET_PROPERTY = gql`
   query property($id: ID) {
-    Property(id: $id) {
+    getPropertyById(id: $id) {
       id
       name
       created_at {
@@ -94,7 +94,7 @@ const PropertyEdit = (props) => {
           <Grid item md={3}>
             <GridNameComponent title={"About"}></GridNameComponent>
             <GridPropertyComponent
-              properties={data.Property}
+              properties={data.getPropertyById}
               refetch={refetch}
               propertyId={params["uid"]}
             ></GridPropertyComponent>
@@ -115,7 +115,7 @@ const PropertyEdit = (props) => {
               <Card key={`card`}>
                 <CardHeader title="Contact" />
                 <Divider />
-                {data.Property.map(({ contacts }) =>
+                {data.getPropertyById.map(({ contacts }) =>
                   contacts.map(({ id, first_name, last_name }) => (
                     <CardContent key={`cd_${id}`}>
                       <Typography key={`tp_${id}`}>

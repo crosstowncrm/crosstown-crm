@@ -196,7 +196,7 @@ function UserEdit(props) {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    if (!!field && fieldValue !== data.user[0][field]) {
+    if (!!field && fieldValue !== data.getUserById[0][field]) {
       updateUser({
         variables: {
           field: "user." + field,
@@ -244,7 +244,7 @@ function UserEdit(props) {
     { loading: cndMutationLoading, error: cndQMutationError },
   ] = useMutation(UPDATE_USER, {
     update: (proxy, { data: { updateUser } }) => {
-      data.user[0][field] = fieldValue;
+      data.getUserById[0][field] = fieldValue;
       proxy.writeQuery({
         query: GET_USER,
         data: { data: data },
@@ -291,7 +291,7 @@ function UserEdit(props) {
                 margin: "2px",
               }}
             >
-              {[data.getUserById].map(
+              {data.getUserById.map(
                 ({
                   id,
                   first_name,
@@ -437,7 +437,7 @@ function UserEdit(props) {
                           </form>
                         ) : (
                           <span onDoubleClick={callRoleDialog}>
-                            role: {role !== null ? role.name : "no role"}
+                            role: {role && role.name ? role.name : "no role"}
                           </span>
                         )}
                       </Typography>
@@ -595,7 +595,7 @@ function UserEdit(props) {
                       >
                         <span onDoubleClick={callAddressDialog}>
                           address:
-                          {address !== null
+                          {address
                             ? " " +
                               address.postal_code +
                               " " +

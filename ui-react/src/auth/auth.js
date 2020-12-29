@@ -2,12 +2,10 @@ import React from "react";
 
 const auth = () => {
   const getToken = () => {
-    console.log("asked for token");
     return localStorage.getItem("inMemoryJWT");
   };
 
   const setToken = (token) => {
-    console.log("token was set");
     localStorage.setItem("inMemoryJWT", token);
     return true;
   };

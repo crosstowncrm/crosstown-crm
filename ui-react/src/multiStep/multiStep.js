@@ -11,10 +11,14 @@ class MultiStep {
   saveData(formData) {
     if (formData.value && formData.value.constructor.name !== "Object") {
       this.data = { ...this.data, [formData.name]: formData.value };
-    } else {
+    }
+    if (formData.value && formData.value.constructor.name === "Object") {
       const name = Object.keys(formData.value)[0];
       const value = formData.value[name];
       this.data[formData.name] = { ...this.data[formData.name], [name]: value };
+    }
+    if (formData.data) {
+      this.data = formData.data;
     }
   }
 

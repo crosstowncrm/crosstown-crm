@@ -1,10 +1,10 @@
-import { typeDefs } from "./graphql-schema";
+import {typeDefs} from "./graphql-schema";
 import resolvers from "./resolvers";
-import { ApolloServer } from "apollo-server-express";
+import {ApolloServer} from "apollo-server-express";
 import express from "express";
 import neo4j from "neo4j-driver";
 
-import { makeAugmentedSchema } from "neo4j-graphql-js";
+import {makeAugmentedSchema} from "neo4j-graphql-js";
 import dotenv from "dotenv";
 
 // set environment variables from ../.env
@@ -21,17 +21,17 @@ const app = express();
  */
 
 const schema = makeAugmentedSchema({
-  typeDefs,
-  config: {
-    auth: {
-        // hasRole: true,
-        hasScope: true
-    }
-  },
-  resolvers,
-  printErrors: true, // optional
-  allowUndefinedInResolve: true,
-  context: ({ req, res }) => ({ req, res })
+    typeDefs,
+    config: {
+        auth: {
+            // hasRole: true,
+            hasScope: true
+        }
+    },
+    resolvers,
+    printErrors: true, // optional
+    allowUndefinedInResolve: true,
+    context: ({req, res}) => ({req, res})
 });
 
 /*
@@ -41,11 +41,11 @@ const schema = makeAugmentedSchema({
  */
 
 const driver = neo4j.driver(
-  process.env.NEO4J_URI || "bolt://localhost:7687",
+    process.env.NEO4J_URI || "bolt://localhost:7687",
     neo4j.auth.basic(
-    process.env.NEO4J_USER || "test",
-    process.env.NEO4J_PASSWORD || "test"
-  )
+        process.env.NEO4J_USER || "test",
+        process.env.NEO4J_PASSWORD || "test"
+    )
 );
 
 /*
@@ -55,15 +55,15 @@ const driver = neo4j.driver(
  * generated resolvers to connect to the database.
  */
 const server = new ApolloServer({
-  context: ({ req }) => {
+    context: ({req}) => {
         return {
-          driver,
-          req
+            driver,
+            req
         };
-  },
-  schema: schema,
-  introspection: true,
-  playground: true,
+    },
+    schema: schema,
+    introspection: true,
+    playground: true,
 
 });
 
@@ -78,5 +78,5 @@ const path = "/graphql";
 server.applyMiddleware({app, path});
 
 app.listen({port, path}, () => {
-  console.log(`GraphQL server ready at http://localhost:${port}${path}`);
+    console.log(`GraphQL server ready at http://localhost:${port}${path}`);
 });

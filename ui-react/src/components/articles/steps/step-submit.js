@@ -13,49 +13,54 @@ const styles = (theme) => ({
   },
 });
 
-const GET_ROLES = gql`
-  query rolesPaginateQuery(
+const GET_ARTICLES = gql`
+  query articlesPaginateQuery(
     $first: Int
     $offset: Int
-    $orderBy: [_RoleOrdering]
+    $orderBy: [_ArticleOrdering]
     $filter: String
   ) {
-    role(first: $first, offset: $offset, orderBy: $orderBy, filter: $filter) {
+    article(
+      first: $first
+      offset: $offset
+      orderBy: $orderBy
+      filter: $filter
+    ) {
       id
       name
     }
   }
 `;
 
-const GET_ROLES_COUNT = gql`
+const GET_ARTICLES_COUNT = gql`
   query conatctsCountQuery {
-    getRoleCount
+    getArticleCount
   }
 `;
 
 function StepSubmit() {
-  multiStep.validateRole();
-  const [errors, setErrors] = React.useState(multiStep.getErrors());
-  const CREATE_NEW_ROLE = gql`
-    mutation createRole($name: String) {
-      createRole(name: $name) {
+  // multiStep.validateArticle();
+  // const [errors, setErrors] = React.useState(multiStep.getErrors());
+  const CREATE_NEW_ARTICLE = gql`
+    mutation createArticle($name: String) {
+      createArticle(name: $name) {
         id
       }
     }
   `;
 
   const [
-    createNewRole,
+    createNewArticle,
     { loading: cntMutationLoading, error: cntQMutationError },
-  ] = useMutation(CREATE_NEW_ROLE, {});
+  ] = useMutation(CREATE_NEW_ARTICLE, {});
 
-  const createRole = (event) => {
-    if (multiStep.validateRole() === true) {
-      createNewRole({
+  const createArticle = (event) => {
+    if (multiStep.validateArticle() === true) {
+      createNewArticle({
         variables: multiStep.getData(),
         refetchQueries: [
           {
-            query: GET_ROLES,
+            query: GET_ARTICLES,
             variables: {
               first: 10,
               offset: 0,
@@ -64,14 +69,14 @@ function StepSubmit() {
             },
           },
           {
-            query: GET_ROLES_COUNT,
+            query: GET_ARTICLES_COUNT,
           },
         ],
       });
       multiStep.clear();
     } else {
       event.preventDefault();
-      setErrors(multiStep.getErrors());
+      // setErrors(multiStep.getErrors());
     }
   };
 
@@ -82,34 +87,41 @@ function StepSubmit() {
           <span>Create contact with current data:</span>
           <ul className="docs-terms">
             {Object.entries(multiStep.getData()).map(([key, value]) => {
-              return typeof value === "string" ? (
-                <li key={key + "-" + value}>
-                  {key}: {value}
+              return (
+                <li
+                  key={
+                    key +
+                    "-" +
+                    value.type +
+                    "-" +
+                    value.data.level +
+                    "-" +
+                    value.data.text
+                  }
+                >
+                  {key + "-" + value.type}: {value.data.text}
                 </li>
-              ) : (
-                Object.entries(value).map(([valKey, valValue]) => {
-                  return (
-                    <li key={key + "-" + valKey + "-" + valValue}>
-                      {key}: {valKey} {valValue}
-                    </li>
-                  );
-                })
               );
             })}
           </ul>
         </div>
       </div>
-      {Object.keys(errors).length > 0 ? (
+      {Object.keys({ key: "value" }).length > 0 ? (
         <div className="row">
           <div className="ten columns terms">
             <span>current errors:</span>
             <ul className="docs-terms">
-              <li>{JSON.stringify(errors)}</li>
+              {/*<li>{JSON.stringify(errors)}</li>*/}
             </ul>
           </div>
         </div>
       ) : (
-        <Link variant="body2" color="primary" to="/roles" onClick={createRole}>
+        <Link
+          variant="body2"
+          color="primary"
+          to="/articles"
+          onClick={createArticle}
+        >
           <Button color="primary" type="button">
             Create
           </Button>

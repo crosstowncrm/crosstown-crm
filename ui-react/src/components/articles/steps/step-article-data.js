@@ -1,101 +1,165 @@
-import React from "react";
-import { makeStyles } from "@material-ui/core/styles/index";
-import TextField from "@material-ui/core/TextField";
-import EditorJS from "@editorjs/editorjs";
-import Header from "@editorjs/header";
-import List from "@editorjs/list";
+import React, { useRef } from "react";
+import EditorJs from "react-editor-js";
+import { EDITOR_JS_TOOLS } from "./tools";
 import { Link } from "react-router-dom";
 import Button from "@material-ui/core/Button";
 import multiStep from "../../../multiStep/multiStep";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 
-// const editor = new EditorJS({
-//     holderId: 'editorjs',
-//     tools: {
-//         header: Header,
-//         list: List,
-//         data: {
-//             time: 1556098174501,
-//             blocks: [
-//                 {
-//                     type: "header",
-//                     data: {
-//                         text: "Editor.js",
-//                         level: 2
-//                     }
-//                 },
-//
-//             ]
-//         }
-//     },});
-
-// console.log(editor);
-
-const useStyles = makeStyles((theme) => ({
-  button: {
-    margin: theme.spacing(1),
-    display: "inline-block",
-    height: "38px",
-    padding: "0 30px",
-    color: "#555",
-    textAlign: "center",
-    fontSize: 11,
-    fontWeight: 600,
-    lineHeight: 38,
-    letterSpacing: "0.1rem",
-    textTransform: "uppercase",
-    textDecoration: "none",
-    whiteSpace: "nowrap",
-    backgroundColor: "transparent",
-    borderRadius: "4px",
-    border: "1px solid #bbb",
-    cursor: "pointer",
-    boxSizing: "border-box",
-  },
-  textField: {
-    width: 400,
-  },
-  selectField: {
-    width: 200,
-  },
-  row: {
-    paddingTop: "10px",
-  },
-}));
+const defaultData = {
+  blocks: [
+    {
+      type: "header",
+      data: {
+        text: "headline",
+        level: 2,
+        config: {
+          placeholder: "Enter a headline",
+          defaultLevel: 3,
+        },
+      },
+    },
+    {
+      type: "paragraph",
+      inlineToolbar: true,
+      data: {
+        text: "summary or description",
+        level: 2,
+      },
+    },
+    {
+      type: "paragraph",
+      inlineToolbar: true,
+      data: {
+        text: "excerpt",
+        level: 2,
+      },
+    },
+    {
+      type: "paragraph",
+      inlineToolbar: true,
+      data: {
+        text: "link to original source",
+        level: 2,
+      },
+    },
+    {
+      type: "paragraph",
+      inlineToolbar: true,
+      data: {
+        text: "excerpt",
+        level: 2,
+      },
+    },
+    {
+      type: "paragraph",
+      inlineToolbar: true,
+      data: {
+        text: "tags",
+        level: 2,
+      },
+    },
+    {
+      type: "paragraph",
+      inlineToolbar: true,
+      data: {
+        text: "date",
+        level: 2,
+      },
+    },
+    {
+      type: "paragraph",
+      inlineToolbar: true,
+      data: {
+        text: "date of publication",
+        level: 2,
+      },
+    },
+    {
+      type: "paragraph",
+      inlineToolbar: true,
+      data: {
+        text: "blog-post date",
+        level: 2,
+      },
+    },
+    {
+      type: "paragraph",
+      inlineToolbar: true,
+      data: {
+        text: "author",
+        level: 2,
+      },
+    },
+    {
+      type: "paragraph",
+      inlineToolbar: true,
+      data: {
+        text: "location",
+        level: 2,
+      },
+    },
+    {
+      type: "paragraph",
+      inlineToolbar: true,
+      data: {
+        text: "front",
+        level: 2,
+      },
+    },
+    {
+      type: "paragraph",
+      inlineToolbar: true,
+      data: {
+        text: "email newsletters",
+        level: 2,
+      },
+    },
+    {
+      type: "delimiter",
+      data: {},
+    },
+    {
+      type: "image",
+      data: {
+        file: {
+          url:
+            "https://codex.so/upload/redactor_images/o_e48549d1855c7fc1807308dd14990126.jpg",
+        },
+        caption: "",
+        withBorder: true,
+        stretched: false,
+        withBackground: false,
+      },
+    },
+  ],
+};
 
 function ArticleData() {
   const [errors, setErrors] = React.useState(multiStep.getErrors());
-  const classes = useStyles();
-  const handleChange = (event) => {
+
+  const instanceRef = useRef(null);
+
+  async function handleSave() {
+    const savedData = await instanceRef.current.save();
     multiStep.saveData({
-      name: event.target.name,
-      value: event.target.value,
+      data: savedData.blocks,
     });
-    multiStep.errorRemove(event.target.name);
-    setErrors({ ...errors, [event.target.name]: "" });
-  };
+  }
 
-  const { name } = multiStep.getData();
-
+  const data =
+    Object.keys(multiStep.getData()).length > 0
+      ? { blocks: multiStep.getData() }
+      : defaultData;
   return (
     <div>
-      <div className="row">
-        <div className="six columns">
-          <TextField
-            className={classes.textField}
-            label="Name *"
-            onChange={handleChange}
-            name="name"
-            defaultValue={name}
-          />
-          <div style={{ fontSize: 12, color: "red" }}>
-            {errors["name"] ? errors["name"] : ""}
-          </div>
-        </div>
-      </div>
-      <div class="container">
-        {/*<div id="editorjs">*/}
-        {/*</div>*/}
+      <div className="container">
+        <EditorJs
+          data={data}
+          tools={EDITOR_JS_TOOLS}
+          onChange={handleSave}
+          instanceRef={(instance) => (instanceRef.current = instance)}
+        />
       </div>
       <Link variant="body2" color="primary" to="/articles">
         <Button color="primary" type="button">
@@ -105,4 +169,5 @@ function ArticleData() {
     </div>
   );
 }
+
 export default ArticleData;

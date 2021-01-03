@@ -40,10 +40,10 @@ const GET_ARTICLES_COUNT = gql`
 
 function StepSubmit() {
   // multiStep.validateArticle();
-  // const [errors, setErrors] = React.useState(multiStep.getErrors());
+  const [errors, setErrors] = React.useState(multiStep.getErrors());
   const CREATE_NEW_ARTICLE = gql`
-    mutation createArticle($name: String) {
-      createArticle(name: $name) {
+    mutation createArticle($arg: ArticleInput) {
+      createArticle(arg: $arg) {
         id
       }
     }
@@ -51,27 +51,13 @@ function StepSubmit() {
 
   const [
     createNewArticle,
-    { loading: cntMutationLoading, error: cntQMutationError },
-  ] = useMutation(CREATE_NEW_ARTICLE, {});
+    { loading: cnaMutationLoading, error: cnaQMutationError },
+  ] = useMutation(CREATE_NEW_ARTICLE);
 
   const createArticle = (event) => {
     if (multiStep.validateArticle() === true) {
       createNewArticle({
         variables: multiStep.getData(),
-        refetchQueries: [
-          {
-            query: GET_ARTICLES,
-            variables: {
-              first: 10,
-              offset: 0,
-              orderBy: `name_asc`,
-              filter: "*",
-            },
-          },
-          {
-            query: GET_ARTICLES_COUNT,
-          },
-        ],
       });
       multiStep.clear();
     } else {
@@ -106,12 +92,12 @@ function StepSubmit() {
           </ul>
         </div>
       </div>
-      {Object.keys({ key: "value" }).length > 0 ? (
+      {Object.keys(errors).length > 0 ? (
         <div className="row">
           <div className="ten columns terms">
             <span>current errors:</span>
             <ul className="docs-terms">
-              {/*<li>{JSON.stringify(errors)}</li>*/}
+              <li>{JSON.stringify(errors)}</li>
             </ul>
           </div>
         </div>

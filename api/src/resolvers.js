@@ -472,6 +472,22 @@ const resolvers = {
                 }
             )
         },
+        createArticle: async (_, params, ctx) => {
+            let session = ctx.driver.session();
+            let set = [];
+            console.log("params", params);
+            for (const [key, value] of Object.entries(params)) {
+                set.push(`article.${key} = "${value ? value : ""}"`);
+            }
+            set.push(`article.id = toString(id(article))`);
+            const cypherQuery = `CREATE (article:Article) SET ` + set.toString() + ` SET article.created_at=date(), article.last_modified=datetime() RETURN article LIMIT 1`;
+            console.log(cypherQuery);
+            return await session.run(cypherQuery).then(
+                result => {
+                    return result.records[0].get('article').properties;
+                }
+            )
+        },
         createCompany: async (_, params, ctx) => {
             const {address} = params;
             delete params.address;

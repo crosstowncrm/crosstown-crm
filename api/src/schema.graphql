@@ -35,9 +35,25 @@ type Address {
 input Addressik {
     lat: String
     lng: String
-    postal_code:String
-    street_address1:String
-    street_address2:String
+    postal_code: String
+    street_address1: String
+    street_address2: String
+}
+
+input ArticleInput {
+    author: String
+    content: String
+    event_time: DateTime
+    excerpt: String
+    headline: String
+    lat: String
+    link: String
+    lng: String
+    location: Point
+    published: DateTime
+    source_name: String
+    summary_description: String
+    title: String
 }
 
 type Article {
@@ -89,7 +105,6 @@ type Client {
 }
 
 type Contact{
-
     id: ID!
     address:  Address @relation(name: "HAS_ADDRESS", direction: "OUT")
     birthday: String
@@ -241,6 +256,7 @@ type Listing {
     workStations: Int
     #  space:  [Space] @relation(name: "IS LISTING OF", direction: "OUT")
 }
+
 type Mail{
     id: ID!
     msgs: String
@@ -388,6 +404,11 @@ type ViewedPost @relation(name: "VIEWED_POST") {
 
 type Query {
 
+    article(filter: String="*", filter: String="*", orderByMe:String="title_asc", first: Int=10, offset: Int=0): [Article] @hasScope(scopes: ["admin", "teamlead", "agent"])
+    @cypher(
+        statement: "MATCH (article:Article) RETURN article"
+    )
+
     activity(first: Int=10, offset: Int=0): [Activity] @hasScope(scopes: ["admin", "teamlead", "agent"])
 
     client(filter: String="*", filter: String="*", orderByMe:String="name_asc", first: Int=10, offset: Int=0): [Client] @hasScope(scopes: ["admin", "teamlead", "agent"])
@@ -424,6 +445,11 @@ type Query {
     getUserById(id:String): [User] @hasScope(scopes: ["admin", "teamlead", "agent"])
     @cypher(
         statement: "MATCH (user:User{id:$id}) RETURN user LIMIT 1"
+    )
+
+    getArticleCount: Int @hasScope(scopes: ["admin", "teamlead", "agent"])
+    @cypher(
+        statement: "MATCH (article:Article) RETURN count(article) as article_count"
     )
 
     getActivityCount: Int @hasScope(scopes: ["admin", "teamlead", "agent"])
@@ -516,8 +542,7 @@ type Mutation {
 
     addressChange(from: ID!, postal_code: String, street_address1:String, street_address2:String, lat:String, lng:String, label:String): String  @hasScope(scopes: ["admin", "teamlead", "agent"])
 
-    createArticle( author: String, categories: String, content: String, event_time: DateTime, excerpt: String, headline: String, lat: String, link: String,
-        lng: String, location: Point, opened_source: String, published: DateTime, source_name: String, summary_description: String, tags: [String], title: String, viewed: String ): Article @hasScope(scopes: ["admin", "teamlead", "agent"])
+    createArticle( arg: ArticleInput ): Article @hasScope(scopes: ["admin", "teamlead", "agent"])
 
     createCompany(address: Addressik, name: String, email: String, phone: String, mobile: String, linkedin_url: String,
         facebook_url: String, instagram_url: String, twitter_url: String, lead_status: String, lead_type: String, lead_date: String, lifecycle_stage: String,

@@ -119,6 +119,10 @@ class MultiStep {
     return true;
   };
 
+  validateArticle = () => {
+    return true;
+  };
+
   isValid = () => {
     return this.validate();
   };

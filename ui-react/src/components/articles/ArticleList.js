@@ -69,9 +69,14 @@ const GET_ARTICLES = gql`
       filter: $filter
     ) {
       id
-      author
-      excerpt
-      headline
+      elements {
+        id
+        type
+        order
+        text
+      }
+      #      excerpt
+      #      headline
     }
   }
 `;
@@ -91,13 +96,13 @@ const GET_ARTICLES_COUNT = gql`
 
 const headCells = [
   {
-    id: "name",
+    id: "Headline",
     numeric: false,
     disablePadding: false,
-    label: "Name",
+    label: "Headline",
   },
   {
-    id: "author",
+    id: "Author",
     numeric: false,
     disablePadding: false,
     label: "Author",
@@ -108,18 +113,12 @@ const headCells = [
     disablePadding: false,
     label: "Excerpt",
   },
-  {
-    id: "Headline",
-    numeric: false,
-    disablePadding: false,
-    label: "Headline",
-  },
 ];
 
 function ArticleList(props) {
   const { classes } = props;
   const [order, setOrder] = React.useState("asc");
-  const [orderByMe, setOrderByMe] = React.useState("title");
+  const [orderByMe, setOrderByMe] = React.useState("id");
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
   const [filterState, setFilterState] = React.useState({ articleFilter: "" });
@@ -280,116 +279,57 @@ function ArticleList(props) {
             </TableRow>
           </TableHead>
           <TableBody>
-            {data.article.map(
-              ({ __typename, id, author, excerpt, headline }, index) => {
-                return (
-                  <TableRow
-                    key={__typename + "-" + id}
-                    hover
-                    article="checkbox"
-                    tabIndex={-1}
-                  >
-                    <TableCell align="left" className={classes.tableCell}>
-                      {isEditMode["title"] ? (
-                        <>
-                          <TextField
-                            label="Headline"
-                            onChange={handleChange}
-                            id="headline"
-                            defaultValue={headline}
-                          />
-                          <br />
-                          <Button color="primary" type="submit">
-                            Update
-                          </Button>
-                          <Button color="secondary" onClick={handleCancel}>
-                            Cancel
-                          </Button>
-                        </>
-                      ) : (
-                        <>
-                          <Link className="edit-link" to={"/articles/" + id}>
-                            {headline}
-                          </Link>
-                        </>
-                      )}
-                    </TableCell>
-
-                    <TableCell align="left" className={classes.tableCell}>
-                      {isEditMode["author"] ? (
-                        <>
-                          <TextField
-                            label="Author"
-                            onChange={handleChange}
-                            id="headline"
-                            defaultValue={author}
-                          />
-                          <br />
-                          <Button color="primary" type="submit">
-                            Update
-                          </Button>
-                          <Button color="secondary" onClick={handleCancel}>
-                            Cancel
-                          </Button>
-                        </>
-                      ) : (
-                        <>{author}</>
-                      )}
-                    </TableCell>
-
-                    <TableCell align="left" className={classes.tableCell}>
-                      {isEditMode["excerpt"] ? (
-                        <>
-                          <TextField
-                            label="Excerpt"
-                            onChange={handleChange}
-                            id="headline"
-                            defaultValue={excerpt}
-                          />
-                          <br />
-                          <Button color="primary" type="submit">
-                            Update
-                          </Button>
-                          <Button color="secondary" onClick={handleCancel}>
-                            Cancel
-                          </Button>
-                        </>
-                      ) : (
-                        <>{excerpt}</>
-                      )}
-                    </TableCell>
-
-                    <TableCell align="left" className={classes.tableCell}>
-                      {isEditMode["headline"] ? (
-                        <>
-                          <TextField
-                            label="Headline"
-                            onChange={handleChange}
-                            id="headline"
-                            defaultValue={headline}
-                          />
-                          <br />
-                          <Button color="primary" type="submit">
-                            Update
-                          </Button>
-                          <Button color="secondary" onClick={handleCancel}>
-                            Cancel
-                          </Button>
-                        </>
-                      ) : (
-                        <>{headline}</>
-                      )}
-                    </TableCell>
-
-                    <TableCell>
-                      <Button onClick={() => callDeleteDialog(id)}>
-                        Delete
-                      </Button>
-                    </TableCell>
-                  </TableRow>
-                );
-              }
-            )}
+            {data.article.map(({ id, elements }) => {
+              return (
+                <TableRow
+                  key={"cb-" + id}
+                  hover
+                  article="checkbox"
+                  tabIndex={-1}
+                >
+                  {elements.map(({ type, text }, index) => {
+                    return (
+                      <TableCell
+                        align="left"
+                        className={classes.tableCell}
+                        id={type + index}
+                      >
+                        {isEditMode["title"] ? (
+                          <>
+                            <TextField
+                              label="Type"
+                              onChange={handleChange}
+                              id="type"
+                              defaultValue={type}
+                            />
+                            <br />
+                            <Button color="primary" type="submit">
+                              Update
+                            </Button>
+                            <Button color="secondary" onClick={handleCancel}>
+                              Cancel
+                            </Button>
+                          </>
+                        ) : (
+                          <>
+                            <Link className="edit-link" to={"/articles/" + id}>
+                              type: {type}
+                            </Link>
+                            <br />
+                            <Link className="edit-link" to={"/articles/" + id}>
+                              text: {text}
+                            </Link>
+                          </>
+                        )}
+                      </TableCell>
+                    );
+                  })}
+                  <TableCell>
+                    <Button onClick={() => callDeleteDialog(id)}>Delete</Button>
+                  </TableCell>
+                </TableRow>
+              );
+            })}
           </TableBody>
         </Table>
       )}

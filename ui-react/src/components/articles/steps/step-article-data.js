@@ -119,19 +119,6 @@ const defaultData = {
       type: "delimiter",
       data: {},
     },
-    {
-      type: "image",
-      data: {
-        file: {
-          url:
-            "https://codex.so/upload/redactor_images/o_e48549d1855c7fc1807308dd14990126.jpg",
-        },
-        caption: "",
-        withBorder: true,
-        stretched: false,
-        withBackground: false,
-      },
-    },
   ],
 };
 

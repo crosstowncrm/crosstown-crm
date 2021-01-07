@@ -40,43 +40,37 @@ input Addressik {
     street_address2: String
 }
 
+
 input ArticleInput {
-    author: String
-    content: String
-    event_time: DateTime
-    excerpt: String
-    headline: String
-    lat: String
-    link: String
-    lng: String
-    location: Point
-    published: DateTime
-    source_name: String
-    summary_description: String
-    title: String
+    type: String
+    data: ArticleDataInput
+}
+
+input ArticleDataInput {
+    text: String
+    level: Int
 }
 
 type Article {
     id: ID!
-    author: String
     categories: [Category] @relation(name: "IN_CATEGORY", direction: "OUT")
-    content: String
-    event_time: DateTime
-    excerpt: String
-    headline: String
-    lat: String
-    link: String
-    lng: String
-    location: Point
+#    lat: String
+#    lng: String
+#    location: Point
+    elements: [Element] @relation(name: "HAS_ELEMENT", direction: "OUT")
     opened_source: [OpenedSource]
-    published: DateTime
-    recommendationTo(first: Int = 300): [Contact] @cypher(statement: "MATCH (address:Address)<-[*]-(contact:Contact) WHERE distance(this.location, Point({latitude:toFloat(address.lat), longitude:toFloat(address.lng)})) < 1000000 RETURN DISTINCT contact")
+    recommendationTo(first: Int = 300): [Contact]
+        @cypher(statement: "MATCH (address:Address)<-[*]-(contact:Contact) WHERE distance(this.location, Point({latitude:toFloat(address.lat), longitude:toFloat(address.lng)})) < 1000000 RETURN DISTINCT contact")
     shared: [Shared]
-    source_name: String
-    summary_description: String
     tags: [String]
-    title: String
     viewed: [Viewed]
+}
+
+type Element {
+    id: ID!
+    type: String
+    order: Int
+    text: String
 }
 
 type AuthData {
@@ -86,9 +80,9 @@ type AuthData {
 }
 
 type Category {
+    id: ID!
     articles: [Article] @relation(name: "IN_CATEGORY", direction: "IN")
     companies: [Company] @relation(name: "IN_CATEGORY", direction: "IN")
-    id: ID!
     name: String
     posts: [Post] @relation(name: "IN_CATEGORY", direction: "IN")
 }
@@ -104,7 +98,7 @@ type Client {
     typename: String
 }
 
-type Contact{
+type Contact {
     id: ID!
     address:  Address @relation(name: "HAS_ADDRESS", direction: "OUT")
     birthday: String
@@ -542,7 +536,7 @@ type Mutation {
 
     addressChange(from: ID!, postal_code: String, street_address1:String, street_address2:String, lat:String, lng:String, label:String): String  @hasScope(scopes: ["admin", "teamlead", "agent"])
 
-    createArticle( arg: ArticleInput ): Article @hasScope(scopes: ["admin", "teamlead", "agent"])
+    createArticle( arg: [ArticleInput] ): Article @hasScope(scopes: ["admin", "teamlead", "agent"])
 
     createCompany(address: Addressik, name: String, email: String, phone: String, mobile: String, linkedin_url: String,
         facebook_url: String, instagram_url: String, twitter_url: String, lead_status: String, lead_type: String, lead_date: String, lifecycle_stage: String,

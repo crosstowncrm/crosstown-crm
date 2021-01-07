@@ -27,7 +27,6 @@ const GET_ARTICLES = gql`
       filter: $filter
     ) {
       id
-      name
     }
   }
 `;
@@ -39,10 +38,10 @@ const GET_ARTICLES_COUNT = gql`
 `;
 
 function StepSubmit() {
-  // multiStep.validateArticle();
+  multiStep.validateArticle();
   const [errors, setErrors] = React.useState(multiStep.getErrors());
   const CREATE_NEW_ARTICLE = gql`
-    mutation createArticle($arg: ArticleInput) {
+    mutation createArticle($arg: [ArticleInput]) {
       createArticle(arg: $arg) {
         id
       }
@@ -57,7 +56,21 @@ function StepSubmit() {
   const createArticle = (event) => {
     if (multiStep.validateArticle() === true) {
       createNewArticle({
-        variables: multiStep.getData(),
+        variables: { arg: multiStep.getData() },
+        refetchQueries: [
+          {
+            query: GET_ARTICLES,
+            variables: {
+              first: 10,
+              offset: 0,
+              orderBy: `id_asc`,
+              filter: "*",
+            },
+          },
+          {
+            query: GET_ARTICLES_COUNT,
+          },
+        ],
       });
       multiStep.clear();
     } else {

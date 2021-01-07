@@ -472,16 +472,17 @@ const resolvers = {
                 }
             )
         },
-        createArticle: async (_, params, ctx) => {
+        createArticle: async (_, {arg}, ctx) => {
             let session = ctx.driver.session();
-            let set = [];
-            console.log("params", params);
-            for (const [key, value] of Object.entries(params)) {
-                set.push(`article.${key} = "${value ? value : ""}"`);
-            }
-            set.push(`article.id = toString(id(article))`);
-            const cypherQuery = `CREATE (article:Article) SET ` + set.toString() + ` SET article.created_at=date(), article.last_modified=datetime() RETURN article LIMIT 1`;
-            console.log(cypherQuery);
+            let articleElements = [];
+            let i =0;
+            arg.map( element => {
+                const push = "MERGE (article)-[:HAS_ELEMENT]->(:Element{id:toString(id(article))+'-'+'" + element.type + "'+" + i + ", type: '" + element.type + "', text:'" + element.data.text+"', order: " + i + "})";
+                articleElements.push(push);
+                i++;
+            });
+
+            const cypherQuery = `CREATE (article:Article) SET article.id=toString(id(article)) SET article.created_at=date(), article.last_modified=datetime()  ` + articleElements.join(" ") + ` RETURN article LIMIT 1`;
             return await session.run(cypherQuery).then(
                 result => {
                     return result.records[0].get('article').properties;

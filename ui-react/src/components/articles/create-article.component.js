@@ -1,7 +1,7 @@
 import React from "react";
 import MultiStep from "react-multistep";
 import ArticleData from "./steps/step-article-data";
-import StepSubmit from "./steps/step-submit";
+import ArticleContent from "./steps/step-article-content";
 
 import Grid from "@material-ui/core/Grid";
 import ResponsiveCard from "../../responsive/ResponsiveCard.js";
@@ -10,8 +10,8 @@ import ResponsiveContainerGrid from "../../responsive/ResponsiveContainerGrid.js
 import "../css/styles.css";
 
 const steps = [
-  { name: "Articles Data", component: <ArticleData /> },
-  { name: "Submit", component: <StepSubmit /> },
+  { name: "Article's Data", component: <ArticleData /> },
+  { name: "Article's Content", component: <ArticleContent /> },
 ];
 
 function ArticleCreate() {

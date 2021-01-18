@@ -473,16 +473,32 @@ const resolvers = {
             )
         },
         createArticle: async (_, {arg}, ctx) => {
+            const {headline, author, excerpt, blocks} = arg;
             let session = ctx.driver.session();
             let articleElements = [];
             let i =0;
-            arg.map( element => {
-                const push = "MERGE (article)-[:HAS_ELEMENT]->(:Element{id:toString(id(article))+'-'+'" + element.type + "'+" + i + ", type: '" + element.type + "', text:'" + element.data.text+"', order: " + i + "})";
-                articleElements.push(push);
+            let push = "";
+            blocks.map( element => {
+                const {type} = element;
+                switch (type) {
+                    case "header":
+                        const {text} = element.data;
+                        push = "MERGE (article)-[:HAS_ELEMENT]->(:Element{id:toString(id(article))+'-header-'+" + i + ", type: 'header', text:'" + text+"', order: " + i + "})";
+                        break;
+                    case "delimiter":
+                        push = "MERGE (article)-[:HAS_ELEMENT]->(:Element{id:toString(id(article))+'-delimiter-'+" + i + ", type: 'delimiter', text:'{}', order: " + i + "})";
+                        break;
+                    default:
+                        push = null;
+                        console.log(element.type, element.data.text, element.data.level);
+                        break;
+                }
+
+                if (push!==null) articleElements.push(push);
                 i++;
             });
 
-            const cypherQuery = `CREATE (article:Article) SET article.id=toString(id(article)) SET article.created_at=date(), article.last_modified=datetime()  ` + articleElements.join(" ") + ` RETURN article LIMIT 1`;
+            const cypherQuery = `CREATE (article:Article{headline: "` + headline + `", author: "` + author + `", excerpt: "` + excerpt + `"}) SET article.id=toString(id(article)) SET article.created_at=date(), article.last_modified=datetime()  ` + articleElements.join(" ") + ` RETURN article LIMIT 1`;
             return await session.run(cypherQuery).then(
                 result => {
                     return result.records[0].get('article').properties;
@@ -525,7 +541,6 @@ const resolvers = {
                 }
             )
         },
-
         createProperty: async (_, params, ctx) => {
             const {address} = params;
             delete params.address;
@@ -542,7 +557,6 @@ const resolvers = {
                 }
             )
         },
-
         updateProperty: async (_, {field, value, propertyId}, ctx) => {
             let session = ctx.driver.session();
             const cypherQuery = `MATCH (property:Property {id: "${propertyId}"}) SET ` + field + `= "${value}" RETURN property LIMIT 1`;

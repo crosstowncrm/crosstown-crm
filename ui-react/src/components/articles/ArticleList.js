@@ -69,14 +69,9 @@ const GET_ARTICLES = gql`
       filter: $filter
     ) {
       id
-      elements {
-        id
-        type
-        order
-        text
-      }
-      #      excerpt
-      #      headline
+      headline
+      excerpt
+      author
     }
   }
 `;
@@ -279,7 +274,7 @@ function ArticleList(props) {
             </TableRow>
           </TableHead>
           <TableBody>
-            {data.article.map(({ id, elements }) => {
+            {data.article.map(({ id, headline, author, excerpt }, index) => {
               return (
                 <TableRow
                   key={"cb-" + id}
@@ -287,43 +282,90 @@ function ArticleList(props) {
                   article="checkbox"
                   tabIndex={-1}
                 >
-                  {elements.map(({ type, text }, index) => {
-                    return (
-                      <TableCell
-                        align="left"
-                        className={classes.tableCell}
-                        id={type + index}
-                      >
-                        {isEditMode["title"] ? (
-                          <>
-                            <TextField
-                              label="Type"
-                              onChange={handleChange}
-                              id="type"
-                              defaultValue={type}
-                            />
-                            <br />
-                            <Button color="primary" type="submit">
-                              Update
-                            </Button>
-                            <Button color="secondary" onClick={handleCancel}>
-                              Cancel
-                            </Button>
-                          </>
-                        ) : (
-                          <>
-                            <Link className="edit-link" to={"/articles/" + id}>
-                              type: {type}
-                            </Link>
-                            <br />
-                            <Link className="edit-link" to={"/articles/" + id}>
-                              text: {text}
-                            </Link>
-                          </>
-                        )}
-                      </TableCell>
-                    );
-                  })}
+                  <TableCell
+                    align="left"
+                    className={classes.tableCell}
+                    id={"headline-" + id}
+                  >
+                    {isEditMode["headline"] ? (
+                      <>
+                        <TextField
+                          label="Type"
+                          onChange={handleChange}
+                          id="type"
+                          defaultValue={headline}
+                        />
+                        <br />
+                        <Button color="primary" type="submit">
+                          Update
+                        </Button>
+                        <Button color="secondary" onClick={handleCancel}>
+                          Cancel
+                        </Button>
+                      </>
+                    ) : (
+                      <>
+                        <Link className="edit-link" to={"/articles/" + id}>
+                          {headline}
+                        </Link>
+                      </>
+                    )}
+                  </TableCell>
+                  <TableCell
+                    align="left"
+                    className={classes.tableCell}
+                    id={"excerpt-" + index}
+                  >
+                    {isEditMode["author"] ? (
+                      <>
+                        <TextField
+                          label="Author"
+                          onChange={handleChange}
+                          id="author"
+                          defaultValue={author}
+                        />
+                        <br />
+                        <Button color="primary" type="submit">
+                          Update
+                        </Button>
+                        <Button color="secondary" onClick={handleCancel}>
+                          Cancel
+                        </Button>
+                      </>
+                    ) : (
+                      <>{author}</>
+                    )}
+                  </TableCell>
+                  <TableCell
+                    align="left"
+                    className={classes.tableCell}
+                    id={"excerpt-" + index}
+                  >
+                    {isEditMode["headline"] ? (
+                      <>
+                        <TextField
+                          label="Excerpt"
+                          onChange={handleChange}
+                          id="excerpt"
+                          defaultValue={excerpt}
+                        />
+                        <br />
+                        <Button color="primary" type="submit">
+                          Update
+                        </Button>
+                        <Button color="secondary" onClick={handleCancel}>
+                          Cancel
+                        </Button>
+                      </>
+                    ) : (
+                      <>
+                        <Link className="edit-link" to={"/articles/" + id}>
+                          {excerpt}
+                        </Link>
+                      </>
+                    )}
+                  </TableCell>
+
                   <TableCell>
                     <Button onClick={() => callDeleteDialog(id)}>Delete</Button>
                   </TableCell>

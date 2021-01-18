@@ -42,8 +42,16 @@ input Addressik {
 
 
 input ArticleInput {
-    type: String
+    headline: String
+    author: String
+    excerpt: String
+    blocks: [ArticleBlocksInput]
     data: ArticleDataInput
+}
+
+input ArticleBlocksInput {
+    data: [ArticleDataInput]
+    type: String
 }
 
 input ArticleDataInput {
@@ -54,6 +62,9 @@ input ArticleDataInput {
 type Article {
     id: ID!
     categories: [Category] @relation(name: "IN_CATEGORY", direction: "OUT")
+    headline: String
+    author: String
+    excerpt: String
 #    lat: String
 #    lng: String
 #    location: Point
@@ -68,6 +79,7 @@ type Article {
 
 type Element {
     id: ID!
+    role: String
     type: String
     order: Int
     text: String
@@ -536,7 +548,7 @@ type Mutation {
 
     addressChange(from: ID!, postal_code: String, street_address1:String, street_address2:String, lat:String, lng:String, label:String): String  @hasScope(scopes: ["admin", "teamlead", "agent"])
 
-    createArticle( arg: [ArticleInput] ): Article @hasScope(scopes: ["admin", "teamlead", "agent"])
+    createArticle( arg: ArticleInput ): Article @hasScope(scopes: ["admin", "teamlead", "agent"])
 
     createCompany(address: Addressik, name: String, email: String, phone: String, mobile: String, linkedin_url: String,
         facebook_url: String, instagram_url: String, twitter_url: String, lead_status: String, lead_type: String, lead_date: String, lifecycle_stage: String,

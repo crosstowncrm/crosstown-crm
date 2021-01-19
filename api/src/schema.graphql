@@ -65,8 +65,8 @@ type Article {
     headline: String
     author: String
     excerpt: String
-#    lat: String
-#    lng: String
+    lat: String
+    lng: String
 #    location: Point
     elements: [Element] @relation(name: "HAS_ELEMENT", direction: "OUT")
     opened_source: [OpenedSource]
@@ -451,6 +451,11 @@ type Query {
     getUserById(id:String): [User] @hasScope(scopes: ["admin", "teamlead", "agent"])
     @cypher(
         statement: "MATCH (user:User{id:$id}) RETURN user LIMIT 1"
+    )
+
+    getArticleById(id:ID): [Article] @hasScope(scopes: ["admin", "teamlead", "agent"])
+    @cypher(
+        statement: "MATCH (article:Article{id:$id}) RETURN article LIMIT 1"
     )
 
     getArticleCount: Int @hasScope(scopes: ["admin", "teamlead", "agent"])

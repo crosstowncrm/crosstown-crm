@@ -22,14 +22,11 @@ const styles = (theme) => ({
 
 const GET_ARTICLE = gql`
   query articleQuery($id: ID) {
-    getArticle(id: $id) {
+    getArticleById(id: $id) {
       id
-      name
-      assigned {
-        id
-        first_name
-        last_name
-      }
+      headline
+      author
+      excerpt
     }
   }
 `;
@@ -136,7 +133,7 @@ function ArticleEdit(props) {
                 margin: "2px",
               }}
             >
-              About
+              Meta Data
             </Grid>
             <Grid
               item
@@ -146,12 +143,12 @@ function ArticleEdit(props) {
                 margin: "2px",
               }}
             >
-              {data.getArticle.map(({ id, name }) => (
+              {data.getArticleById.map(({ id, headline, author, excerpt }) => (
                 <Card key={`card-${id}`}>
                   <CardContent>
                     <Avatar>***</Avatar>
                     <Typography gutterBottom variant="h5" component="h2">
-                      {name ? name : "no data"}
+                      {headline ? headline : "no data"}
                     </Typography>
                   </CardContent>
                   <Divider />
@@ -161,14 +158,14 @@ function ArticleEdit(props) {
                       color="textSecondary"
                       component="div"
                     >
-                      {isEditMode["name"] ? (
+                      {isEditMode["headline"] ? (
                         <form onSubmit={handleSubmit}>
                           <TextField
-                            label="Name"
+                            label="Headline"
                             onClick={handleChange}
                             onChange={handleChange}
-                            id="name"
-                            defaultValue={name}
+                            id="headline"
+                            defaultValue={headline}
                             size="small"
                           />
                           <br />
@@ -189,7 +186,81 @@ function ArticleEdit(props) {
                             } else setIsEditMode({ name: false });
                           }}
                         >
-                          Name: {name}
+                          Headline: {headline}
+                        </span>
+                      )}
+                    </Typography>
+                    <Typography
+                      variant="body2"
+                      color="textSecondary"
+                      component="div"
+                    >
+                      {isEditMode["author"] ? (
+                        <form onSubmit={handleSubmit}>
+                          <TextField
+                            label="Author"
+                            onClick={handleChange}
+                            onChange={handleChange}
+                            id="author"
+                            defaultValue={author}
+                            size="small"
+                          />
+                          <br />
+                          <Button color="primary" type="submit">
+                            Update
+                          </Button>
+                          <Button color="secondary" onClick={handleCancel}>
+                            Cancel
+                          </Button>
+                        </form>
+                      ) : (
+                        <span
+                          onDoubleClick={(event) => {
+                            event.preventDefault();
+                            if (!engaged) {
+                              setIsEditMode({ name: true });
+                              setEngaged(true);
+                            } else setIsEditMode({ name: false });
+                          }}
+                        >
+                          Author: {author}
+                        </span>
+                      )}
+                    </Typography>
+                    <Typography
+                      variant="body2"
+                      color="textSecondary"
+                      component="div"
+                    >
+                      {isEditMode["excerpt"] ? (
+                        <form onSubmit={handleSubmit}>
+                          <TextField
+                            label="Excerpt"
+                            onClick={handleChange}
+                            onChange={handleChange}
+                            id="excerpt"
+                            defaultValue={excerpt}
+                            size="small"
+                          />
+                          <br />
+                          <Button color="primary" type="submit">
+                            Update
+                          </Button>
+                          <Button color="secondary" onClick={handleCancel}>
+                            Cancel
+                          </Button>
+                        </form>
+                      ) : (
+                        <span
+                          onDoubleClick={(event) => {
+                            event.preventDefault();
+                            if (!engaged) {
+                              setIsEditMode({ name: true });
+                              setEngaged(true);
+                            } else setIsEditMode({ name: false });
+                          }}
+                        >
+                          Excerpt: {excerpt}
                         </span>
                       )}
                     </Typography>
@@ -207,7 +278,7 @@ function ArticleEdit(props) {
                 margin: "2px",
               }}
             >
-              Activity
+              Content
             </Grid>
           </Grid>
           <Grid item md={3}>
@@ -219,7 +290,7 @@ function ArticleEdit(props) {
                 margin: "2px",
               }}
             >
-              Assigned
+              Recommended
             </Grid>
             <Grid
               item
@@ -229,23 +300,23 @@ function ArticleEdit(props) {
                 margin: "2px",
               }}
             >
-              {data.getArticle.map(({ id, assigned }) => (
-                <Card key={`card-${id}`}>
-                  <CardContent>
-                    <Typography
-                      variant="body2"
-                      color="textSecondary"
-                      component="p"
-                    >
-                      <span>
-                        {assigned !== null
-                          ? assigned.first_name + " " + assigned.last_name
-                          : "no assigned"}
-                      </span>
-                    </Typography>
-                  </CardContent>
-                </Card>
-              ))}
+              {/*{data.getArticleById.map(({ id, assigned }) => (*/}
+              {/*<Card key={`card-${id}`}>*/}
+              {/*<CardContent>*/}
+              {/*<Typography*/}
+              {/*variant="body2"*/}
+              {/*color="textSecondary"*/}
+              {/*component="p"*/}
+              {/*>*/}
+              {/*<span>*/}
+              {/*{assigned !== null*/}
+              {/*? assigned.first_name + " " + assigned.last_name*/}
+              {/*: "no assigned"}*/}
+              {/*</span>*/}
+              {/*</Typography>*/}
+              {/*</CardContent>*/}
+              {/*</Card>*/}
+              {/*))}*/}
             </Grid>
           </Grid>
         </Grid>

@@ -1,10 +1,10 @@
-import React from "react";
+import React, { useRef } from "react";
 import { useQuery, gql } from "@apollo/client";
 import { withStyles } from "@material-ui/core/styles";
 
 import { Grid } from "@material-ui/core";
 import Card from "@material-ui/core/Card";
-
+import EditorJs from "react-editor-js";
 import CardContent from "@material-ui/core/CardContent";
 import Button from "@material-ui/core/Button";
 import Typography from "@material-ui/core/Typography";
@@ -13,12 +13,42 @@ import TextField from "@material-ui/core/TextField";
 
 import { Divider } from "@material-ui/core";
 import { useMutation } from "@apollo/client";
+import { EDITOR_JS_TOOLS } from "./tools";
+import multiStep from "../../multiStep/multiStep";
 
 const styles = (theme) => ({
   root: {
     maxWidth: "100%",
   },
 });
+
+// const elements = data.getArticleById[0]["elements"];
+
+const defaultData = {
+  blocks: [
+    {
+      type: "header",
+      data: {
+        text: "headline",
+        level: 2,
+        config: {
+          placeholder: "Enter a headline",
+          defaultLevel: 3,
+        },
+      },
+    },
+    {
+      type: "delimiter",
+      data: {},
+    },
+  ],
+};
+
+const articleData =
+  multiStep.getData().blocks &&
+  Object.keys(multiStep.getData().blocks).length > 0
+    ? { blocks: multiStep.getData() }
+    : defaultData;
 
 const GET_ARTICLE = gql`
   query articleQuery($id: ID) {
@@ -27,6 +57,11 @@ const GET_ARTICLE = gql`
       headline
       author
       excerpt
+      elements {
+        id
+        order
+        text
+      }
     }
   }
 `;
@@ -77,7 +112,7 @@ function ArticleEdit(props) {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    if (!!field && fieldValue !== data.getArticle[0][field]) {
+    if (!!field && fieldValue !== data.getArticleById[0][field]) {
       updateArticle({
         variables: {
           field: "article." + field,
@@ -108,6 +143,15 @@ function ArticleEdit(props) {
   ] = useMutation(UPDATE_ARTICLE, {
     update: () => refetch(),
   });
+
+  const instanceRef = useRef(null);
+
+  async function handleSave() {
+    const savedData = await instanceRef.current.save();
+    multiStep.saveData({
+      data: { ...multiStep.getData(), blocks: savedData.blocks },
+    });
+  }
 
   return (
     <>
@@ -279,6 +323,21 @@ function ArticleEdit(props) {
               }}
             >
               Content
+            </Grid>
+            <Grid
+              item
+              md={12}
+              style={{
+                border: "2px solid blue",
+                margin: "2px",
+              }}
+            >
+              <EditorJs
+                data={articleData}
+                tools={EDITOR_JS_TOOLS}
+                onChange={handleSave}
+                instanceRef={(instance) => (instanceRef.current = instance)}
+              />
             </Grid>
           </Grid>
           <Grid item md={3}>

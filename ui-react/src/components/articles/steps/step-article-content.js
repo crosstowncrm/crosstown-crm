@@ -1,6 +1,6 @@
 import React, { useRef } from "react";
 import EditorJs from "react-editor-js";
-import { EDITOR_JS_TOOLS } from "./tools";
+import { EDITOR_JS_TOOLS } from "../tools";
 import multiStep from "../../../multiStep/multiStep";
 import { Link } from "react-router-dom";
 import Button from "@material-ui/core/Button";
@@ -11,11 +11,9 @@ const defaultData = {
   blocks: [
     {
       type: "header",
-      role: "headline",
       data: {
         text: "headline",
         level: 2,
-        role: "headline",
         config: {
           placeholder: "Enter a headline",
           defaultLevel: 3,

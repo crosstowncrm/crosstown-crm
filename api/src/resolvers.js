@@ -4,6 +4,34 @@ import jwt from "jsonwebtoken";
 const resolvers = {
 
     Query: {
+        getArticleById: async (_, {id}, ctx) =>{
+            let session = ctx.driver.session();
+            const cypherQuery = `MATCH (article:Article{id:"${id}"})-[:HAS_ELEMENT]->(element:Element) RETURN article, collect(element) as elements;`;
+            return await session.run(cypherQuery).then(
+                result => {
+                    const resData = result.records.map(
+                        record => {
+                            const {id, author, headline, excerpt} = record.get('article') ? record.get('article').properties : null;
+                            const elements = record.get('elements') ? record.get('elements') : null;
+                            let blocks = [];
+                            elements.map(element => {
+                                const {id:articleId, order, text, type} = element.properties ? element.properties : null;
+                                blocks = [...blocks, {type:type, data:{text: text}}];
+                            });
+
+                            return {
+                                id: id,
+                                author: author,
+                                headline: headline,
+                                excerpt: excerpt,
+                                elements: blocks
+                            }
+                        }
+                    );
+                    return resData;
+                }
+            );
+        },
 
         loginUser: async (_, {name, pswd}, ctx) => {
             let session = ctx.driver.session();
@@ -478,22 +506,26 @@ const resolvers = {
             let articleElements = [];
             let i =0;
             let push = "";
+            let text = "";
             blocks.map( element => {
                 const {type} = element;
                 switch (type) {
                     case "header":
-                        const {text} = element.data;
-                        push = "MERGE (article)-[:HAS_ELEMENT]->(:Element{id:toString(id(article))+'-header-'+" + i + ", type: 'header', text:'" + text+"', order: " + i + "})";
+                        text = element.data[0].text;
+                        push = "MERGE (article)-[:HAS_ELEMENT]->(:Element{id:toString(id(article))+'-header-'+" + i + ", type: 'header', text:'" + text + "', order: " + i + "})";
                         break;
                     case "delimiter":
                         push = "MERGE (article)-[:HAS_ELEMENT]->(:Element{id:toString(id(article))+'-delimiter-'+" + i + ", type: 'delimiter', text:'{}', order: " + i + "})";
+                        break;
+                    case "paragraph":
+                        let text = element.data[0].text;
+                        push = "MERGE (article)-[:HAS_ELEMENT]->(:Element{id:toString(id(article))+'-paragraph-'+" + i + ", type: 'paragraph', text:'" + text + "', order: " + i + "})";
                         break;
                     default:
                         push = null;
                         console.log(element.type, element.data.text, element.data.level);
                         break;
                 }
-
                 if (push!==null) articleElements.push(push);
                 i++;
             });

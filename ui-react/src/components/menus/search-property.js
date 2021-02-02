@@ -2,6 +2,7 @@ import React from "react";
 import Menu from "@material-ui/core/Menu";
 import { Link } from "react-router-dom";
 import MenuItem from "@material-ui/core/MenuItem";
+import MenuBookIcon from "@material-ui/icons/MenuBook";
 import { ListItemIcon } from "@material-ui/core";
 import {
   EmojiTransportation as EmojiTransportationIcon,
@@ -39,7 +40,7 @@ export default function PropertyMenus({ isOpen, handleClose, anchorEl }) {
       <Link to={"/articles"} onClick={handleClose}>
         <MenuItem primary={"Articles"}>
           <ListItemIcon>
-            <ListAltIcon />
+            <MenuBookIcon />
           </ListItemIcon>
           <p>Articles</p>
         </MenuItem>

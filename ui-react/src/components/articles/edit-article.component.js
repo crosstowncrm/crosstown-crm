@@ -29,12 +29,8 @@ const defaultData = {
     {
       type: "header",
       data: {
-        text: "headline",
+        text: "headliners",
         level: 2,
-        config: {
-          placeholder: "Enter a headline",
-          defaultLevel: 3,
-        },
       },
     },
     {
@@ -44,12 +40,6 @@ const defaultData = {
   ],
 };
 
-const articleData =
-  multiStep.getData().blocks &&
-  Object.keys(multiStep.getData().blocks).length > 0
-    ? { blocks: multiStep.getData() }
-    : defaultData;
-
 const GET_ARTICLE = gql`
   query articleQuery($id: ID) {
     getArticleById(id: $id) {
@@ -58,9 +48,11 @@ const GET_ARTICLE = gql`
       author
       excerpt
       elements {
-        id
-        order
-        text
+        type
+        data {
+          text
+          level
+        }
       }
     }
   }
@@ -86,29 +78,22 @@ const GET_USERS = gql`
 
 function ArticleEdit(props) {
   const params = props.match.params;
-  const [openDialogComponent, setOpenDialogComponent] = React.useState(false);
-  const [
-    openAddressDialogComponent,
-    setOpenAddressDialogComponent,
-  ] = React.useState(false);
   const [field, setField] = React.useState(false);
   const [fieldValue, setFieldValue] = React.useState(false);
   const [engaged, setEngaged] = React.useState(false);
   const [isEditMode, setIsEditMode] = React.useState({});
-
-  const handleCloseDialogComponent = () => {
-    setOpenDialogComponent(false);
-  };
-
-  const handleCloseAddressDialogComponent = () => {
-    setOpenAddressDialogComponent(false);
-  };
 
   const { loading, data, error, refetch } = useQuery(GET_ARTICLE, {
     variables: {
       id: params["uid"],
     },
   });
+
+  const articleData =
+    multiStep.getData().blocks &&
+    Object.keys(multiStep.getData().blocks).length > 0
+      ? { blocks: multiStep.getData() }
+      : defaultData;
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -155,8 +140,8 @@ function ArticleEdit(props) {
 
   return (
     <>
-      {loading && !error && <p>Loading...</p>}
-      {error && !loading && <p>Error</p>}
+      {loading && !error && <p>Loading Article for Edit...</p>}
+      {error && !loading && <p>{error.message}</p>}
 
       {data && !loading && !error && (
         <Grid
@@ -332,12 +317,19 @@ function ArticleEdit(props) {
                 margin: "2px",
               }}
             >
-              <EditorJs
-                data={articleData}
-                tools={EDITOR_JS_TOOLS}
-                onChange={handleSave}
-                instanceRef={(instance) => (instanceRef.current = instance)}
-              />
+              {data.getArticleById.map(({ elements: articleData }) => (
+                <EditorJs
+                  key="edunique"
+                  data={JSON.parse(
+                    JSON.stringify(
+                      articleData ? { blocks: articleData } : defaultData
+                    )
+                  )}
+                  tools={EDITOR_JS_TOOLS}
+                  onChange={handleSave}
+                  instanceRef={(instance) => (instanceRef.current = instance)}
+                />
+              ))}
             </Grid>
           </Grid>
           <Grid item md={3}>

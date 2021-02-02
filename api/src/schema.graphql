@@ -41,6 +41,7 @@ input Addressik {
 }
 
 
+
 input ArticleInput {
     headline: String
     author: String
@@ -52,6 +53,16 @@ input ArticleInput {
 input ArticleBlocksInput {
     data: [ArticleDataInput]
     type: String
+}
+
+type ArticleBlocksType {
+    data: ArticleDataType
+    type: String
+}
+
+type ArticleDataType {
+    text: String
+    level: Int
 }
 
 input ArticleDataInput {
@@ -68,9 +79,9 @@ type Article {
     lat: String
     lng: String
 #    location: Point
-    elements: [Element] @relation(name: "HAS_ELEMENT", direction: "OUT")
+    elements: [ArticleBlocksType]
     opened_source: [OpenedSource]
-    recommendationTo(first: Int = 300): [Contact]
+    recommendationTo(first: Int = 30): [Contact]
         @cypher(statement: "MATCH (address:Address)<-[*]-(contact:Contact) WHERE distance(this.location, Point({latitude:toFloat(address.lat), longitude:toFloat(address.lng)})) < 1000000 RETURN DISTINCT contact")
     shared: [Shared]
     tags: [String]
@@ -79,7 +90,6 @@ type Article {
 
 type Element {
     id: ID!
-    role: String
     type: String
     order: Int
     text: String
@@ -454,9 +464,6 @@ type Query {
     )
 
     getArticleById(id:ID): [Article] @hasScope(scopes: ["admin", "teamlead", "agent"])
-    @cypher(
-        statement: "MATCH (article:Article{id:$id}) RETURN article LIMIT 1"
-    )
 
     getArticleCount: Int @hasScope(scopes: ["admin", "teamlead", "agent"])
     @cypher(

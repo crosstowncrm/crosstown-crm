@@ -6,7 +6,7 @@ const resolvers = {
     Query: {
         getArticleById: async (_, {id}, ctx) =>{
             let session = ctx.driver.session();
-            const cypherQuery = `MATCH (article:Article{id:"${id}"})-[:HAS_ELEMENT]->(element:Element) RETURN article, collect(element) as elements;`;
+            const cypherQuery = `MATCH (article:Article{id:"${id}"})-[:HAS_ELEMENT]->(element:Element) WITH article, element ORDER BY element RETURN article, collect(element) as elements;`;
             return await session.run(cypherQuery).then(
                 result => {
                     const resData = result.records.map(

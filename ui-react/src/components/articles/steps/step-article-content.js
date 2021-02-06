@@ -62,8 +62,10 @@ const CREATE_NEW_ARTICLE = gql`
 function ArticleContent() {
   const createArticle = (event) => {
     if (multiStep.validateArticle() === true) {
+      let data = multiStep.getData();
+      data["blocks"] = JSON.stringify(data["blocks"], null, "\t");
       createNewArticle({
-        variables: { arg: multiStep.getData() },
+        variables: { arg: data },
         refetchQueries: [
           {
             query: GET_ARTICLES,

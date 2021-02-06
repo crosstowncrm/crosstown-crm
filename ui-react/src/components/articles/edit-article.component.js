@@ -22,24 +22,6 @@ const styles = (theme) => ({
   },
 });
 
-// const elements = data.getArticleById[0]["elements"];
-
-const defaultData = {
-  blocks: [
-    {
-      type: "header",
-      data: {
-        text: "headliners",
-        level: 2,
-      },
-    },
-    {
-      type: "delimiter",
-      data: {},
-    },
-  ],
-};
-
 const GET_ARTICLE = gql`
   query articleQuery($id: ID) {
     getArticleById(id: $id) {
@@ -47,13 +29,7 @@ const GET_ARTICLE = gql`
       headline
       author
       excerpt
-      elements {
-        type
-        data {
-          text
-          level
-        }
-      }
+      blocks
     }
   }
 `;
@@ -88,12 +64,6 @@ function ArticleEdit(props) {
       id: params["uid"],
     },
   });
-
-  const articleData =
-    multiStep.getData().blocks &&
-    Object.keys(multiStep.getData().blocks).length > 0
-      ? { blocks: multiStep.getData() }
-      : defaultData;
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -317,13 +287,11 @@ function ArticleEdit(props) {
                 margin: "2px",
               }}
             >
-              {data.getArticleById.map(({ elements: articleData }) => (
+              {data.getArticleById.map(({ blocks }) => (
                 <EditorJs
                   key="edunique"
                   data={JSON.parse(
-                    JSON.stringify(
-                      articleData ? { blocks: articleData } : defaultData
-                    )
+                    JSON.stringify({ blocks: JSON.parse(blocks) })
                   )}
                   tools={EDITOR_JS_TOOLS}
                   onChange={handleSave}

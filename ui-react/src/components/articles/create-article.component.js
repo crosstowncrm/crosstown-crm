@@ -10,7 +10,7 @@ import ResponsiveContainerGrid from "../../responsive/ResponsiveContainerGrid.js
 import "../css/styles.css";
 
 const steps = [
-  { name: "Article's Data", component: <ArticleData /> },
+  { name: "Article's Meta Data", component: <ArticleData /> },
   { name: "Article's Content", component: <ArticleContent /> },
 ];
 

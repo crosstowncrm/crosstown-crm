@@ -4,34 +4,34 @@ import jwt from "jsonwebtoken";
 const resolvers = {
 
     Query: {
-        getArticleById: async (_, {id}, ctx) =>{
-            let session = ctx.driver.session();
-            const cypherQuery = `MATCH (article:Article{id:"${id}"})-[:HAS_ELEMENT]->(element:Element) WITH article, element ORDER BY element RETURN article, collect(element) as elements;`;
-            return await session.run(cypherQuery).then(
-                result => {
-                    const resData = result.records.map(
-                        record => {
-                            const {id, author, headline, excerpt} = record.get('article') ? record.get('article').properties : null;
-                            const elements = record.get('elements') ? record.get('elements') : null;
-                            let blocks = [];
-                            elements.map(element => {
-                                const {id:articleId, order, text, type} = element.properties ? element.properties : null;
-                                blocks = [...blocks, {type:type, data:{text: text}}];
-                            });
-
-                            return {
-                                id: id,
-                                author: author,
-                                headline: headline,
-                                excerpt: excerpt,
-                                elements: blocks
-                            }
-                        }
-                    );
-                    return resData;
-                }
-            );
-        },
+        // getArticleById: async (_, {id}, ctx) =>{
+        //     let session = ctx.driver.session();
+        //     const cypherQuery = `MATCH (article:Article{id:"${id}"}) RETURN article;`;
+        //     return await session.run(cypherQuery).then(
+        //         result => {
+        //             const resData = result.records.map(
+        //                 record => {
+        //                     const {id, author, headline, excerpt} = record.get('article') ? record.get('article').properties : null;
+        //                     const elements = record.get('elements') ? record.get('elements') : null;
+        //                     let blocks = [];
+        //                     elements.map(element => {
+        //                         const {id:articleId, order, text, type} = element.properties ? element.properties : null;
+        //                         blocks = [...blocks, {type:type, data:{text: text}}];
+        //                     });
+        //
+        //                     return {
+        //                         id: id,
+        //                         author: author,
+        //                         headline: headline,
+        //                         excerpt: excerpt,
+        //                         elements: blocks
+        //                     }
+        //                 }
+        //             );
+        //             return resData;
+        //         }
+        //     );
+        // },
 
         loginUser: async (_, {name, pswd}, ctx) => {
             let session = ctx.driver.session();
@@ -501,36 +501,10 @@ const resolvers = {
             )
         },
         createArticle: async (_, {arg}, ctx) => {
-            const {headline, author, excerpt, blocks} = arg;
-            let session = ctx.driver.session();
-            let articleElements = [];
-            let i =0;
-            let push = "";
-            let text = "";
-            blocks.map( element => {
-                const {type} = element;
-                switch (type) {
-                    case "header":
-                        text = element.data[0].text;
-                        push = "MERGE (article)-[:HAS_ELEMENT]->(:Element{id:toString(id(article))+'-header-'+" + i + ", type: 'header', text:'" + text + "', order: " + i + "})";
-                        break;
-                    case "delimiter":
-                        push = "MERGE (article)-[:HAS_ELEMENT]->(:Element{id:toString(id(article))+'-delimiter-'+" + i + ", type: 'delimiter', text:'{}', order: " + i + "})";
-                        break;
-                    case "paragraph":
-                        let text = element.data[0].text;
-                        push = "MERGE (article)-[:HAS_ELEMENT]->(:Element{id:toString(id(article))+'-paragraph-'+" + i + ", type: 'paragraph', text:'" + text + "', order: " + i + "})";
-                        break;
-                    default:
-                        push = null;
-                        console.log(element.type, element.data.text, element.data.level);
-                        break;
-                }
-                if (push!==null) articleElements.push(push);
-                i++;
-            });
 
-            const cypherQuery = `CREATE (article:Article{headline: "` + headline + `", author: "` + author + `", excerpt: "` + excerpt + `"}) SET article.id=toString(id(article)) SET article.created_at=date(), article.last_modified=datetime()  ` + articleElements.join(" ") + ` RETURN article LIMIT 1`;
+            const {headline, author, excerpt, blocks} = arg;
+            const cypherQuery = `CREATE (article:Article{headline: "` + headline + `", author: "` + author + `", excerpt: "` + excerpt + `", blocks: '` + blocks + `'}) SET article.id=toString(id(article)) SET article.created_at=date(), article.last_modified=datetime() RETURN article LIMIT 1`;
+            let session = ctx.driver.session();
             return await session.run(cypherQuery).then(
                 result => {
                     return result.records[0].get('article').properties;

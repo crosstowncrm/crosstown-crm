@@ -27,7 +27,7 @@ export default function DeleteArticleDialog({
 
   const [
     deleteArticle,
-    { loading: duMutationLoading, error: duMutationError },
+    { loading: daMutationLoading, error: daMutationError },
   ] = useMutation(DELETE_ARTICLE, {
     update: () => refetch(),
   });

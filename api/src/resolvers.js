@@ -4,34 +4,6 @@ import jwt from "jsonwebtoken";
 const resolvers = {
 
     Query: {
-        // getArticleById: async (_, {id}, ctx) =>{
-        //     let session = ctx.driver.session();
-        //     const cypherQuery = `MATCH (article:Article{id:"${id}"}) RETURN article;`;
-        //     return await session.run(cypherQuery).then(
-        //         result => {
-        //             const resData = result.records.map(
-        //                 record => {
-        //                     const {id, author, headline, excerpt} = record.get('article') ? record.get('article').properties : null;
-        //                     const elements = record.get('elements') ? record.get('elements') : null;
-        //                     let blocks = [];
-        //                     elements.map(element => {
-        //                         const {id:articleId, order, text, type} = element.properties ? element.properties : null;
-        //                         blocks = [...blocks, {type:type, data:{text: text}}];
-        //                     });
-        //
-        //                     return {
-        //                         id: id,
-        //                         author: author,
-        //                         headline: headline,
-        //                         excerpt: excerpt,
-        //                         elements: blocks
-        //                     }
-        //                 }
-        //             );
-        //             return resData;
-        //         }
-        //     );
-        // },
 
         loginUser: async (_, {name, pswd}, ctx) => {
             let session = ctx.driver.session();
@@ -428,6 +400,18 @@ const resolvers = {
                 }
             )
         },
+
+        deleteArticle: async (_, params, ctx) => {
+            const {articleId} = params;
+            let session = ctx.driver.session();
+            const cypherQuery = `MATCH (article:Article{id:"${articleId}"}) DETACH DELETE article`;
+            return await session.run(cypherQuery).then(
+                result => {
+                    return true;
+                }
+            )
+        },
+
         deleteContact: async (_, params, ctx) => {
             const {contactId} = params;
             let session = ctx.driver.session();

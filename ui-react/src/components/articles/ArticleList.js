@@ -121,6 +121,7 @@ function ArticleList(props) {
   const [field, setField] = React.useState(false);
   const [fieldValue, setFieldValue] = React.useState(false);
   const [articleId, setArticleId] = React.useState(false);
+  const [engaged, setEngaged] = React.useState(false);
 
   const [
     openDeleteDialogComponent,
@@ -162,6 +163,7 @@ function ArticleList(props) {
       });
     }
     setIsEditMode({});
+    setEngaged(false);
   };
 
   const createSortHandler = (property) => (event) => {
@@ -191,6 +193,7 @@ function ArticleList(props) {
 
   const handleCancel = (event) => {
     event.preventDefault();
+    setEngaged(false);
     setIsEditMode({});
   };
 
@@ -325,7 +328,10 @@ function ArticleList(props) {
                           defaultValue={author}
                         />
                         <br />
-                        <Button color="primary" type="submit">
+                        <Button
+                          color="primary"
+                          onClick={() => articleUpdate(id, index)}
+                        >
                           Update
                         </Button>
                         <Button color="secondary" onClick={handleCancel}>
@@ -333,7 +339,20 @@ function ArticleList(props) {
                         </Button>
                       </>
                     ) : (
-                      <>{author}</>
+                      <>
+                        <span
+                          id={index}
+                          onDoubleClick={(event) => {
+                            event.preventDefault();
+                            if (!engaged) {
+                              setIsEditMode({ author: { id: id } });
+                              setEngaged(true);
+                            } else return;
+                          }}
+                        >
+                          {author ? author : "no author yet"}
+                        </span>
+                      </>
                     )}
                   </TableCell>
                   <TableCell

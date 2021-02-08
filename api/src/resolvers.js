@@ -434,6 +434,17 @@ const resolvers = {
             )
         },
 
+        updateArticle: async (_, {field, value, articleId}, ctx) => {
+            let session = ctx.driver.session();
+            const cypherQuery = `MATCH (article:Article {id: "${articleId}"}) SET ` + field + `= "${value}" RETURN article LIMIT 1`;
+            return await session.run(cypherQuery).then(
+                result => {
+                    const resData = result.records[0].get('article').properties;
+                    return resData;
+                }
+            )
+        },
+
         updateData: async (_, {nodeLabel, nodeId, unitId, label}, ctx) => {
             const digest = {"User": "OWNS_PROSPECT"};
             let session = ctx.driver.session();

@@ -11,6 +11,8 @@ import Typography from "@material-ui/core/Typography";
 import Avatar from "@material-ui/core/Avatar";
 import TextField from "@material-ui/core/TextField";
 
+import { Link } from "react-router-dom";
+
 import { Divider } from "@material-ui/core";
 import { useMutation } from "@apollo/client";
 import { EDITOR_JS_TOOLS } from "./tools";
@@ -180,9 +182,9 @@ function ArticleEdit(props) {
                           onDoubleClick={(event) => {
                             event.preventDefault();
                             if (!engaged) {
-                              setIsEditMode({ name: true });
+                              setIsEditMode({ headline: true });
                               setEngaged(true);
-                            } else setIsEditMode({ name: false });
+                            } else setIsEditMode({ headline: false });
                           }}
                         >
                           Headline: {headline}
@@ -217,9 +219,9 @@ function ArticleEdit(props) {
                           onDoubleClick={(event) => {
                             event.preventDefault();
                             if (!engaged) {
-                              setIsEditMode({ name: true });
+                              setIsEditMode({ author: true });
                               setEngaged(true);
-                            } else setIsEditMode({ name: false });
+                            } else setIsEditMode({ author: false });
                           }}
                         >
                           Author: {author}
@@ -254,9 +256,9 @@ function ArticleEdit(props) {
                           onDoubleClick={(event) => {
                             event.preventDefault();
                             if (!engaged) {
-                              setIsEditMode({ name: true });
+                              setIsEditMode({ excerpt: true });
                               setEngaged(true);
-                            } else setIsEditMode({ name: false });
+                            } else setIsEditMode({ excerpt: false });
                           }}
                         >
                           Excerpt: {excerpt}
@@ -288,15 +290,27 @@ function ArticleEdit(props) {
               }}
             >
               {data.getArticleById.map(({ blocks }) => (
-                <EditorJs
-                  key="edunique"
-                  data={JSON.parse(
-                    JSON.stringify({ blocks: JSON.parse(blocks) })
-                  )}
-                  tools={EDITOR_JS_TOOLS}
-                  onChange={handleSave}
-                  instanceRef={(instance) => (instanceRef.current = instance)}
-                />
+                <>
+                  <EditorJs
+                    key="edunique"
+                    data={JSON.parse(
+                      JSON.stringify({ blocks: JSON.parse(blocks) })
+                    )}
+                    tools={EDITOR_JS_TOOLS}
+                    onChange={handleSave}
+                    instanceRef={(instance) => (instanceRef.current = instance)}
+                  />
+                  <Link
+                    variant="body2"
+                    color="primary"
+                    to="/articles"
+                    onClick={updateArticle}
+                  >
+                    <Button color="primary" type="button">
+                      Update
+                    </Button>
+                  </Link>
+                </>
               ))}
             </Grid>
           </Grid>

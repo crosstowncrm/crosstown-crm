@@ -61,6 +61,15 @@ function ArticleEdit(props) {
   const [engaged, setEngaged] = React.useState(false);
   const [isEditMode, setIsEditMode] = React.useState({});
 
+  async function handleSave() {
+    const savedData = await instanceRef.current.save();
+    multiStep.saveData({
+      data: { ...multiStep.getData(), blocks: savedData.blocks },
+    });
+    setField("blocks");
+    setFieldValue(JSON.stringify(savedData.blocks, null, "\t"));
+  }
+
   const { loading, data, error, refetch } = useQuery(GET_ARTICLE, {
     variables: {
       id: params["uid"],
@@ -102,13 +111,6 @@ function ArticleEdit(props) {
   });
 
   const instanceRef = useRef(null);
-
-  async function handleSave() {
-    const savedData = await instanceRef.current.save();
-    multiStep.saveData({
-      data: { ...multiStep.getData(), blocks: savedData.blocks },
-    });
-  }
 
   return (
     <>
@@ -304,7 +306,7 @@ function ArticleEdit(props) {
                     variant="body2"
                     color="primary"
                     to="/articles"
-                    onClick={updateArticle}
+                    onClick={handleSubmit}
                   >
                     <Button color="primary" type="button">
                       Update

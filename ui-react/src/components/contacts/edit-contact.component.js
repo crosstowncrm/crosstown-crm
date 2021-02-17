@@ -89,7 +89,7 @@ const GET_CONTACT = gql`
         }
         Article {
           id
-          title
+          headline
         }
       }
     }
@@ -1095,7 +1095,7 @@ function ContactEdit(props) {
                           className="edit-link"
                           to={"/articles/" + article.Article.id}
                         >
-                          {article.Article.title}
+                          {article.Article.headline}
                         </Link>
                       </Typography>
                     </CardContent>

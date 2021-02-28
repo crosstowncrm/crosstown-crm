@@ -65,6 +65,7 @@ const GET_CLIENTS = gql`
         first_name
         last_name
       }
+      typename
     }
   }
 `;
@@ -271,7 +272,7 @@ function ClientList(props) {
           <TableBody>
             {data.client.map(
               ({
-                __typename,
+                typename,
                 id,
                 name,
                 email,
@@ -284,7 +285,7 @@ function ClientList(props) {
                 const labelId = `enhanced-table-checkbox-${id}`;
                 return (
                   <TableRow
-                    key={__typename + "-" + id}
+                    key={typename + "-" + id}
                     hover
                     onClick={(event) => handleClick(event, id)}
                     role="checkbox"
@@ -304,13 +305,13 @@ function ClientList(props) {
                       scope="row"
                       padding="none"
                     >
-                      {__typename.toString() === "Contact" ? (
+                      {typename.toString() === "Contact" ? (
                         <Link className="edit-link" to={"/contacts/" + id}>
-                          {name}-{__typename.toString()}
+                          {name}-{typename.toString()}
                         </Link>
                       ) : (
                         <Link className="edit-link" to={"/companies/" + id}>
-                          {name}-{__typename.toString()}
+                          {name}-{typename.toString()}
                         </Link>
                       )}
                     </TableCell>

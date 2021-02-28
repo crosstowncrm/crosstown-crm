@@ -209,6 +209,13 @@ type Deal {
     type: Type @relation(name: "HAS_TYPE", direction: "OUT")
 }
 
+type Email {
+    id: ID!
+    name: String
+    created_at: DateTime
+    domain_name: String
+}
+
 type Last {
     action: String
     date: String
@@ -416,9 +423,11 @@ type Query {
 
     client(filter: String="*", filter: String="*", orderByMe:String="name_asc", first: Int=10, offset: Int=0): [Client] @hasScope(scopes: ["admin", "teamlead", "agent"])
 
-    company(filter: String="*", filter: String="*", orderByMe: String="owner.first_name asc", id: String, first: Int=10, offset: Int=0):[Company] @hasScope(scopes: ["admin", "teamlead"])
+    company(filter: String="*", filter: String="*", orderByMe: String="owner.first_name asc", id: String, first: Int=10, offset: Int=0):[Company] @hasScope(scopes: ["admin", "teamlead", "agent"])
 
     contact(filter: String="*", filter: String="*", orderByMe: String="owner.first_name asc", first: Int=10, offset: Int=0): [Contact] @hasScope(scopes: ["admin", "teamlead", "agent"])
+
+    email(filter: String="*", filter: String="*", orderByMe: String="owner.first_name asc", id: String, first: Int=10, offset: Int=0):[Company] @hasScope(scopes: ["admin", "teamlead", "agent"])
 
     getCompanyById(id:String): [Company] @hasScope(scopes: ["admin", "teamlead", "agent"])
     @cypher(
@@ -556,6 +565,8 @@ type Mutation {
         facebook_url: String, instagram_url: String, twitter_url: String, lead_status: String, lead_type: String, lead_date: String, lifecycle_stage: String,
         created_at: _Neo4jDateInput, last_modified: String, email_domain: String): Company
 
+    createEmail(name: String, email: String, created_at: _Neo4jDateInput, email_domain: String): Email
+
     createContact(address: Addressik, first_name: String, last_name: String, suffix: String, birthday: String, email: String, phone: String, mobile: String, linkedin_url: String,
         facebook_url: String, instagram_url: String, twitter_url: String, lead_status: String, lead_type: String, lead_date: String, lifecycle_stage: String,
         created_at: _Neo4jDateInput, last_modified: String, email_domain: String, marital_status: String): Contact
@@ -572,13 +583,15 @@ type Mutation {
     createTask(type: String, priority: String, title: String, associated: String, label: String, assigned: String, notes: String, dueDate:String): Task @hasScope(scopes: ["admin", "teamlead", "agent"])
 
     createUser(address: Addressik, first_name: String, last_name: String, birthday: String, email: String, phone: String, mobile: String, pswd: String, lead_type: String, lead_date: String, lifecycle_stage: String,
-        created_at: _Neo4jDateInput, last_modified: String, email_domain: String, marital_status: String): User @hasScope(scopes: ["admin", "teamlead", "agent"])
+        created_at: _Neo4jDateInput, last_modified: String, email_domain: String, marital_status: String): User @hasScope(scopes: ["admin"])
 
     deleteArticle(articleId: String): String @hasScope(scopes: ["admin", "teamlead", "agent"])
 
     deleteCompany(companyId: String): String @hasScope(scopes: ["admin", "teamlead", "agent"])
 
     deleteContact(contactId: String): String @hasScope(scopes: ["admin", "teamlead", "agent"])
+
+    deleteEmail(emailId: String): String @hasScope(scopes: ["admin", "teamlead", "agent"])
 
     deleteProperty(propertyId: String): String @hasScope(scopes: ["admin", "teamlead", "agent"])
 

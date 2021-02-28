@@ -18,6 +18,9 @@ import ContactData from "./components/contacts/edit-contact.component";
 import ContactList from "./components/contacts/ContactList";
 import DealData from "./components/deals/edit-deal.component";
 import DealsList from "./components/deals/DealsList";
+import EmailCreate from "./components/emails/create-email.component";
+import EmailData from "./components/emails/edit-email.component";
+import EmailsList from "./components/emails/EmailList";
 import ListingData from "./components/listings/edit-listing.component";
 import ListingList from "./components/listings/ListingList";
 import Login from "./components/Login";
@@ -139,6 +142,13 @@ export default function App() {
               <ProtectedRoute exact path="/posts/:uid" component={PostData} />
               <ProtectedRoute exact path="/deals" component={DealsList} />
               <ProtectedRoute exact path="/deals/:uid" component={DealData} />
+              <ProtectedRoute
+                exact
+                path="/email/create"
+                component={EmailCreate}
+              />
+              <ProtectedRoute exact path="/emails" component={EmailsList} />
+              <ProtectedRoute exact path="/emails/:uid" component={EmailData} />
               <Route exact path="/login" component={Login} />
             </Switch>
           </main>

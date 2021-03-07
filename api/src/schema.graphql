@@ -135,7 +135,8 @@ type Contact {
     owner:  User @relation(name: "OWNS_PROSPECT", direction: "IN")
     phone: String
     phone_numbers: [String]
-    properties:  [Interest]
+    properties: [Interest]
+    sent_by_contact: [SentByContact]
     recommendations(first: Int = 300): [Article] @cypher(statement: "MATCH (article:Article), (address:Address)<-[*]-(this) WHERE distance(article.location, Point({latitude:toFloat(address.lat), longitude:toFloat(address.lng)})) < 1000000 RETURN DISTINCT article")
     suffix: String
     twitter_url: String
@@ -211,9 +212,41 @@ type Deal {
 
 type Email {
     id: ID!
-    name: String
-    created_at: DateTime
-    domain_name: String
+    forward: Boolean
+    reply: Boolean
+    subject: String
+    content: String
+    sent: DateTime
+    sent_by_user: SentByUser
+    sent_by_contact: SentByContact
+    sent_to_user: SentToUser
+    sent_to_contact: SentToContact
+    opened: DateTime
+    clicked: DateTime
+}
+
+type SentByUser @relation(name: "SENT_BY_USER") {
+    from: User
+    to: Email
+    timestamp: DateTime
+}
+
+type SentByContact @relation(name: "SENT_BY_CONTACT") {
+    from: Contact
+    to: Email
+    timestamp: DateTime
+}
+
+type SentToUser @relation(name: "SENT_TO_USER") {
+    from: Email
+    to: User
+    timestamp: DateTime
+}
+
+type SentToContact @relation(name: "SENT_TO_CONTACT") {
+    from: Email
+    to: Contact
+    timestamp: DateTime
 }
 
 type Last {
@@ -265,19 +298,6 @@ type Listing {
     user:  User @relation(name: "IS_PRIMARY_AGENT_FOR", direction: "IN")
     workStations: Int
     #  space:  [Space] @relation(name: "IS LISTING OF", direction: "OUT")
-}
-
-type Mail{
-    id: ID!
-    msgs: String
-    timestamp: DateTime
-}
-
-type Mailed @relation(name: "MAILS") {
-    action: Boolean
-    from: Company
-    timestamp: DateTime
-    to: Mail
 }
 
 type Post {
@@ -362,6 +382,7 @@ type User{
     phone: String
     pswd: String
     role: Role @relation(name: "HAS_ROLE", direction: "OUT")
+    sent_by_user: SentByUser
     teams: [Team] @relation(name: "IS_MEMBER_OF", direction: "OUT")
 }
 

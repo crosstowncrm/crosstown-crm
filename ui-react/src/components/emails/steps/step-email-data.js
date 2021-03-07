@@ -1,8 +1,10 @@
 import React from "react";
 import { withStyles } from "@material-ui/core/styles/index";
+import Checkbox from "@material-ui/core/Checkbox";
 import TextField from "@material-ui/core/TextField";
 import { Link } from "react-router-dom";
 import Button from "@material-ui/core/Button";
+import FormControlLabel from "@material-ui/core/FormControlLabel";
 import multiStep from "../../../multiStep/multiStep";
 const styles = (theme) => ({
   button: {
@@ -29,6 +31,11 @@ const styles = (theme) => ({
 
 function EmailData() {
   const [errors, setErrors] = React.useState(multiStep.getErrors());
+  const [state, setState] = React.useState({
+    forward: true,
+    reply: true,
+  });
+
   const handleChange = (event) => {
     multiStep.saveData({
       name: event.target.name,
@@ -37,29 +44,60 @@ function EmailData() {
     multiStep.errorRemove(event.target.name);
     setErrors({ ...errors, [event.target.name]: "" });
   };
-  const { name, email, phone, mobile, email_domain } = multiStep.getData();
+
+  const { forward, reply, subject, content } = multiStep.getData();
 
   return (
     <div>
       <div className="row">
         <div className="six columns">
           <TextField
-            label="Email"
+            label="Subject"
             onChange={handleChange}
-            name="email"
+            name="subject"
             size="small"
-            defaultValue={email}
+            defaultValue={subject}
           />
         </div>
       </div>
       <div className="row">
         <div className="six columns">
           <TextField
-            label="Email domain"
+            label="Content"
             onChange={handleChange}
-            name="email_domain"
+            name="content"
             size="small"
-            defaultValue={email_domain}
+            defaultValue={content}
+          />
+        </div>
+      </div>
+      <div className="row">
+        <div className="six columns">
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={forward}
+                onChange={handleChange}
+                name="forward"
+                color="primary"
+              />
+            }
+            label="Forward"
+          />
+        </div>
+      </div>
+      <div className="row">
+        <div className="six columns">
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={reply}
+                onChange={handleChange}
+                name="reply"
+                color="primary"
+              />
+            }
+            label="Reply"
           />
         </div>
       </div>

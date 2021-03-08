@@ -176,7 +176,6 @@ type Company {
     li_page: String
     lifecycle_stage: String
     listings: [Listing] @relation(name: "LISTS", direction: "OUT")
-    mailed: [Mailed]
     name: String
     owner: User @relation(name: "OWNS_PROSPECT", direction: "IN")
     owner_assigned_at: String

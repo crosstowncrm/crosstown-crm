@@ -222,6 +222,8 @@ type Email {
     sent_to_contact: SentToContact
     opened: DateTime
     clicked: DateTime
+    created: DateTime
+    modified: DateTime
 }
 
 type SentByUser @relation(name: "SENT_BY_USER") {

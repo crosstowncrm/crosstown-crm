@@ -9,6 +9,12 @@ class MultiStep {
   }
 
   saveData(formData) {
+    console.log(formData.value);
+    console.log(formData.value.constructor.name);
+    if (formData.value && formData.value.constructor.name === "Boolean") {
+      console.log("we are here");
+      this.data = { ...this.data, [formData.name]: formData.value };
+    }
     if (formData.value && formData.value.constructor.name !== "Object") {
       this.data = { ...this.data, [formData.name]: formData.value };
     }
@@ -72,6 +78,27 @@ class MultiStep {
     }
 
     if (companyNameError || companyStreetAddressError) {
+      return false;
+    }
+    this.errors = {};
+    return true;
+  };
+
+  validateEmail = () => {
+    let emailSubjectError = "";
+    let emailContentError = "";
+
+    if (!this.data.subject) {
+      emailSubjectError = "Required";
+      this.errors = { ...this.errors, ["subject"]: emailSubjectError };
+    }
+
+    if (!this.data.content) {
+      emailContentError = "Required";
+      this.errors = { ...this.errors, ["content"]: emailContentError };
+    }
+
+    if (emailSubjectError || emailContentError) {
       return false;
     }
     this.errors = {};

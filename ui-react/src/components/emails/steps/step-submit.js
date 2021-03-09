@@ -13,7 +13,7 @@ const styles = (theme) => ({
   },
 });
 
-const GET_COMPANIES = gql`
+const GET_EMAILS = gql`
   query emailsPaginateQuery(
     $first: Int
     $offset: Int
@@ -27,66 +27,23 @@ const GET_COMPANIES = gql`
       filter: $filter
     ) {
       id
-      name
-      employees_num
-      lead_status
-      phone
-      created_at {
-        formatted
-      }
-      owner {
-        first_name
-        last_name
-      }
+      subject
+      content
     }
   }
 `;
-const GET_COMPANIES_COUNT = gql`
+const GET_EMAILS_COUNT = gql`
   query emailsCountQuery {
     getEmailCount
   }
 `;
 
 function StepSubmit() {
-  multiStep.validateComp();
+  multiStep.validateEmail();
   const [errors, setErrors] = React.useState(multiStep.getErrors());
-  const CREATE_NEW_COMPANY = gql`
-    mutation createEmail(
-      $name: String
-      $email: String
-      $phone: String
-      $mobile: String
-      $linkedin_url: String
-      $facebook_url: String
-      $instagram_url: String
-      $twitter_url: String
-      $lead_status: String
-      $lead_type: String
-      $lead_date: String
-      $lifecycle_stage: String
-      $created_at: _Neo4jDateInput
-      $last_modified: String
-      $email_domain: String
-      $address: Addressik
-    ) {
-      createEmail(
-        address: $address
-        name: $name
-        email: $email
-        phone: $phone
-        mobile: $mobile
-        linkedin_url: $linkedin_url
-        facebook_url: $facebook_url
-        instagram_url: $instagram_url
-        twitter_url: $twitter_url
-        lead_status: $lead_status
-        lead_type: $lead_type
-        lead_date: $lead_date
-        lifecycle_stage: $lifecycle_stage
-        created_at: $created_at
-        last_modified: $last_modified
-        email_domain: $email_domain
-      ) {
+  const CREATE_NEW_EMAIL = gql`
+    mutation createEmail($subject: String, $content: String) {
+      createEmail(subject: $subject, content: $content) {
         id
       }
     }
@@ -94,25 +51,25 @@ function StepSubmit() {
 
   const [
     createNewEmail,
-    { loading: cncMutationLoading, error: cncQMutationError },
-  ] = useMutation(CREATE_NEW_COMPANY, {});
+    { loading: cneMutationLoading, error: cneQMutationError },
+  ] = useMutation(CREATE_NEW_EMAIL, {});
 
   const createEmail = (event) => {
-    if (multiStep.validateComp() === true) {
+    if (multiStep.validateEmail() === true) {
       createNewEmail({
         variables: multiStep.getData(),
         refetchQueries: [
           {
-            query: GET_COMPANIES,
+            query: GET_EMAILS,
             variables: {
               first: 10,
               offset: 0,
-              orderByMe: `node.name asc`,
+              orderByMe: `node.created asc`,
               filter: "*",
             },
           },
           {
-            query: GET_COMPANIES_COUNT,
+            query: GET_EMAILS_COUNT,
           },
         ],
       });

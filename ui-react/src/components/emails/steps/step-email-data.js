@@ -31,11 +31,6 @@ const styles = (theme) => ({
 
 function EmailData() {
   const [errors, setErrors] = React.useState(multiStep.getErrors());
-  const [state, setState] = React.useState({
-    forward: true,
-    reply: true,
-  });
-
   const handleChange = (event) => {
     multiStep.saveData({
       name: event.target.name,
@@ -43,6 +38,13 @@ function EmailData() {
     });
     multiStep.errorRemove(event.target.name);
     setErrors({ ...errors, [event.target.name]: "" });
+  };
+
+  const handleChangeCheckBox = (event) => {
+    multiStep.saveData({
+      name: event.target.name,
+      value: event.target.checked,
+    });
   };
 
   const { forward, reply, subject, content } = multiStep.getData();
@@ -58,6 +60,9 @@ function EmailData() {
             size="small"
             defaultValue={subject}
           />
+          <div style={{ fontSize: 12, color: "red" }}>
+            {errors && errors.subject ? errors.subject : ""}
+          </div>
         </div>
       </div>
       <div className="row">
@@ -69,6 +74,9 @@ function EmailData() {
             size="small"
             defaultValue={content}
           />
+          <div style={{ fontSize: 12, color: "red" }}>
+            {errors && errors.content ? errors.content : ""}
+          </div>
         </div>
       </div>
       <div className="row">
@@ -77,7 +85,7 @@ function EmailData() {
             control={
               <Checkbox
                 checked={forward}
-                onChange={handleChange}
+                onChange={handleChangeCheckBox}
                 name="forward"
                 color="primary"
               />
@@ -92,7 +100,7 @@ function EmailData() {
             control={
               <Checkbox
                 checked={reply}
-                onChange={handleChange}
+                onChange={handleChangeCheckBox}
                 name="reply"
                 color="primary"
               />

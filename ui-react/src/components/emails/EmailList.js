@@ -59,16 +59,19 @@ const GET_EMAILS = gql`
       filter: $filter
     ) {
       id
-      name
-      employees_num
-      lead_status
-      phone
-      created_at {
-        formatted
+      subject
+      content
+      sent_by_user {
+        to {
+          first_name
+          last_name
+        }
       }
-      owner {
-        first_name
-        last_name
+      sent_to_contact {
+        to {
+          first_name
+          last_name
+        }
       }
     }
   }

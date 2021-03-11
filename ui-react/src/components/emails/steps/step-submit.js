@@ -1,10 +1,8 @@
 import React from "react";
 import { withStyles } from "@material-ui/core/styles/index";
 import { useMutation, gql } from "@apollo/client";
-
 import { Link } from "react-router-dom";
 import Button from "@material-ui/core/Button";
-
 import multiStep from "../../../multiStep/multiStep";
 
 const styles = (theme) => ({
@@ -29,9 +27,18 @@ const GET_EMAILS = gql`
       id
       subject
       content
+      sent_by_user {
+        id
+        first_name
+      }
+      sent_to_contact {
+        id
+        first_name
+      }
     }
   }
 `;
+
 const GET_EMAILS_COUNT = gql`
   query emailsCountQuery {
     getEmailCount
@@ -42,8 +49,22 @@ function StepSubmit() {
   multiStep.validateEmail();
   const [errors, setErrors] = React.useState(multiStep.getErrors());
   const CREATE_NEW_EMAIL = gql`
-    mutation createEmail($subject: String, $content: String) {
-      createEmail(subject: $subject, content: $content) {
+    mutation createEmail(
+      $subject: String
+      $content: String
+      $forward: Boolean
+      $reply: Boolean
+      $from: String
+      $contact: String
+    ) {
+      createEmail(
+        subject: $subject
+        content: $content
+        forward: $forward
+        reply: $reply
+        from: $from
+        contact: $contact
+      ) {
         id
       }
     }
@@ -51,13 +72,16 @@ function StepSubmit() {
 
   const [
     createNewEmail,
-    { loading: cneMutationLoading, error: cneQMutationError },
+    { loading: cneMutationLoading, error: cneMutationError },
   ] = useMutation(CREATE_NEW_EMAIL, {});
 
   const createEmail = (event) => {
     if (multiStep.validateEmail() === true) {
       createNewEmail({
-        variables: multiStep.getData(),
+        variables: {
+          ...multiStep.getData(),
+          from: localStorage.getItem("userId"),
+        },
         refetchQueries: [
           {
             query: GET_EMAILS,
@@ -87,9 +111,9 @@ function StepSubmit() {
           <span>Create email with current data:</span>
           <ul className="docs-terms">
             {Object.entries(multiStep.getData()).map(([key, value]) => {
-              return typeof value === "string" ? (
-                <li key={key + "-" + value}>
-                  {key}: {value}
+              return typeof value === "string" || typeof value === "boolean" ? (
+                <li key={key + "-" + value.toString()}>
+                  {key}: {value.toString()}
                 </li>
               ) : (
                 Object.entries(value).map(([valKey, valValue]) => {
@@ -128,4 +152,5 @@ function StepSubmit() {
     </div>
   );
 }
+
 export default withStyles(styles)(StepSubmit);

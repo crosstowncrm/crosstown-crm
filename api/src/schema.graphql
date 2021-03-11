@@ -227,8 +227,8 @@ type Email {
 }
 
 type SentByUser @relation(name: "SENT_BY_USER") {
-    from: User
-    to: Email
+    from: Email
+    to: User
     timestamp: DateTime
 }
 
@@ -449,7 +449,7 @@ type Query {
 
     contact(filter: String="*", filter: String="*", orderByMe: String="owner.first_name asc", first: Int=10, offset: Int=0): [Contact] @hasScope(scopes: ["admin", "teamlead", "agent"])
 
-    email(filter: String="*", filter: String="*", orderByMe: String="owner.first_name asc", id: String, first: Int=10, offset: Int=0):[Company] @hasScope(scopes: ["admin", "teamlead", "agent"])
+    email(filter: String="*", filter: String="*", orderByMe: String="owner.created asc", id: String, first: Int=10, offset: Int=0):[Email] @hasScope(scopes: ["admin", "teamlead", "agent"])
 
     getCompanyById(id:String): [Company] @hasScope(scopes: ["admin", "teamlead", "agent"])
     @cypher(
@@ -587,7 +587,7 @@ type Mutation {
         facebook_url: String, instagram_url: String, twitter_url: String, lead_status: String, lead_type: String, lead_date: String, lifecycle_stage: String,
         created_at: _Neo4jDateInput, last_modified: String, email_domain: String): Company
 
-    createEmail(name: String, email: String, created_at: _Neo4jDateInput, email_domain: String): Email
+    createEmail(subject: String, content: String, forward: Boolean, from: String, reply: Boolean, contact: String): Email
 
     createContact(address: Addressik, first_name: String, last_name: String, suffix: String, birthday: String, email: String, phone: String, mobile: String, linkedin_url: String,
         facebook_url: String, instagram_url: String, twitter_url: String, lead_status: String, lead_type: String, lead_date: String, lifecycle_stage: String,

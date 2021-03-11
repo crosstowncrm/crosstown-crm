@@ -9,12 +9,6 @@ class MultiStep {
   }
 
   saveData(formData) {
-    console.log(formData.value);
-    console.log(formData.value.constructor.name);
-    if (formData.value && formData.value.constructor.name === "Boolean") {
-      console.log("we are here");
-      this.data = { ...this.data, [formData.name]: formData.value };
-    }
     if (formData.value && formData.value.constructor.name !== "Object") {
       this.data = { ...this.data, [formData.name]: formData.value };
     }
@@ -26,6 +20,10 @@ class MultiStep {
     if (formData.data) {
       this.data = formData.data;
     }
+  }
+
+  saveCheckBox(formData) {
+    this.data = { ...this.data, [formData.name]: formData.value };
   }
 
   getData() {

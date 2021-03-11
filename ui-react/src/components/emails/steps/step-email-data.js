@@ -6,6 +6,9 @@ import { Link } from "react-router-dom";
 import Button from "@material-ui/core/Button";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import multiStep from "../../../multiStep/multiStep";
+import Autocomplete from "@material-ui/lab/Autocomplete";
+import { gql, useQuery } from "@apollo/client/index";
+
 const styles = (theme) => ({
   button: {
     margin: theme.spacing(1),
@@ -29,6 +32,26 @@ const styles = (theme) => ({
   },
 });
 
+const GET_CONTACTS = gql`
+  query contactsPaginateQuery(
+    $first: Int
+    $offset: Int
+    $orderByMe: String
+    $filter: String
+  ) {
+    contact(
+      first: $first
+      offset: $offset
+      orderByMe: $orderByMe
+      filter: $filter
+    ) {
+      id
+      first_name
+      last_name
+    }
+  }
+`;
+
 function EmailData() {
   const [errors, setErrors] = React.useState(multiStep.getErrors());
   const handleChange = (event) => {
@@ -41,13 +64,32 @@ function EmailData() {
   };
 
   const handleChangeCheckBox = (event) => {
-    multiStep.saveData({
+    multiStep.saveCheckBox({
       name: event.target.name,
       value: event.target.checked,
     });
   };
 
+  const handleAcChange = (event, value) => {
+    event.preventDefault();
+    const name = event.target.id.split("-")[0];
+    multiStep.saveData({
+      name: name,
+      value: value.id,
+    });
+  };
+
   const { forward, reply, subject, content } = multiStep.getData();
+
+  const {
+    loading: contactsQueryLoading,
+    data: contacts,
+    error: contactsQueryError,
+  } = useQuery(GET_CONTACTS, {
+    variables: {
+      orderBy: "first_name_asc",
+    },
+  });
 
   return (
     <div>
@@ -107,6 +149,34 @@ function EmailData() {
             }
             label="Reply"
           />
+        </div>
+      </div>
+      <div className="row">
+        <div className="six columns">
+          {contacts && !contactsQueryLoading && !contactsQueryError && (
+            <>
+              <Autocomplete
+                id="contact"
+                name="contact"
+                options={contacts.contact}
+                getOptionLabel={(option) =>
+                  option.first_name + " " + option.last_name
+                }
+                style={{ width: 250 }}
+                onChange={handleAcChange}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    label="Email to Contact"
+                    variant="outlined"
+                    data-validators="isRequired"
+                    required={true}
+                  />
+                )}
+              />
+              <div style={{ fontSize: 12, color: "red" }}>{errors.toError}</div>
+            </>
+          )}
         </div>
       </div>
 

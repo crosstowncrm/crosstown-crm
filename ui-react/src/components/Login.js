@@ -56,6 +56,7 @@ function Login() {
 
     if (data.length > 0) {
       auth.setToken(data[0].token);
+      localStorage.setItem("userId", data[0].userId);
       const path = "/users/" + data[0].userId;
       return <Redirect to={path} />;
     }

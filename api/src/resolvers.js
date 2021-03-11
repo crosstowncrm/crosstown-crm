@@ -52,7 +52,6 @@ const resolvers = {
                             } else {
                                 typename = "Company";
                             }
-                            console.log(name, typename);
                             return {
                                 id: id,
                                 name: name,
@@ -551,6 +550,16 @@ const resolvers = {
             }
             set.push(`company.id = toString(id(company))`);
             const cypherQuery = `MATCH (owner:User{id:"1"}) MERGE (address:Address{postal_code: "${address.postal_code ? address.postal_code : ""}", street_address1: "${address.street_address1}", street_address2: "${address.street_address2 ? address.street_address2 : ""}"}) ON CREATE SET address.lat = "${address.lat ? address.lat : ""}", address.lng = "${address.lng ? address.lng : ""}" CREATE (company:Company) SET ` + set.toString() + ` SET company.created_at=date(), company.last_modified=datetime(), address.id=toString(id(address)) MERGE (owner)-[:OWNS_PROSPECT]->(company) MERGE (company)-[:HAS_ADDRESS]->(address) RETURN company LIMIT 1`;
+            return await session.run(cypherQuery).then(
+                result => {
+                    return result.records[0].get('company').properties;
+                }
+            )
+        },
+        createEmail: async (_, params, ctx) => {
+            const { contact, content, forward, from, subject, reply } = params;
+            let session = ctx.driver.session();
+            const cypherQuery = `MATCH (user:User{id:"${from}"}) MATCH (contact:Contact{id:"${contact}"}) CREATE (email:Email{subject: "${subject}", content: "${content}", reply: ${reply}, forward: ${forward} }) SET email.id = toString(id(email)),  email.created=datetime() MERGE (user)<-[:SENT_BY_USER]-(email)-[:SENT_TO_CONTACT]->(contact) RETURN email LIMIT 1`;
             return await session.run(cypherQuery).then(
                 result => {
                     return result.records[0].get('company').properties;

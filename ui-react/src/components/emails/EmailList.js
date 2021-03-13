@@ -13,7 +13,6 @@ import { Link } from "react-router-dom";
 import Button from "@material-ui/core/Button";
 import TablePagination from "@material-ui/core/TablePagination";
 import { TableSortLabel, Typography, TextField } from "@material-ui/core";
-import { useMutation } from "@apollo/client";
 
 import DeleteEmailDialog from "../dialogs/delete-email-dialog";
 
@@ -87,14 +86,6 @@ const GET_EMAILS_COUNT = gql`
   }
 `;
 
-const UPDATE_COMPANY = gql`
-  mutation updateEmail($field: String, $value: String, $emailId: String) {
-    updateEmail(field: $field, value: $value, emailId: $emailId) {
-      id
-    }
-  }
-`;
-
 const headCells = [
   {
     id: "node.name",
@@ -132,14 +123,10 @@ function EmailList(props) {
   const { classes, numSelected, rowCount, onRequestSort } = props;
   const [selected, setSelected] = React.useState([]);
   const [order, setOrder] = React.useState("asc");
-  const [orderByMe, setOrderByMe] = React.useState("node.name");
+  const [orderByMe, setOrderByMe] = React.useState("node.created");
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
   const [filterState, setFilterState] = React.useState({ emailFilter: "" });
-  const [field, setField] = React.useState(false);
-  const [fieldValue, setFieldValue] = React.useState(false);
-  const [engaged, setEngaged] = React.useState(false);
-  const [isEditMode, setIsEditMode] = React.useState({});
   const [emailId, setEmailId] = React.useState(false);
 
   const [
@@ -160,12 +147,6 @@ function EmailList(props) {
     return filterState.emailFilter.length > 0
       ? "*" + filterState.emailFilter + "*"
       : "*";
-  };
-
-  const handleChange = (event) => {
-    event.preventDefault();
-    setField(event.target.id);
-    setFieldValue(event.target.value);
   };
 
   let variables = {
@@ -233,33 +214,6 @@ function EmailList(props) {
 
   const isSelected = (name) => selected.indexOf(name) !== -1;
 
-  const handleCancel = (event) => {
-    event.preventDefault();
-    setEngaged(false);
-    setIsEditMode({});
-  };
-
-  const emailUpdate = (id, index) => {
-    if (!!field && fieldValue !== data.email[index][field]) {
-      updateEmail({
-        variables: {
-          field: "email." + field,
-          value: fieldValue,
-          emailId: id,
-        },
-      });
-    }
-    setIsEditMode({});
-    setEngaged(false);
-  };
-
-  const [
-    updateEmail,
-    { loading: cndMutationLoading, error: cndQMutationError },
-  ] = useMutation(UPDATE_COMPANY, {
-    update: () => refetch(),
-  });
-
   return (
     <Paper className={classes.root}>
       <Typography variant="h2" gutterBottom>
@@ -294,7 +248,6 @@ function EmailList(props) {
                 <Checkbox
                   indeterminate={numSelected > 0 && numSelected < rowCount}
                   checked={rowCount > 0 && numSelected === rowCount}
-                  // onChange={handleSelectAllClick}
                   inputProps={{
                     "aria-label": "select all emails",
                   }}
@@ -328,10 +281,7 @@ function EmailList(props) {
           </TableHead>
           <TableBody>
             {data.email.map(
-              (
-                { id, created, sent_by_user, sent_to_contact, subject },
-                index
-              ) => {
+              ({ id, created, sent_by_user, sent_to_contact, subject }) => {
                 const isItemSelected = isSelected(id);
                 const labelId = `enhanced-table-checkbox-${id}`;
                 return (

@@ -559,10 +559,10 @@ const resolvers = {
         createEmail: async (_, params, ctx) => {
             const { contact, content, forward, from, subject, reply } = params;
             let session = ctx.driver.session();
-            const cypherQuery = `MATCH (user:User{id:"${from}"}) MATCH (contact:Contact{id:"${contact}"}) CREATE (email:Email{subject: "${subject}", content: "${content}", reply: ${reply}, forward: ${forward} }) SET email.id = toString(id(email)),  email.created=datetime() MERGE (user)<-[:SENT_BY_USER]-(email)-[:SENT_TO_CONTACT]->(contact) RETURN email LIMIT 1`;
+            const cypherQuery = `MATCH (user:User{id:"${from}"}) MATCH (contact:Contact{id:"${contact}"}) CREATE (email:Email{subject: "${subject}", content: "${content}", reply: ${reply? true : false}, forward: ${forward? true : false} }) SET email.id = toString(id(email)),  email.created=datetime() MERGE (user)<-[:SENT_BY_USER]-(email)-[:SENT_TO_CONTACT]->(contact) RETURN email LIMIT 1`;
             return await session.run(cypherQuery).then(
                 result => {
-                    return result.records[0].get('company').properties;
+                    return result.records[0].get('email').properties;
                 }
             )
         },

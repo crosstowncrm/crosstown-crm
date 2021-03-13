@@ -26,14 +26,22 @@ const GET_EMAILS = gql`
     ) {
       id
       subject
-      content
+      created {
+        formatted
+      }
       sent_by_user {
-        id
-        first_name
+        User {
+          id
+          first_name
+          last_name
+        }
       }
       sent_to_contact {
-        id
-        first_name
+        Contact {
+          id
+          first_name
+          last_name
+        }
       }
     }
   }

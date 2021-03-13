@@ -450,6 +450,9 @@ type Query {
     contact(filter: String="*", filter: String="*", orderByMe: String="owner.first_name asc", first: Int=10, offset: Int=0): [Contact] @hasScope(scopes: ["admin", "teamlead", "agent"])
 
     email(filter: String="*", filter: String="*", orderByMe: String="owner.created asc", id: String, first: Int=10, offset: Int=0):[Email] @hasScope(scopes: ["admin", "teamlead", "agent"])
+    @cypher(
+        statement: "MATCH (email:Email) RETURN email"
+    )
 
     getCompanyById(id:String): [Company] @hasScope(scopes: ["admin", "teamlead", "agent"])
     @cypher(
@@ -514,6 +517,11 @@ type Query {
     getDealCount: Int @hasScope(scopes: ["admin", "teamlead", "agent"])
     @cypher(
         statement: "MATCH (deal:Deal) RETURN count(deal) as deal_count"
+    )
+
+    getEmailCount: Int @hasScope(scopes: ["admin", "teamlead", "agent"])
+    @cypher(
+        statement: "MATCH (email:Email) RETURN count(email) as email_count"
     )
 
     getPropertyCount: Int @hasScope(scopes: ["admin", "teamlead", "agent"])

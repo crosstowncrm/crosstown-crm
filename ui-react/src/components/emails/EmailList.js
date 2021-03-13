@@ -60,15 +60,19 @@ const GET_EMAILS = gql`
     ) {
       id
       subject
-      content
+      created {
+        formatted
+      }
       sent_by_user {
-        to {
+        User {
+          id
           first_name
           last_name
         }
       }
       sent_to_contact {
-        to {
+        Contact {
+          id
           first_name
           last_name
         }
@@ -96,19 +100,31 @@ const headCells = [
     id: "node.name",
     numeric: false,
     disablePadding: false,
-    label: "Name",
+    label: "Sent By User",
   },
   {
-    id: "node.created_at",
+    id: "user.first_name",
+    numeric: false,
+    disablePadding: false,
+    label: "Sent To Contact",
+  },
+  {
+    id: "contact.first_name",
+    numeric: false,
+    disablePadding: false,
+    label: "Subject",
+  },
+  {
+    id: "node.created",
     numeric: false,
     disablePadding: false,
     label: "Create Date",
   },
   {
-    id: "owner.first_name",
+    id: "node.sent",
     numeric: false,
     disablePadding: false,
-    label: "Email Owner",
+    label: "Sent Date",
   },
 ];
 
@@ -251,7 +267,7 @@ function EmailList(props) {
       </Typography>
       <TextField
         id="search"
-        label="Email Name Contains"
+        label="Email Subject Contains"
         className={classes.textField}
         value={filterState.emailFilter}
         onChange={handleFilterChange("emailFilter")}
@@ -313,23 +329,14 @@ function EmailList(props) {
           <TableBody>
             {data.email.map(
               (
-                {
-                  __typename,
-                  id,
-                  name,
-                  employees_num,
-                  property_type,
-                  phone,
-                  created_at,
-                  owner,
-                },
+                { id, created, sent_by_user, sent_to_contact, subject },
                 index
               ) => {
                 const isItemSelected = isSelected(id);
                 const labelId = `enhanced-table-checkbox-${id}`;
                 return (
                   <TableRow
-                    key={__typename + "-" + id}
+                    key={"email-" + id}
                     hover
                     onClick={(event) => handleClick(event, id)}
                     role="checkbox"
@@ -343,105 +350,54 @@ function EmailList(props) {
                         inputProps={{ "aria-labelledby": labelId }}
                       />
                     </TableCell>
-                    <TableCell
-                      component="th"
-                      id={labelId}
-                      scope="row"
-                      padding="none"
-                    >
-                      {__typename.toString() === "Email" ? (
-                        <Link className="edit-link" to={"/emails/" + id}>
-                          {name}-{__typename.toString()}
+                    <TableCell>
+                      {sent_by_user ? (
+                        <Link
+                          variant="body2"
+                          color="primary"
+                          to={"/users/" + sent_by_user.User.id}
+                        >
+                          {sent_by_user.User.first_name +
+                            " " +
+                            sent_by_user.User.last_name}
                         </Link>
                       ) : (
-                        <Link className="edit-link" to={"/emails/" + id}>
-                          {name}-{__typename.toString()}
+                        "no data yet"
+                      )}
+                    </TableCell>
+                    <TableCell>
+                      {sent_to_contact ? (
+                        <Link
+                          variant="body2"
+                          color="primary"
+                          to={"/contacts/" + sent_to_contact.Contact.id}
+                        >
+                          {sent_to_contact.Contact.first_name +
+                            " " +
+                            sent_to_contact.Contact.last_name}
                         </Link>
-                      )}
-                    </TableCell>
-                    <TableCell>
-                      {employees_num ? employees_num : "no employees_num yet"}
-                    </TableCell>
-                    <TableCell align="left" className={classes.tableCell}>
-                      {isEditMode["lead_status"] &&
-                      isEditMode["lead_status"]["id"] === id ? (
-                        <>
-                          <TextField
-                            label="lead status"
-                            onChange={handleChange}
-                            id="lead_status"
-                            defaultValue={property_type}
-                          />
-                          <br />
-                          <Button
-                            color="primary"
-                            onClick={() => emailUpdate(id, index)}
-                          >
-                            Update
-                          </Button>
-                          <Button color="secondary" onClick={handleCancel}>
-                            Cancel
-                          </Button>
-                        </>
                       ) : (
-                        <span
-                          id={index}
-                          onDoubleClick={(event) => {
-                            event.preventDefault();
-                            if (!engaged) {
-                              setIsEditMode({ property_type: { id: id } });
-                              setEngaged(true);
-                            } else return;
-                          }}
-                        >
-                          {property_type ? property_type : "no lead status yet"}
-                        </span>
+                        "no data yet"
                       )}
                     </TableCell>
-                    <TableCell align="left" className={classes.tableCell}>
-                      {isEditMode["phone"] &&
-                      isEditMode["phone"]["id"] === id ? (
-                        <>
-                          <TextField
-                            label="phone"
-                            onChange={handleChange}
-                            id="phone"
-                            defaultValue={phone}
-                          />
-                          <br />
-                          <Button
-                            color="primary"
-                            onClick={() => emailUpdate(id, index)}
-                          >
-                            Update
-                          </Button>
-                          <Button color="secondary" onClick={handleCancel}>
-                            Cancel
-                          </Button>
-                        </>
+                    <TableCell>
+                      {subject ? (
+                        <Link
+                          variant="body2"
+                          color="primary"
+                          to={"/emails/" + id}
+                        >
+                          {subject}
+                        </Link>
                       ) : (
-                        <span
-                          id={index}
-                          onDoubleClick={(event) => {
-                            event.preventDefault();
-                            if (!engaged) {
-                              setIsEditMode({ phone: { id: id } });
-                              setEngaged(true);
-                            } else return;
-                          }}
-                        >
-                          {phone ? phone : "no phone"}
-                        </span>
+                        "no data yet"
                       )}
                     </TableCell>
                     <TableCell>
-                      {created_at ? created_at.formatted : "no date yet"}
+                      {created ? created.formatted : "no date yet"}
                     </TableCell>
-
                     <TableCell>
-                      {owner
-                        ? `${owner.first_name} ${owner.last_name}`
-                        : "no owner yet"}
+                      {created ? created.formatted : "no date yet"}
                     </TableCell>
                     <TableCell>
                       <Button onClick={() => callDeleteDialog(id)}>

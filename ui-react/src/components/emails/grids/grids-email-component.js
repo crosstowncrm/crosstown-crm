@@ -55,7 +55,7 @@ const GET_USERS = gql`
 `;
 
 export default function GridEmailComponent({ emails, refetch, emailId }) {
-  const [editNameMode, setEditNameMode] = React.useState(false);
+  const [editSubjectMode, setEditSubjectMode] = React.useState(false);
   const [editOwnerMode, setEditOwnerMode] = React.useState(false);
   const [editPhoneMode, setEditPhoneMode] = React.useState(false);
   const [editCAMode, setEditCAMode] = React.useState(false);
@@ -93,7 +93,7 @@ export default function GridEmailComponent({ emails, refetch, emailId }) {
   const setAllFalse = () => {
     setField(false);
     setFieldValue(false);
-    setEditNameMode(false);
+    setEditSubjectMode(false);
     setEditOwnerMode(false);
     setEditCAMode(false);
     setEditWUMode(false);
@@ -169,18 +169,23 @@ export default function GridEmailComponent({ emails, refetch, emailId }) {
           margin: "2px",
         }}
       >
-        {emails.map(({ id, name, created_at, owner }) => (
+        {emails.map(({ id, created, subject }) => (
           <Card key={"card" + id}>
             <CardContent>
               <Avatar>***</Avatar>
               <Typography gutterBottom variant="h5" component="h2">
-                {name ? name : "no data"}
+                {subject ? subject : "no subject"}
               </Typography>
             </CardContent>
             <CardActionArea>
-              <CardActions>
+              <CardActions key="card-actions">
                 {headCells.map((headCell) => (
-                  <Link to="/" size="small" color="primary">
+                  <Link
+                    to="/"
+                    size="small"
+                    color="primary"
+                    key={"head_" + headCell}
+                  >
                     {headCell}
                   </Link>
                 ))}
@@ -190,10 +195,10 @@ export default function GridEmailComponent({ emails, refetch, emailId }) {
 
             <CardContent>
               <FieldComponent
-                title="Name"
-                value={name}
-                editMode={editNameMode}
-                setEditMode={setEditNameMode}
+                title="Subject"
+                value={subject}
+                editMode={editSubjectMode}
+                setEditMode={setEditSubjectMode}
                 handleSubmit={handleSubmit}
                 handleChange={handleChange}
                 engaged={engaged}
@@ -201,96 +206,10 @@ export default function GridEmailComponent({ emails, refetch, emailId }) {
                 handleCancel={handleCancel}
               ></FieldComponent>
               <Typography variant="body2" color="textSecondary" component="div">
-                {editCAMode ? (
-                  <form onSubmit={handleSubmit}>
-                    <TextField
-                      type="date"
-                      label="created at"
-                      onChange={handleChange}
-                      id="created_at"
-                      defaultValue={created_at.formatted}
-                      size="small"
-                      style={{
-                        width: 200,
-                      }}
-                    />
-
-                    <br />
-                    <Button color="primary" type="submit">
-                      Update
-                    </Button>
-                    <Button color="secondary" onClick={handleCancel}>
-                      Cancel
-                    </Button>
-                  </form>
-                ) : (
-                  <span
-                    onDoubleClick={(event) => {
-                      event.preventDefault();
-                      if (!engaged) {
-                        setEditCAMode(!editCAMode);
-                        setEngaged(true);
-                      } else setEditCAMode(editCAMode);
-                    }}
-                  >
-                    created at: {created_at.formatted}
-                  </span>
-                )}
+                <span>created at: {created.formatted}</span>
               </Typography>
-
               <Typography variant="body2" color="textSecondary" component="div">
-                {editOwnerMode ? (
-                  <form name="User" onSubmit={handleAcSubmit}>
-                    {users && !usersQueryLoading && !usersQueryError && (
-                      <FormControl>
-                        <Autocomplete
-                          id="user"
-                          name="user"
-                          options={users.user}
-                          getOptionLabel={(option) =>
-                            option.first_name + " " + option.last_name
-                          }
-                          style={{ width: 250 }}
-                          onChange={handleAcChange}
-                          renderInput={(params) => (
-                            <TextField
-                              {...params}
-                              label="User"
-                              variant="outlined"
-                              data-validators="isRequired"
-                              required={true}
-                            />
-                          )}
-                        />
-                        <div style={{ fontSize: 12, color: "red" }}>
-                          {/*{errors.emailError}*/}
-                        </div>
-                        <br />
-                        <Button color="primary" type="submit">
-                          Update
-                        </Button>
-                        <Button color="secondary" onClick={handleCancel}>
-                          Cancel
-                        </Button>
-                      </FormControl>
-                    )}
-                  </form>
-                ) : (
-                  <span
-                    onDoubleClick={(event) => {
-                      event.preventDefault();
-                      if (!engaged) {
-                        setEditOwnerMode(!editOwnerMode);
-                        setEngaged(true);
-                      } else setEditOwnerMode(editOwnerMode);
-                    }}
-                  >
-                    owner:{" "}
-                    {owner && owner.first_name
-                      ? owner.first_name + " " + owner.last_name
-                      : "no owner"}
-                  </span>
-                )}
+                <span>sent at: {created.formatted}</span>
               </Typography>
             </CardContent>
           </Card>

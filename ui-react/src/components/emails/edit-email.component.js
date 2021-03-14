@@ -35,12 +35,25 @@ const GET_EMAIL = gql`
   query getEmailById($id: String) {
     getEmailById(id: $id) {
       id
-      name
-      created_at {
+      subject
+      content
+      created {
         formatted
       }
-      domain_name
-      owner
+      sent_by_user {
+        User {
+          id
+          first_name
+          last_name
+        }
+      }
+      sent_to_contact {
+        Contact {
+          id
+          first_name
+          last_name
+        }
+      }
     }
   }
 `;
@@ -71,15 +84,15 @@ const EmailEdit = (props) => {
           }}
         >
           <Grid item md={3}>
-            <GridNameComponent title={"About"}></GridNameComponent>
+            <GridNameComponent title={"Email's Meta Data"}></GridNameComponent>
             <GridEmailComponent
-              companies={data.getEmailById}
+              emails={data.getEmailById}
               refetch={refetch}
               emailId={params["uid"]}
             ></GridEmailComponent>
           </Grid>
           <Grid item md={6}>
-            <GridNameComponent title={"Activity"}></GridNameComponent>
+            <GridNameComponent title={"Content"}></GridNameComponent>
             <Grid
               item
               md={12}
@@ -88,41 +101,32 @@ const EmailEdit = (props) => {
                 margin: "2px",
               }}
             >
-              {data.getEmailById.map(({ mailed }) =>
-                mailed.map(({ Mail, timestamp }) => (
-                  <Card key={`ard${Mail.id}`}>
-                    <CardHeader
-                      title={"Mailed "}
-                      subheader={timestamp.formatted}
-                    />
-
+              {data.getEmailById.map(({ content }) => {
+                return (
+                  <Card key={`ard-1`}>
+                    <CardHeader title={"Content "} />
                     <Divider />
-
-                    <CardContent key={"cd" + Mail.id}>
-                      <Typography key={"tpip" + Mail.id}>
-                        {JSON.parse(Mail.msgs).map(({ from, date, text }) => (
-                          <div>
-                            <p>from:{from}</p>
-                            <p>date:{date}</p>
-                            <p>text:{text}</p>
-                            <Divider />
-                          </div>
-                        ))}
+                    <CardContent key={"cd-1"}>
+                      <Typography key={"tpip-1"}>
+                        <div>
+                          {content}
+                          <Divider />
+                        </div>
                       </Typography>
                     </CardContent>
                     <CardActions className={classes.actions}>
                       <Button size="small" color="primary" variant="text">
-                        Reply
+                        Save
                         <EmojiPeopleIcon className={classes.EmojiPeople} />
                       </Button>
                     </CardActions>
                   </Card>
-                ))
-              )}
+                );
+              })}
             </Grid>
           </Grid>
           <Grid item md={3}>
-            <GridNameComponent title={"Associations"}></GridNameComponent>
+            <GridNameComponent title={"Sent"}></GridNameComponent>
             <Grid
               item
               md={12}
@@ -131,24 +135,42 @@ const EmailEdit = (props) => {
                 margin: "2px",
               }}
             >
-              <Card key={`card`}>
-                <CardHeader title="Contact" />
+              <Card key={`card-from`}>
+                <CardHeader title="From" />
                 <Divider />
-                {data.getEmailById.map(({ contacts }) =>
-                  contacts.map(({ id, first_name, last_name }) => (
-                    <CardContent key={`cd_${id}`}>
-                      <Typography key={`tp_${id}`}>
-                        <Link
-                          key={`link${id}`}
-                          className="edit-link"
-                          to={`/contacts/${id}`}
-                        >
-                          {first_name} {last_name}
-                        </Link>
-                      </Typography>
-                    </CardContent>
-                  ))
-                )}
+                {data.getEmailById.map(({ sent_by_user }) => (
+                  <CardContent key={`cd_${sent_by_user.User.id}`}>
+                    <Typography key={`tp_${sent_by_user.User.id}`}>
+                      <Link
+                        key={`link${sent_by_user.User.id}`}
+                        className="edit-link"
+                        to={`/users/${sent_by_user.User.id}`}
+                      >
+                        {sent_by_user.User.first_name}{" "}
+                        {sent_by_user.User.last_name}
+                      </Link>
+                    </Typography>
+                  </CardContent>
+                ))}
+              </Card>
+
+              <Card key={`card-to`}>
+                <CardHeader title="To" />
+                <Divider />
+                {data.getEmailById.map(({ sent_to_contact }) => (
+                  <CardContent key={`cd_${sent_to_contact.Contact.id}`}>
+                    <Typography key={`tp_${sent_to_contact.Contact.id}`}>
+                      <Link
+                        key={`link${sent_to_contact.Contact.id}`}
+                        className="edit-link"
+                        to={`/contacts/${sent_to_contact.Contact.id}`}
+                      >
+                        {sent_to_contact.Contact.first_name}{" "}
+                        {sent_to_contact.Contact.last_name}
+                      </Link>
+                    </Typography>
+                  </CardContent>
+                ))}
               </Card>
             </Grid>
           </Grid>

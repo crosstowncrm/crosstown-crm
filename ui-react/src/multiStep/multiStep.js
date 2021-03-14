@@ -85,6 +85,7 @@ class MultiStep {
   validateEmail = () => {
     let emailSubjectError = "";
     let emailContentError = "";
+    let emailContactError = "";
 
     if (!this.data.subject) {
       emailSubjectError = "Required";
@@ -96,7 +97,12 @@ class MultiStep {
       this.errors = { ...this.errors, ["content"]: emailContentError };
     }
 
-    if (emailSubjectError || emailContentError) {
+    if (!this.data.contact) {
+      emailContactError = "Required";
+      this.errors = { ...this.errors, ["contact"]: emailContactError };
+    }
+
+    if (emailSubjectError || emailContentError || emailContactError) {
       return false;
     }
     this.errors = {};

@@ -469,6 +469,11 @@ type Query {
         statement: "MATCH (deal:Deal{id:$id}) RETURN deal LIMIT 1"
     )
 
+    getEmailById(id:String): [Email] @hasScope(scopes: ["admin", "teamlead", "agent"])
+    @cypher(
+        statement: "MATCH (email:Email{id:$id}) RETURN email LIMIT 1"
+    )
+
     getPropertyById(id:ID): [Property] @hasScope(scopes: ["admin", "teamlead", "agent"])
     @cypher(
         statement: "MATCH (property:Property{id:$id}) RETURN property LIMIT 1"

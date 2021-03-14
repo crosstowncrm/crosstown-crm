@@ -54,6 +54,7 @@ const GET_CONTACTS = gql`
 
 function EmailData() {
   const [errors, setErrors] = React.useState(multiStep.getErrors());
+  const [contactAC, setContactAC] = React.useState("");
   const handleChange = (event) => {
     multiStep.saveData({
       name: event.target.name,
@@ -71,7 +72,6 @@ function EmailData() {
   };
 
   const handleAcChange = (event, value) => {
-    event.preventDefault();
     const name = event.target.id.split("-")[0];
     multiStep.saveData({
       name: name,
@@ -174,7 +174,7 @@ function EmailData() {
                   />
                 )}
               />
-              <div style={{ fontSize: 12, color: "red" }}>{errors.toError}</div>
+              <div style={{ fontSize: 12, color: "red" }}>{errors.contact}</div>
             </>
           )}
         </div>

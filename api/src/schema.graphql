@@ -1,5 +1,7 @@
 directive @hasScope(scopes: [String]) on OBJECT | FIELD_DEFINITION
 
+scalar Upload
+
 type Activity {
     actionDateList: [String]
     actions: [String]
@@ -207,6 +209,16 @@ type Deal {
     strategy: Strategy @relation(name: "HAS_STRATEGY", direction: "OUT")
     title: String
     type: Type @relation(name: "HAS_TYPE", direction: "OUT")
+}
+
+type Document {
+    id: ID!
+    #  categories: [Category] @relation(name: "IN_CATEGORY", direction: "OUT")
+    name: String
+    created: Date
+    description: String
+    is_public: Boolean
+    owner: User @relation(name: "OWNS_DOCUMENT", direction: "IN")
 }
 
 type Email {
@@ -449,6 +461,8 @@ type Query {
 
     contact(filter: String="*", filter: String="*", orderByMe: String="owner.first_name asc", first: Int=10, offset: Int=0): [Contact] @hasScope(scopes: ["admin", "teamlead", "agent"])
 
+    document(filter: String="*", filter: String="*", orderByMe: String="node.created asc", id: String, first: Int=10, offset: Int=0):[Document] @hasScope(scopes: ["admin", "teamlead", "agent"])
+
     email(filter: String="*", filter: String="*", orderByMe: String="owner.created asc", id: String, first: Int=10, offset: Int=0):[Email] @hasScope(scopes: ["admin", "teamlead", "agent"])
     @cypher(
         statement: "MATCH (email:Email) RETURN email"
@@ -467,6 +481,11 @@ type Query {
     getDealById(id:String): [Deal] @hasScope(scopes: ["admin", "teamlead", "agent"])
     @cypher(
         statement: "MATCH (deal:Deal{id:$id}) RETURN deal LIMIT 1"
+    )
+
+    getDocumentCount: Int @hasScope(scopes: ["admin", "teamlead", "agent"])
+    @cypher(
+        statement: "MATCH (document:Document) RETURN count(document) as document_count"
     )
 
     getEmailById(id:String): [Email] @hasScope(scopes: ["admin", "teamlead", "agent"])
@@ -600,6 +619,8 @@ type Mutation {
         facebook_url: String, instagram_url: String, twitter_url: String, lead_status: String, lead_type: String, lead_date: String, lifecycle_stage: String,
         created_at: _Neo4jDateInput, last_modified: String, email_domain: String): Company
 
+    createDocument(document:Upload!, description:String, is_public: Boolean, owner: String): Document
+
     createEmail(subject: String, content: String, forward: Boolean, from: String, reply: Boolean, contact: String): Email
 
     createContact(address: Addressik, first_name: String, last_name: String, suffix: String, birthday: String, email: String, phone: String, mobile: String, linkedin_url: String,
@@ -607,7 +628,7 @@ type Mutation {
         created_at: _Neo4jDateInput, last_modified: String, email_domain: String, marital_status: String): Contact
 
     createDeal(action: Int, amount: String, client_id: String, est_date: String, living: Int, property_id: String): Deal
-    @cypher(statement: "MATCH (client:Client {id: $client_id }) MATCH (property:Property{id:$property_id}) MATCH (strategy:Strategy {id: $living }) MATCH (type:Type {id: $action }) CREATE (deal:Deal{stage: 'start', action: $action, amount: $amount, start_time: datetime(), est_date: datetime($est_date), living: $living}) MERGE (client)-[:HAS_INTEREST_IN]->(deal)-[:HAS_INTEREST_IN]->(property) MERGE (type)<-[:HAS_TYPE]-(deal)-[:HAS_STRATEGY]->(strategy) SET deal.id = toString(id(deal)) RETURN deal")
+        @cypher(statement: "MATCH (client:Client {id: $client_id }) MATCH (property:Property{id:$property_id}) MATCH (strategy:Strategy {id: $living }) MATCH (type:Type {id: $action }) CREATE (deal:Deal{stage: 'start', action: $action, amount: $amount, start_time: datetime(), est_date: datetime($est_date), living: $living}) MERGE (client)-[:HAS_INTEREST_IN]->(deal)-[:HAS_INTEREST_IN]->(property) MERGE (type)<-[:HAS_TYPE]-(deal)-[:HAS_STRATEGY]->(strategy) SET deal.id = toString(id(deal)) RETURN deal")
 
     createProperty(address: Addressik, name: String, email: String, phone: String, mobile: String, linkedin_url: String,
         facebook_url: String, instagram_url: String, twitter_url: String, property_type: String, lead_type: String, lead_date: String, lifecycle_stage: String,

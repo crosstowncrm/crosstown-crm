@@ -109,6 +109,22 @@ class MultiStep {
     return true;
   };
 
+  validateDoc = () => {
+    let documentError = "";
+
+    if (!this.data.document) {
+      documentError = "Required";
+      this.errors = { ...this.errors, ["document"]: documentError };
+    }
+
+    if (documentError) {
+      return false;
+    }
+
+    this.errors = {};
+    return true;
+  };
+
   validateTask = () => {
     let taskNameError = "";
     let taskAssignedError = "";

@@ -4,6 +4,8 @@ import {ApolloServer} from "apollo-server-express";
 import express from "express";
 import neo4j from "neo4j-driver";
 
+import { graphqlUploadExpress } from 'graphql-upload';
+
 import {makeAugmentedSchema} from "neo4j-graphql-js";
 import dotenv from "dotenv";
 
@@ -64,6 +66,7 @@ const server = new ApolloServer({
     schema: schema,
     introspection: true,
     playground: true,
+    uploads: false
 
 });
 
@@ -71,11 +74,18 @@ const server = new ApolloServer({
 const port = process.env.GRAPHQL_LISTEN_PORT || 4001;
 const path = "/graphql";
 
+app.use(
+    express.static(__dirname + '/uploads/documents'),
+    graphqlUploadExpress({ maxFileSize: 10000000, maxFiles: 10 })
+)
+
 /*
 * Optionally, apply Express middleware for authentication, etc
 * This also also allows us to specify a path for the GraphQL endpoint
 */
 server.applyMiddleware({app, path});
+
+
 
 app.listen({port, path}, () => {
     console.log(`GraphQL server ready at http://localhost:${port}${path}`);

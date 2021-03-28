@@ -10,6 +10,11 @@ import ArticleCreate from "./components/articles/create-article.component";
 import ArticleData from "./components/articles/edit-article.component";
 import ArticleList from "./components/articles/ArticleList";
 import ClientList from "./components/clients/ClientList";
+
+import DocumentCreate from "./components/documents/create-document.component";
+import DocumentData from "./components/documents/edit-document.component";
+import DocumentList from "./components/documents/DocumentList";
+
 import CompanyCreate from "./components/companies/create-company.component";
 import CompanyData from "./components/companies/edit-company.component";
 import CompanyList from "./components/companies/CompanyList";
@@ -100,16 +105,27 @@ export default function App() {
               />
               <ProtectedRoute
                 exact
+                path="/document/create"
+                component={DocumentCreate}
+              />
+              <ProtectedRoute
+                exact
                 path="/article/create"
                 component={ArticleCreate}
               />
               <ProtectedRoute exact path="/clients" component={ClientList} />
               <ProtectedRoute exact path="/activity" component={ActivityList} />
               <ProtectedRoute exact path="/companies" component={CompanyList} />
+              <ProtectedRoute exact path="/docs" component={DocumentList} />
               <ProtectedRoute
                 exact
                 path="/companies/:uid"
                 component={CompanyData}
+              />
+              <ProtectedRoute
+                exact
+                path="/documents/:uid"
+                component={DocumentData}
               />
               <ProtectedRoute
                 exact

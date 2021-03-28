@@ -1,8 +1,12 @@
 import {neo4jgraphql} from "neo4j-graphql-js";
 import jwt from "jsonwebtoken";
+import path from "path";
+import fs from "fs";
+
+const { GraphQLUpload } = require('graphql-upload');
 
 const resolvers = {
-
+    Upload: GraphQLUpload,
     Query: {
 
         loginUser: async (_, {name, pswd}, ctx) => {
@@ -78,7 +82,7 @@ const resolvers = {
             WITH node OPTIONAL MATCH (node)<-[:OWNS_PROSPECT]-(owner:User) RETURN node, owner 
             ORDER BY ${orderByMe} 
             SKIP ${offset} 
-            LIMIT ${first};`;
+            LIMIT ${first};`    ``  ;
             return await session.run(cypherQuery).then(
                 result => {
                     const resData = result.records.map(
@@ -131,6 +135,38 @@ const resolvers = {
                             };
                         }
                     );
+                    return resData;
+                }
+            )
+        },
+
+        document: async (_, {filter, orderByMe, first, offset}, ctx) => {
+            let session = ctx.driver.session();
+
+            const cypherQuery = `CALL db.index.fulltext.queryNodes('searchDocument', '${filter}') YIELD node 
+            WITH node OPTIONAL MATCH (node)<-[:OWNS_DOCUMENT]-(owner:User) RETURN node, owner 
+            ORDER BY ${orderByMe} 
+            SKIP ${offset} 
+            LIMIT ${first};`;
+            return await session.run(cypherQuery).then(
+                result => {
+                    const resData = result.records.map(
+                        record => {
+                            const owner = record.get('owner') === null ? null : record.get('owner').properties;
+                            let {id, name, description, is_public, created} = record.get('node').properties;
+                            return {
+                                id: id,
+                                name: name,
+                                description: description,
+                                is_public: is_public,
+                                created: {formatted: created.toString()},
+                                owner: owner === null ? null : {
+                                    first_name: owner.first_name,
+                                    last_name: owner.last_name
+                                }
+                            }
+                        }
+                    )
                     return resData;
                 }
             )
@@ -530,7 +566,6 @@ const resolvers = {
             )
         },
         createArticle: async (_, {arg}, ctx) => {
-
             const {headline, author, excerpt, blocks} = arg;
             const cypherQuery = `CREATE (article:Article{headline: "` + headline + `", author: "` + author + `", excerpt: "` + excerpt + `", blocks: '` + blocks + `'}) SET article.id=toString(id(article)) SET article.created_at=date(), article.last_modified=datetime() RETURN article LIMIT 1`;
             let session = ctx.driver.session();
@@ -559,10 +594,37 @@ const resolvers = {
         createEmail: async (_, params, ctx) => {
             const { contact, content, forward, from, subject, reply } = params;
             let session = ctx.driver.session();
-            const cypherQuery = `MATCH (user:User{id:"${from}"}) MATCH (contact:Contact{id:"${contact}"}) CREATE (email:Email{subject: "${subject}", content: "${content}", reply: ${reply? true : false}, forward: ${forward? true : false} }) SET email.id = toString(id(email)),  email.created=datetime() MERGE (user)<-[:SENT_BY_USER]-(email)-[:SENT_TO_CONTACT]->(contact) RETURN email LIMIT 1`;
+            const cypherQuery = `MATCH (user:User{id:"${from}"}) MATCH (contact:Contact{id:"${contact}"}) CREATE (email:Email{subject: "${subject}", content: "${content}", reply: ${reply? true : false}, filename: ${filename} }) SET document.id = toString(id(document)),  document.created=datetime() MERGE (user)-[:OWNS_DOCUMENT]->(document) RETURN document LIMIT 1`;
             return await session.run(cypherQuery).then(
                 result => {
                     return result.records[0].get('email').properties;
+                }
+            )
+        },
+        createDocument: async (_, params, ctx) => {
+            const { description, is_public, owner, document } = params;
+
+            const {filename, mimetype, encoding, createReadStream} = await document;
+            const stream = createReadStream();
+            const pathFolder = path.join(__dirname, "../uploads/documents/", owner);
+
+            if (!fs.existsSync(pathFolder)){
+                fs.mkdirSync(pathFolder);
+            }
+
+            const pathName = path.join(pathFolder, filename);
+
+            try {
+                await stream.pipe(fs.createWriteStream(pathName));
+            } catch (e) {
+                throw e;
+            }
+
+            let session = ctx.driver.session();
+            const cypherQuery = `MATCH (user:User{id:"${owner}"}) CREATE (document:Document{description: "${description}", mimetype: "${mimetype}", encoding: "${encoding}", is_public: ${is_public?true:false}, name: "${filename}") SET document.id = toString(id(document)),  document.created=datetime() MERGE (user)-[:OWNS_DOCUMENT]->(document) RETURN document LIMIT 1`;
+            return await session.run(cypherQuery).then(
+                result => {
+                    return result.records[0].get('document').properties;
                 }
             )
         },

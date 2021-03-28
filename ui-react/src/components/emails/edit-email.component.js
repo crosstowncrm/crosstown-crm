@@ -116,7 +116,7 @@ const EmailEdit = (props) => {
                     </CardContent>
                     <CardActions className={classes.actions}>
                       <Button size="small" color="primary" variant="text">
-                        Save
+                        Sent
                         <EmojiPeopleIcon className={classes.EmojiPeople} />
                       </Button>
                     </CardActions>

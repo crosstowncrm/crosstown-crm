@@ -101,15 +101,15 @@ const GET_COMPANY = gql`
       phone
       sessions_num
       time_zone
-      mailed {
-        timestamp {
-          formatted
-        }
-        Mail {
-          id
-          msgs
-        }
-      }
+      #      mailed {
+      #        timestamp {
+      #          formatted
+      #        }
+      #        Mail {
+      #          id
+      #          msgs
+      #        }
+      #      }
     }
   }
 `;
@@ -157,37 +157,37 @@ const CompanyEdit = (props) => {
                 margin: "2px",
               }}
             >
-              {data.getCompanyById.map(({ mailed }) =>
-                mailed.map(({ Mail, timestamp }) => (
-                  <Card key={`ard${Mail.id}`}>
-                    <CardHeader
-                      title={"Mailed "}
-                      subheader={timestamp.formatted}
-                    />
+              {/*{data.getCompanyById.map(({ mailed }) =>*/}
+              {/*mailed.map(({ Mail, timestamp }) => (*/}
+              {/*<Card key={`ard${Mail.id}`}>*/}
+              {/*<CardHeader*/}
+              {/*title={"Mailed "}*/}
+              {/*subheader={timestamp.formatted}*/}
+              {/*/>*/}
 
-                    <Divider />
+              {/*<Divider />*/}
 
-                    <CardContent key={"cd" + Mail.id}>
-                      <Typography key={"tpip" + Mail.id}>
-                        {JSON.parse(Mail.msgs).map(({ from, date, text }) => (
-                          <div>
-                            <p>from:{from}</p>
-                            <p>date:{date}</p>
-                            <p>text:{text}</p>
-                            <Divider />
-                          </div>
-                        ))}
-                      </Typography>
-                    </CardContent>
-                    <CardActions className={classes.actions}>
-                      <Button size="small" color="primary" variant="text">
-                        Reply
-                        <EmojiPeopleIcon className={classes.EmojiPeople} />
-                      </Button>
-                    </CardActions>
-                  </Card>
-                ))
-              )}
+              {/*<CardContent key={"cd" + Mail.id}>*/}
+              {/*<Typography key={"tpip" + Mail.id}>*/}
+              {/*{JSON.parse(Mail.msgs).map(({ from, date, text }) => (*/}
+              {/*<div>*/}
+              {/*<p>from:{from}</p>*/}
+              {/*<p>date:{date}</p>*/}
+              {/*<p>text:{text}</p>*/}
+              {/*<Divider />*/}
+              {/*</div>*/}
+              {/*))}*/}
+              {/*</Typography>*/}
+              {/*</CardContent>*/}
+              {/*<CardActions className={classes.actions}>*/}
+              {/*<Button size="small" color="primary" variant="text">*/}
+              {/*Reply*/}
+              {/*<EmojiPeopleIcon className={classes.EmojiPeople} />*/}
+              {/*</Button>*/}
+              {/*</CardActions>*/}
+              {/*</Card>*/}
+              {/*))*/}
+              {/*)}*/}
             </Grid>
           </Grid>
           <Grid item md={3}>

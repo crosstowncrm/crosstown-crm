@@ -16,7 +16,7 @@ const GET_PROPERTIES = gql`
     $offset: Int
     $orderBy: [_PropertyOrdering]
   ) {
-    Property(first: $first, offset: $offset, orderBy: $orderBy) {
+    property(first: $first, offset: $offset, orderBy: $orderBy) {
       id
       name
     }
@@ -107,7 +107,7 @@ export default function AddInterestDialog({
               <Autocomplete
                 id="property"
                 name="property"
-                options={properties.Property}
+                options={properties.property}
                 getOptionLabel={(option) => option.name}
                 style={{ width: 300 }}
                 onChange={handleChange}

@@ -589,7 +589,7 @@ type Query {
 
     loginUser(name: String, pswd: String): [AuthData]
 
-    property(filter: String="*", filter: String="*", orderByMe: String="owner.first_name asc"): [Property!] @hasScope(scopes: ["admin", "teamlead", "agent"])
+    property(filter: String="*", filter: String="*", orderByMe: String="owner.first_name asc", offset: Int=0, first: Int=10): [Property!] @hasScope(scopes: ["admin", "teamlead", "agent"])
 
     role(filter: String="*", filter: String="*", orderByMe: String="node.title asc", offset: Int=0, first: Int=10):[Role] @hasScope(scopes: ["admin", "teamlead", "agent"])
     @cypher(

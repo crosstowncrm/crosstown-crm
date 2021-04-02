@@ -16,7 +16,7 @@ const GET_COMPANIES = gql`
     $offset: Int
     $orderBy: [_CompanyOrdering]
   ) {
-    Company(first: $first, offset: $offset, orderBy: $orderBy) {
+    company(first: $first, offset: $offset, orderBy: $orderBy) {
       id
       name
     }
@@ -24,15 +24,8 @@ const GET_COMPANIES = gql`
 `;
 
 const ASSOCIATION_ADD = gql`
-  mutation associationAdd($from: ID!, $to: ID!) {
-    MergeContactCompanies(from: { id: $from }, to: { id: $to }) {
-      from {
-        id
-      }
-      to {
-        id
-      }
-    }
+  mutation associationAdd($from: String!, $to: String!) {
+    associationAdd(from: $from, to: $to)
   }
 `;
 
@@ -78,6 +71,7 @@ export default function AddCompanyDialog({
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    console.log("wish you were here");
     const isValid = validate(formData);
 
     if (isValid) {
@@ -115,7 +109,7 @@ export default function AddCompanyDialog({
               <Autocomplete
                 id="company"
                 name="company"
-                options={companies.Company}
+                options={companies.company}
                 getOptionLabel={(option) => option.name}
                 style={{ width: 300 }}
                 onChange={handleChange}

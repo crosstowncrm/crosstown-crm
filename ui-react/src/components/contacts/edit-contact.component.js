@@ -371,22 +371,22 @@ function ContactEdit(props) {
                     </CardContent>
                     <CardActionArea>
                       <CardActions>
-                        <Link to="/" size="small" color="primary">
+                        <Link key="note" to="/" size="small" color="primary">
                           Note
                         </Link>
-                        <Link to="/" size="small" color="primary">
+                        <Link key="email" to="/" size="small" color="primary">
                           Email
                         </Link>
-                        <Link to="/" size="small" color="primary">
+                        <Link key="call" to="/" size="small" color="primary">
                           Call
                         </Link>
-                        <Link to="/" size="small" color="primary">
+                        <Link key="log" to="/" size="small" color="primary">
                           Log
                         </Link>
-                        <Link to="/" size="small" color="primary">
+                        <Link key="task" to="/" size="small" color="primary">
                           Task
                         </Link>
-                        <Link to="/" size="small" color="primary">
+                        <Link key="meet" to="/" size="small" color="primary">
                           Meet
                         </Link>
                       </CardActions>
@@ -1059,7 +1059,7 @@ function ContactEdit(props) {
               )}
             </Grid>
           </Grid>
-          <Grid item md={6}>
+          <Grid key="Activity" item md={6}>
             <Grid
               item
               md={12}
@@ -1124,121 +1124,123 @@ function ContactEdit(props) {
             >
               Associations, Interests, Listings
             </Grid>
-
-            {data.getContactById.map(({ companies, properties, listings }) => (
-              <>
-                <Grid
-                  key="company"
-                  item
-                  md={12}
-                  style={{
-                    border: "2px solid blue",
-                    margin: "2px",
-                  }}
-                >
-                  <Card key={"company"}>
-                    <CardActions>
-                      <CardHeader title="Company" />
-                      <Button onClick={callDialog} size="small" color="primary">
-                        Add
-                      </Button>
-                    </CardActions>
-                    <Divider />
-                    <CardContent key={"key"}>
-                      {companies.map((company) => (
-                        <Typography key={"tp_" + company.id}>
-                          <Link
-                            key={"link_" + company.id}
-                            className="edit-link"
-                            to={"/companies/" + company.id}
-                          >
-                            {company.name}
-                          </Link>
-                        </Typography>
-                      ))}
-                    </CardContent>
-                  </Card>
-                </Grid>
-                <Grid
-                  key={"property"}
-                  item
-                  md={12}
-                  style={{
-                    border: "2px solid blue",
-                    margin: "2px",
-                  }}
-                >
-                  <Card key={"property"}>
-                    <CardActions>
-                      <CardHeader title="Has Interest In" />
-                      <Button
-                        onClick={callInterestDialog}
-                        size="small"
-                        color="primary"
-                      >
-                        Add
-                      </Button>
-                    </CardActions>
-                    <Divider />
-                    <CardContent>
-                      {properties.map((property) => (
-                        <Typography key={"tp_" + property.Property.id}>
-                          <Link
-                            key={"link_" + property.Property.id}
-                            className="edit-link"
-                            to={"/properties/" + property.Property.id}
-                          >
-                            {property.Property.name}
-                          </Link>
-                        </Typography>
-                      ))}
-                    </CardContent>
-                  </Card>
-                </Grid>
-
-                <Grid
-                  key={"listing"}
-                  item
-                  md={12}
-                  style={{
-                    border: "2px solid blue",
-                    margin: "2px",
-                  }}
-                >
-                  <Card key={"listing"}>
-                    <CardActions>
-                      <CardHeader title="Listings" />
-                      <Button
-                        onClick={callListingDialog}
-                        size="small"
-                        size="small"
-                        color="primary"
-                      >
-                        Add
-                      </Button>
-                    </CardActions>
-
-                    <Divider />
-                    {listings.map((listing) => (
-                      <CardContent key={"ls_" + listing.id}>
-                        <Typography key={"tp_" + listing.id}>
-                          <Link
-                            key={"link_" + listing.id}
-                            className="edit-link"
-                            to={"/listings/" + listing.id}
-                          >
-                            {listing.name}
-                          </Link>
-                        </Typography>
-                      </CardContent>
+            <Grid
+              key="company-grid"
+              item
+              md={12}
+              style={{
+                border: "2px solid blue",
+                margin: "2px",
+              }}
+            >
+              {data.getContactById.map(({ companies }) => (
+                <Card key={"company-card"}>
+                  <CardActions>
+                    <CardHeader title="Company" />
+                    <Button onClick={callDialog} size="small" color="primary">
+                      Add
+                    </Button>
+                  </CardActions>
+                  <Divider />
+                  <CardContent key={"key"}>
+                    {companies.map((company) => (
+                      <Typography key={"tp_" + company.id}>
+                        <Link
+                          key={"link_" + company.id}
+                          className="edit-link"
+                          to={"/companies/" + company.id}
+                        >
+                          {company.name}
+                        </Link>
+                      </Typography>
                     ))}
-                  </Card>
-                </Grid>
-              </>
-            ))}
+                  </CardContent>
+                </Card>
+              ))}
+            </Grid>
+            <Grid
+              key={"property-grid"}
+              item
+              md={12}
+              style={{
+                border: "2px solid blue",
+                margin: "2px",
+              }}
+            >
+              {data.getContactById.map(({ properties }) => (
+                <Card key={"property-card"}>
+                  <CardActions>
+                    <CardHeader title="Has Interest In" />
+                    <Button
+                      onClick={callInterestDialog}
+                      size="small"
+                      color="primary"
+                    >
+                      Add
+                    </Button>
+                  </CardActions>
+                  <Divider />
+                  <CardContent>
+                    {properties.map((property) => (
+                      <Typography key={"tp_" + property.Property.id}>
+                        <Link
+                          key={"link_" + property.Property.id}
+                          className="edit-link"
+                          to={"/properties/" + property.Property.id}
+                        >
+                          {property.Property.name}
+                        </Link>
+                      </Typography>
+                    ))}
+                  </CardContent>
+                </Card>
+              ))}
+            </Grid>
+
+            <Grid
+              key={"listing-grid"}
+              item
+              md={12}
+              style={{
+                border: "2px solid blue",
+                margin: "2px",
+              }}
+            >
+              {data.getContactById.map(({ listings }) => (
+                <Card key={"listing-card"}>
+                  <CardActions>
+                    <CardHeader title="Listings" />
+                    <Button
+                      onClick={callListingDialog}
+                      size="small"
+                      size="small"
+                      color="primary"
+                    >
+                      Add
+                    </Button>
+                  </CardActions>
+
+                  <Divider />
+                  {listings.map((listing) => (
+                    <CardContent key={"ls_" + listing.id}>
+                      <Typography key={"tp_" + listing.id}>
+                        <Link
+                          key={"link_" + listing.id}
+                          className="edit-link"
+                          to={"/listings/" + listing.id}
+                        >
+                          {listing.name}
+                        </Link>
+                      </Typography>
+                    </CardContent>
+                  ))}
+                </Card>
+              ))}
+            </Grid>
           </Grid>
         </Grid>
       )}
+
       <ChangeAddressDialog
         key={"changeAddress"}
         isOpen={openAddressDialogComponent}

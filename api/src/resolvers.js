@@ -431,6 +431,16 @@ const resolvers = {
 
     },
     Mutation: {
+        associationAdd: async (_, {from, to}, ctx) => {
+            let session = ctx.driver.session();
+            const cypherQuery = `MATCH (contact:Contact {id: "${from}"}) MATCH (company:Company{id: "${to}"}) MERGE (contact)-[rel:ASSOCIATED_WITH]-(company) RETURN id(rel) as rel_id LIMIT 1`;
+            return await session.run(cypherQuery).then(
+                result => {
+                    const resData = result.records[0] ? result.records[0].get('rel_id').properties : null;
+                    return resData;
+                }
+            )
+        },
         addressChange: async (_, {from, postal_code, street_address1, street_address2, lat, lng, label}, ctx) => {
             let session = ctx.driver.session();
             const cypherQuery = `MATCH (unit:${label} {id: "${from}"}) OPTIONAL MATCH (:Address)-[r]->(unit) DELETE r WITH unit MERGE (address:Address{postal_code: "${postal_code}", street_address1: "${street_address1}", street_address2: "${street_address2}"}) ON CREATE SET address.lat = "${lat}", address.lng = "${lng}"  MERGE (unit)-[rel:HAS_ADDRESS]-(address) SET address.id=toString(id(address)) RETURN id(rel) as rel_id LIMIT 1`;

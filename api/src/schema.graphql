@@ -613,6 +613,8 @@ type Mutation {
 
     addressChange(from: ID!, postal_code: String, street_address1:String, street_address2:String, lat:String, lng:String, label:String): String  @hasScope(scopes: ["admin", "teamlead", "agent"])
 
+    associationAdd(from: String!, to: String!): String @hasScope(scopes: ["admin", "teamlead", "agent"])
+
     createArticle( arg: ArticleInput ): Article @hasScope(scopes: ["admin", "teamlead", "agent"])
 
     createCompany(address: Addressik, name: String, email: String, phone: String, mobile: String, linkedin_url: String,

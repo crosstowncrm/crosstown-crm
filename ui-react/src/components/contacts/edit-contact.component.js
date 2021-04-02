@@ -1170,7 +1170,7 @@ function ContactEdit(props) {
               {data.getContactById.map(({ properties }) => (
                 <Card key={"property-card"}>
                   <CardActions>
-                    <CardHeader title="Has Interest In" />
+                    <CardHeader title="Property" />
                     <Button
                       onClick={callInterestDialog}
                       size="small"

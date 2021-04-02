@@ -659,6 +659,8 @@ type Mutation {
 
     deleteUser(userId: String): String @hasScope(scopes: ["admin", "teamlead", "agent"])
 
+    listingAdd( from: String!, to: String! ): String @hasScope(scopes: ["admin", "teamlead", "agent"])
+
     mergeContactInterest(from: String, to: String): Interest @hasScope(scopes: ["admin", "teamlead", "agent"])
     @cypher(statement: "MATCH (contact:Contact{id: $from}) MATCH (property:Property{id: $to}) MERGE (contact)-[hii:HAS_INTEREST_IN]->(property) RETURN hii")
 

@@ -24,15 +24,8 @@ const GET_LISTINGS = gql`
 `;
 
 const LISTING_ADD = gql`
-  mutation listingAdd($from: ID!, $to: ID!) {
-    MergeContactListings(from: { id: $from }, to: { id: $to }) {
-      from {
-        id
-      }
-      to {
-        id
-      }
-    }
+  mutation listingAdd($from: String!, $to: String!) {
+    listingAdd(from: $from, to: $to)
   }
 `;
 

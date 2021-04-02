@@ -503,6 +503,17 @@ const resolvers = {
             )
         },
 
+        listingAdd: async (_, {from, to}, ctx) => {
+            let session = ctx.driver.session();
+            const cypherQuery = `MATCH (contact:Contact {id: "${from}"}) MATCH (listing:Listing{id: "${to}"}) MERGE (contact)-[rel:LISTS]-(listing) RETURN id(rel) as rel_id LIMIT 1`;
+            return await session.run(cypherQuery).then(
+                result => {
+                    const resData = result.records[0] ? result.records[0].get('rel_id').properties : null;
+                    return resData;
+                }
+            )
+        },
+
         updateContact: async (_, {field, value, contactId}, ctx) => {
             let session = ctx.driver.session();
             const cypherQuery = `MATCH (contact:Contact {id: "${contactId}"}) SET ` + field + `= "${value}" RETURN contact LIMIT 1`;

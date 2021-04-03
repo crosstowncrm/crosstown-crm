@@ -8,11 +8,10 @@ import CardActions from "@material-ui/core/CardActions";
 import CardContent from "@material-ui/core/CardContent";
 import Button from "@material-ui/core/Button";
 import Typography from "@material-ui/core/Typography";
-import EmojiPeopleIcon from "@material-ui/icons/EmojiPeople";
 import GridNameComponent from "./grids/grids-name-component";
 import GridCompanyComponent from "./grids/grids-company-component";
-
 import AddContactDialog from "../dialogs/add-contact-dialog";
+import AddListingDialog from "../dialogs/add-listing-company-dialog";
 
 import { CardHeader, Divider } from "@material-ui/core";
 
@@ -120,6 +119,10 @@ const CompanyEdit = (props) => {
   const { classes } = props;
   const params = props.match.params;
   const [openDialogComponent, setOpenDialogComponent] = React.useState(false);
+  const [
+    openDialogListingComponent,
+    setOpenListingDialogComponent,
+  ] = React.useState(false);
 
   const { loading, data, error, refetch } = useQuery(GET_COMPANY, {
     variables: {
@@ -130,9 +133,14 @@ const CompanyEdit = (props) => {
   const callDialog = () => {
     setOpenDialogComponent(true);
   };
-
   const handleCloseDialogComponent = () => {
     setOpenDialogComponent(false);
+  };
+  const callListingDialog = () => {
+    setOpenListingDialogComponent(true);
+  };
+  const handleCloseListingDialogComponent = () => {
+    setOpenListingDialogComponent(false);
   };
 
   return (
@@ -239,6 +247,45 @@ const CompanyEdit = (props) => {
                 </Card>
               ))}
             </Grid>
+            <Grid
+              key={"listing-grid"}
+              item
+              md={12}
+              style={{
+                border: "2px solid blue",
+                margin: "2px",
+              }}
+            >
+              {data.getCompanyById.map(({ listings }) => (
+                <Card key={"listing-card"}>
+                  <CardActions>
+                    <CardHeader title="Listings" />
+                    <Button
+                      onClick={callListingDialog}
+                      size="small"
+                      color="primary"
+                    >
+                      Add
+                    </Button>
+                  </CardActions>
+
+                  <Divider />
+                  {listings.map((listing) => (
+                    <CardContent key={"ls_" + listing.id}>
+                      <Typography key={"tp_" + listing.id}>
+                        <Link
+                          key={"link_" + listing.id}
+                          className="edit-link"
+                          to={"/listings/" + listing.id}
+                        >
+                          {listing.name}
+                        </Link>
+                      </Typography>
+                    </CardContent>
+                  ))}
+                </Card>
+              ))}
+            </Grid>
           </Grid>
         </Grid>
       )}
@@ -250,6 +297,14 @@ const CompanyEdit = (props) => {
         title="Associations"
         refetch={refetch}
       ></AddContactDialog>
+      <AddListingDialog
+        key={"AddListing"}
+        isOpen={openDialogListingComponent}
+        handleClose={handleCloseListingDialogComponent}
+        companyId={params["uid"]}
+        title="Listing"
+        refetch={refetch}
+      ></AddListingDialog>
     </>
   );
 };

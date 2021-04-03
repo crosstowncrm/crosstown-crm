@@ -1213,7 +1213,6 @@ function ContactEdit(props) {
                     <Button
                       onClick={callListingDialog}
                       size="small"
-                      size="small"
                       color="primary"
                     >
                       Add

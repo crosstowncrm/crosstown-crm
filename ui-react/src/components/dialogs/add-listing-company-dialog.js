@@ -10,42 +10,41 @@ import FormControl from "@material-ui/core/FormControl";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import { useMutation, useQuery, gql } from "@apollo/client";
 
-const GET_CONTACTS = gql`
-  query contactsPaginateQuery(
+const GET_LISTINGS = gql`
+  query listingsForUsers(
     $first: Int
     $offset: Int
-    $orderBy: [_ContactOrdering]
+    $orderBy: [_ListingOrdering]
   ) {
-    contact(first: $first, offset: $offset, orderBy: $orderBy) {
+    listings(first: $first, offset: $offset, orderBy: $orderBy) {
       id
-      first_name
-      last_name
+      name
     }
   }
 `;
 
-const ASSOCIATION_ADD = gql`
-  mutation associationAdd($from: String!, $to: String!) {
-    associationAdd(from: $to, to: $from)
+const LISTING_ADD = gql`
+  mutation listingToCompanyAdd($from: String!, $to: String!) {
+    listingToCompanyAdd(from: $from, to: $to)
   }
 `;
 
-export default function AddContactDialog({
+export default function AddListingDialog({
   isOpen,
   handleClose,
-  contactId,
+  companyId,
   refetch,
 }) {
-  const [formData, updateFormData] = React.useState({ from: contactId });
+  const [formData, updateFormData] = React.useState({ from: companyId });
   const [errors, setErrors] = React.useState({});
 
   const {
-    loading: contactsQueryLoading,
-    data: contacts,
-    error: contactsQueryError,
-  } = useQuery(GET_CONTACTS, {
+    loading: listingsQueryLoading,
+    data: listings,
+    error: listingsQueryError,
+  } = useQuery(GET_LISTINGS, {
     variables: {
-      orderBy: "first_name_asc",
+      orderBy: "name_asc",
     },
   });
 
@@ -57,13 +56,13 @@ export default function AddContactDialog({
   };
 
   const validate = (values) => {
-    let contactError = "";
+    let listingError = "";
     if (!values.to) {
-      contactError = "Required";
+      listingError = "Required";
     }
-    if (contactError) {
+    if (listingError) {
       setErrors({
-        contactError,
+        listingError,
       });
       return false;
     }
@@ -78,14 +77,12 @@ export default function AddContactDialog({
       associationAdd({
         variables: formData,
       });
-
-      //clear form
-      updateFormData({ from: contactId });
+      updateFormData({ from: companyId });
       handleClose();
     }
   };
 
-  const [associationAdd, { loading, error }] = useMutation(ASSOCIATION_ADD, {
+  const [associationAdd, { loading, error }] = useMutation(LISTING_ADD, {
     update: () => refetch(),
   });
 
@@ -96,26 +93,22 @@ export default function AddContactDialog({
         onClose={handleClose}
         aria-labelledby="edit-apartment"
       >
-        <DialogTitle id="edit-apartment">Contact</DialogTitle>
+        <DialogTitle id="edit-apartment">Listings</DialogTitle>
         <DialogContent>
-          <DialogContentText>
-            Choose the Contact for Association
-          </DialogContentText>
-          {contacts && !contactsQueryLoading && !contactsQueryError && (
+          <DialogContentText>Choose the Company's Listing</DialogContentText>
+          {listings && !listingsQueryLoading && !listingsQueryError && (
             <FormControl>
               <Autocomplete
-                id="contact"
-                name="contact"
-                options={contacts.contact}
-                getOptionLabel={(option) =>
-                  option.first_name + " " + option.last_name
-                }
+                id="company"
+                name="company"
+                options={listings.listings}
+                getOptionLabel={(option) => option.name}
                 style={{ width: 300 }}
                 onChange={handleChange}
                 renderInput={(params) => (
                   <TextField
                     {...params}
-                    label="Contact"
+                    label="Listing"
                     variant="outlined"
                     data-validators="isRequired"
                     required={true}

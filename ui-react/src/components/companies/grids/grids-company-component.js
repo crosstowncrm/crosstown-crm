@@ -243,7 +243,12 @@ export default function GridCompanyComponent({
               <CardActionArea>
                 <CardActions>
                   {headCells.map((headCell) => (
-                    <Link to="/" size="small" color="primary">
+                    <Link
+                      to="/"
+                      size="small"
+                      color="primary"
+                      key={`headcell-${headCell}`}
+                    >
                       {headCell}
                     </Link>
                   ))}

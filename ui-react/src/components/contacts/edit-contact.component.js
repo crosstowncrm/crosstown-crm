@@ -1122,7 +1122,7 @@ function ContactEdit(props) {
                 margin: "2px",
               }}
             >
-              Associations, Interests, Listings
+              Associations, Properties, Listings
             </Grid>
             <Grid
               key="company-grid"
@@ -1142,7 +1142,7 @@ function ContactEdit(props) {
                     </Button>
                   </CardActions>
                   <Divider />
-                  <CardContent key={"key"}>
+                  <CardContent key={"company-card-content-key"}>
                     {companies.map((company) => (
                       <Typography key={"tp_" + company.id}>
                         <Link

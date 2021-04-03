@@ -12,6 +12,8 @@ import EmojiPeopleIcon from "@material-ui/icons/EmojiPeople";
 import GridNameComponent from "./grids/grids-name-component";
 import GridCompanyComponent from "./grids/grids-company-component";
 
+import AddContactDialog from "../dialogs/add-contact-dialog";
+
 import { CardHeader, Divider } from "@material-ui/core";
 
 const styles = (theme) => ({
@@ -117,12 +119,21 @@ const GET_COMPANY = gql`
 const CompanyEdit = (props) => {
   const { classes } = props;
   const params = props.match.params;
+  const [openDialogComponent, setOpenDialogComponent] = React.useState(false);
 
   const { loading, data, error, refetch } = useQuery(GET_COMPANY, {
     variables: {
       id: params["uid"],
     },
   });
+
+  const callDialog = () => {
+    setOpenDialogComponent(true);
+  };
+
+  const handleCloseDialogComponent = () => {
+    setOpenDialogComponent(false);
+  };
 
   return (
     <>
@@ -191,38 +202,54 @@ const CompanyEdit = (props) => {
             </Grid>
           </Grid>
           <Grid item md={3}>
-            <GridNameComponent title={"Associations"}></GridNameComponent>
+            <GridNameComponent
+              title={"Associations, Listings"}
+            ></GridNameComponent>
             <Grid
               item
+              key="contact-grid"
               md={12}
               style={{
                 border: "2px solid blue",
                 margin: "2px",
               }}
             >
-              <Card key={`card`}>
-                <CardHeader title="Contact" />
-                <Divider />
-                {data.getCompanyById.map(({ contacts }) =>
-                  contacts.map(({ id, first_name, last_name }) => (
-                    <CardContent key={`cd_${id}`}>
-                      <Typography key={`tp_${id}`}>
+              {data.getCompanyById.map(({ contacts }) => (
+                <Card key={`contact-card`}>
+                  <CardActions>
+                    <CardHeader title="Contact" />
+                    <Button onClick={callDialog} size="small" color="primary">
+                      Add
+                    </Button>
+                  </CardActions>
+                  <Divider />
+                  <CardContent>
+                    {contacts.map(({ id, first_name, last_name }) => (
+                      <Typography key={`tp-${id}`}>
                         <Link
-                          key={`link${id}`}
+                          key={`link-contact-${id}`}
                           className="edit-link"
                           to={`/contacts/${id}`}
                         >
                           {first_name} {last_name}
                         </Link>
                       </Typography>
-                    </CardContent>
-                  ))
-                )}
-              </Card>
+                    ))}
+                  </CardContent>
+                </Card>
+              ))}
             </Grid>
           </Grid>
         </Grid>
       )}
+      <AddContactDialog
+        key={"addContact"}
+        isOpen={openDialogComponent}
+        handleClose={handleCloseDialogComponent}
+        contactId={params["uid"]}
+        title="Associations"
+        refetch={refetch}
+      ></AddContactDialog>
     </>
   );
 };

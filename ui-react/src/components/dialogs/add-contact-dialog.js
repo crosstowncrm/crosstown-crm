@@ -10,26 +10,27 @@ import FormControl from "@material-ui/core/FormControl";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import { useMutation, useQuery, gql } from "@apollo/client";
 
-const GET_COMPANIES = gql`
-  query companiesPaginateQuery(
+const GET_CONTACTS = gql`
+  query contactsPaginateQuery(
     $first: Int
     $offset: Int
-    $orderBy: [_CompanyOrdering]
+    $orderBy: [_ContactOrdering]
   ) {
-    company(first: $first, offset: $offset, orderBy: $orderBy) {
+    contact(first: $first, offset: $offset, orderBy: $orderBy) {
       id
-      name
+      first_name
+      last_name
     }
   }
 `;
 
 const ASSOCIATION_ADD = gql`
   mutation associationAdd($from: String!, $to: String!) {
-    associationAdd(from: $from, to: $to)
+    associationAdd(from: $to, to: $from)
   }
 `;
 
-export default function AddCompanyDialog({
+export default function AddContactDialog({
   isOpen,
   handleClose,
   contactId,
@@ -39,12 +40,12 @@ export default function AddCompanyDialog({
   const [errors, setErrors] = React.useState({});
 
   const {
-    loading: companiesQueryLoading,
-    data: companies,
-    error: companiesQueryError,
-  } = useQuery(GET_COMPANIES, {
+    loading: contactsQueryLoading,
+    data: contacts,
+    error: contactsQueryError,
+  } = useQuery(GET_CONTACTS, {
     variables: {
-      orderBy: "name_asc",
+      orderBy: "first_name_asc",
     },
   });
 
@@ -56,13 +57,13 @@ export default function AddCompanyDialog({
   };
 
   const validate = (values) => {
-    let companyError = "";
+    let contactError = "";
     if (!values.to) {
-      companyError = "Required";
+      contactError = "Required";
     }
-    if (companyError) {
+    if (contactError) {
       setErrors({
-        companyError,
+        contactError,
       });
       return false;
     }
@@ -71,6 +72,7 @@ export default function AddCompanyDialog({
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    console.log("wish you were here");
     const isValid = validate(formData);
 
     if (isValid) {
@@ -98,24 +100,26 @@ export default function AddCompanyDialog({
         onClose={handleClose}
         aria-labelledby="edit-apartment"
       >
-        <DialogTitle id="edit-apartment">Association</DialogTitle>
+        <DialogTitle id="edit-apartment">Contact</DialogTitle>
         <DialogContent>
           <DialogContentText>
-            Choose the Company for Association
+            Choose the Contact for Association
           </DialogContentText>
-          {companies && !companiesQueryLoading && !companiesQueryError && (
+          {contacts && !contactsQueryLoading && !contactsQueryError && (
             <FormControl>
               <Autocomplete
-                id="company"
-                name="company"
-                options={companies.company}
-                getOptionLabel={(option) => option.name}
+                id="contact"
+                name="contact"
+                options={contacts.contact}
+                getOptionLabel={(option) =>
+                  option.first_name + " " + option.last_name
+                }
                 style={{ width: 300 }}
                 onChange={handleChange}
                 renderInput={(params) => (
                   <TextField
                     {...params}
-                    label="Company"
+                    label="Contact"
                     variant="outlined"
                     data-validators="isRequired"
                     required={true}

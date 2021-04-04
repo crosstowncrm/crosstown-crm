@@ -259,14 +259,7 @@ function PropertyList(props) {
     updateProperty,
     { loading: cndMutationLoading, error: cndQMutationError },
   ] = useMutation(UPDATE_PROPERTY, {
-    update: (proxy, { data: { updateProperty } }) => {
-      const number = data.property.findIndex((x) => x.id === updateProperty.id);
-      data.property[number][field] = fieldValue;
-      proxy.writeQuery({
-        query: GET_PROPERTIES,
-        data: { data: data },
-      });
-    },
+    update: () => refetch(),
   });
 
   return (

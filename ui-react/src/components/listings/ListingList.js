@@ -220,14 +220,7 @@ function ListingList(props) {
     updateListing,
     { loading: cndMutationLoading, error: cndQMutationError },
   ] = useMutation(UPDATE_LISTING, {
-    update: (proxy, { data: { updateListing } }) => {
-      const number = data.listing.findIndex((x) => x.id === updateListing.id);
-      data.listing[number][field] = fieldValue;
-      proxy.writeQuery({
-        query: GET_LISTINGS,
-        data: { data: data },
-      });
-    },
+    update: () => refetch(),
   });
 
   const {

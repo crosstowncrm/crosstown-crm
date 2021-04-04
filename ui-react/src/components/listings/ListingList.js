@@ -51,13 +51,13 @@ const GET_LISTINGS = gql`
   query listingsPaginateQuery(
     $first: Int
     $offset: Int
-    $orderByMe: String
+    $orderBy: [_ListingOrdering]
     $filter: String
   ) {
     listing(
       first: $first
       offset: $offset
-      orderByMe: $orderByMe
+      orderBy: $orderBy
       filter: $filter
     ) {
       id
@@ -95,7 +95,7 @@ function ListingList(props) {
   const [selected, setSelected] = React.useState([]);
   const [order, setOrder] = React.useState("asc");
   const [page, setPage] = React.useState(0);
-  const [orderByMe, setOrderByMe] = React.useState("node.name");
+  const [orderByMe, setOrderByMe] = React.useState("name");
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
   const [filterState, setFilterState] = React.useState({ listingFilter: "" });
   const [field, setField] = React.useState(false);
@@ -119,7 +119,7 @@ function ListingList(props) {
     variables: {
       first: rowsPerPage,
       offset: rowsPerPage * page,
-      orderByMe: `${orderByMe} ${order}`,
+      orderBy: `${orderByMe}_${order}`,
       filter: getFilter(),
     },
   });
@@ -230,7 +230,7 @@ function ListingList(props) {
   } = useQuery(GET_LISTINGS_COUNT);
 
   const headCells = [
-    { id: "node.name", numeric: false, disablePadding: false, label: "Name" },
+    { id: "name", numeric: false, disablePadding: false, label: "Name" },
     {
       id: "node.investment_highlights",
       numeric: false,
@@ -238,19 +238,19 @@ function ListingList(props) {
       label: "Investment Highlights",
     },
     {
-      id: "node.noi",
+      id: "noi",
       numeric: false,
       disablePadding: false,
       label: "NOI",
     },
     {
-      id: "node.price",
+      id: "price",
       numeric: false,
       disablePadding: false,
       label: "Price",
     },
     {
-      id: "price.units",
+      id: "units",
       numeric: false,
       disablePadding: false,
       label: "Units",

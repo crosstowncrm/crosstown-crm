@@ -582,9 +582,9 @@ type Query {
         statement: "MATCH (contact:Contact)-[hii:HAS_INTEREST_IN]-(:Property) WHERE hii.id IS NOT NULL RETURN hii"
     )
 
-    listing(filter: String="*", orderByMe: String="node.name asc", offset: Int=0, first: Int=10): [Listing] @hasScope(scopes: ["admin", "teamlead", "agent"])
+    listing(filter: String="*", offset: Int=0, first: Int=10): [Listing] @hasScope(scopes: ["admin", "teamlead", "agent"])
     @cypher(
-        statement: "CALL db.index.fulltext.queryNodes('searchListing', $filter) YIELD node RETURN node ORDER BY $orderByMe SKIP $offset LIMIT $first"
+        statement: "CALL db.index.fulltext.queryNodes('searchListing', $filter) YIELD node RETURN node SKIP $offset LIMIT $first"
     )
 
     loginUser(name: String, pswd: String): [AuthData]

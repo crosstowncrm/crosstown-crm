@@ -232,7 +232,7 @@ function ListingList(props) {
   const headCells = [
     { id: "name", numeric: false, disablePadding: false, label: "Name" },
     {
-      id: "node.investment_highlights",
+      id: "investment_highlights",
       numeric: false,
       disablePadding: false,
       label: "Investment Highlights",

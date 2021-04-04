@@ -16,24 +16,13 @@ import {
 
 const styles = (theme) => ({
   root: {
-    maxWidth: 700,
-    marginTop: theme.spacing(3),
-    overflowX: "auto",
-    margin: "auto",
-  },
-  table: {
-    minWidth: 700,
-  },
-  textField: {
-    marginLeft: theme.spacing(1),
-    marginRight: theme.spacing(1),
-    minWidth: 300,
+    maxWidth: "100%",
   },
 });
 
 const GET_LISTING = gql`
-  query userQuery($id: ID) {
-    Listing(id: $id) {
+  query userQuery($id: String) {
+    getListingById(id: $id) {
       id
       name
       square_footage
@@ -87,7 +76,7 @@ function ListingEdit(props) {
             </TableRow>
           </TableHead>
           <TableBody>
-            {data.listings.map((n) => {
+            {data.getListingById.map((n) => {
               return (
                 <TableRow key={n.id}>
                   <TableCell>{n.name}</TableCell>

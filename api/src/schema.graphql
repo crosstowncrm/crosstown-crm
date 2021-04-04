@@ -498,6 +498,11 @@ type Query {
         statement: "MATCH (property:Property{id:$id}) RETURN property LIMIT 1"
     )
 
+    getListingById(id:String): [Listing] @hasScope(scopes: ["admin", "teamlead", "agent"])
+    @cypher(
+        statement: "MATCH (listing:Listing{id:$id}) RETURN listing LIMIT 1"
+    )
+
     getTaskById(id:ID): [Task] @hasScope(scopes: ["admin", "teamlead", "agent"])
     @cypher(
         statement: "MATCH (task:Task{id:$id}) RETURN task LIMIT 1"

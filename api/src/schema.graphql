@@ -279,7 +279,7 @@ type Listing {
     commission: String
     condition: String
     conferenceRooms: Int
-    description: String
+    investment_highlights: String
     documents: [String]
     existingBuildout: String
     images: [String]
@@ -290,11 +290,11 @@ type Listing {
     leaseType: String
     listing_expiration: String
     name: String
-    noi: Int
+    noi: String
     numPeopleMax: Int
     numPeopleMin: Int
     parking_spaces: String
-    price: Int
+    price: String
     priceTerms: String
     privateOffices: Int
     pro_forma_noi: String
@@ -582,7 +582,7 @@ type Query {
         statement: "MATCH (contact:Contact)-[hii:HAS_INTEREST_IN]-(:Property) WHERE hii.id IS NOT NULL RETURN hii"
     )
 
-    listings(filter: String="*", filter: String="*", orderByMe: String="node.name asc", offset: Int=0, first: Int=10): [Listing] @hasScope(scopes: ["admin", "teamlead", "agent"])
+    listing(filter: String="*", orderByMe: String="node.name asc", offset: Int=0, first: Int=10): [Listing] @hasScope(scopes: ["admin", "teamlead", "agent"])
     @cypher(
         statement: "CALL db.index.fulltext.queryNodes('searchListing', $filter) YIELD node RETURN node ORDER BY $orderByMe SKIP $offset LIMIT $first"
     )
@@ -651,6 +651,8 @@ type Mutation {
 
     deleteEmail(emailId: String): String @hasScope(scopes: ["admin", "teamlead", "agent"])
 
+    deleteListing(listingId: String): String @hasScope(scopes: ["admin", "teamlead", "agent"])
+
     deleteProperty(propertyId: String): String @hasScope(scopes: ["admin", "teamlead", "agent"])
 
     deleteRole(roleId: String): String @hasScope(scopes: ["admin", "teamlead", "agent"])
@@ -678,6 +680,8 @@ type Mutation {
     updateContact(field: String, value: String, contactId: String): Contact @hasScope(scopes: ["admin", "teamlead", "agent"])
 
     updateData(nodeLabel: String, nodeId: String, unitId: String, label: String): String @hasScope(scopes: ["admin", "teamlead", "agent"])
+
+    updateListing(field: String, value: String, listingId: String): Listing @hasScope(scopes: ["admin", "teamlead", "agent"])
 
     updateProperty(field: String, value: String, propertyId: String): Company @hasScope(scopes: ["admin", "teamlead", "agent"])
 

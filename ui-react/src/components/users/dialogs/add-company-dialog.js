@@ -11,12 +11,8 @@ import Autocomplete from "@material-ui/lab/Autocomplete";
 import { useMutation, useQuery, gql } from "@apollo/client";
 
 const GET_COMPANIES = gql`
-  query companiesPaginateQuery(
-    $first: Int
-    $offset: Int
-    $orderBy: [_CompanyOrdering]
-  ) {
-    Company(first: $first, offset: $offset, orderBy: $orderBy) {
+  query companiesPaginateQuery($first: Int, $offset: Int) {
+    company(first: $first, offset: $offset, orderBy: "name_asc") {
       id
       name
     }
@@ -79,7 +75,6 @@ export default function AddCompanyDialog({
   const handleSubmit = (e) => {
     e.preventDefault();
     const isValid = validate(formData);
-
     if (isValid) {
       associationAdd({
         variables: formData,

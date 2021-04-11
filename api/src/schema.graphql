@@ -275,7 +275,7 @@ type Listing {
     amenities: [String]
     availableOn: String
     availableWithin: String
-    cap_rate: Float
+    cap_rate: String #Float
     commission: String
     condition: String
     conferenceRooms: Int
@@ -298,7 +298,7 @@ type Listing {
     priceTerms: String
     privateOffices: Int
     pro_forma_noi: String
-    properties:  [Property] @relation(name: "IS_LISTING_OF", direction: "IN")
+    properties: [Property] @relation(name: "IS_LISTING_OF", direction: "IN")
     sale_conditions: [String]
     sfAvailMax: Int
     sfAvailMin: Int
@@ -308,7 +308,7 @@ type Listing {
     tenantName: String
     units: String
     use: [String]
-    user:  User @relation(name: "IS_PRIMARY_AGENT_FOR", direction: "IN")
+    users: [User] @relation(name: "IS_PRIMARY_AGENT_FOR", direction: "IN")
     workStations: Int
     #  space:  [Space] @relation(name: "IS LISTING OF", direction: "OUT")
 }
@@ -589,7 +589,7 @@ type Query {
 
     listing(filter: String="*", offset: Int=0, first: Int=10): [Listing] @hasScope(scopes: ["admin", "teamlead", "agent"])
     @cypher(
-        statement: "CALL db.index.fulltext.queryNodes('searchListing', $filter) YIELD node RETURN node SKIP $offset LIMIT $first"
+        statement: "CALL    db.index.fulltext.queryNodes('searchListing', $filter) YIELD node RETURN node SKIP $offset LIMIT $first"
     )
 
     loginUser(name: String, pswd: String): [AuthData]
@@ -669,6 +669,8 @@ type Mutation {
     listingAdd( from: String!, to: String! ): String @hasScope(scopes: ["admin", "teamlead", "agent"])
 
     listingToCompanyAdd( from: String!, to: String! ): String @hasScope(scopes: ["admin", "teamlead", "agent"])
+
+    listingToPropertyAdd( from: String!, to: String! ): String @hasScope(scopes: ["admin", "teamlead", "agent"])
 
     mergeContactInterest(from: String, to: String): Interest @hasScope(scopes: ["admin", "teamlead", "agent"])
     @cypher(statement: "MATCH (contact:Contact{id: $from}) MATCH (property:Property{id: $to}) MERGE (contact)-[hii:HAS_INTEREST_IN]->(property) RETURN hii")

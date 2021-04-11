@@ -1,48 +1,51 @@
 import React from "react";
-import Button from "@material-ui/core/Button";
-import TextField from "@material-ui/core/TextField";
-import Dialog from "@material-ui/core/Dialog";
-import DialogActions from "@material-ui/core/DialogActions";
-import DialogContent from "@material-ui/core/DialogContent";
-import DialogContentText from "@material-ui/core/DialogContentText";
-import DialogTitle from "@material-ui/core/DialogTitle";
-import FormControl from "@material-ui/core/FormControl";
+import {
+  Button,
+  TextField,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  FormControl,
+} from "@material-ui/core/";
+
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import { useMutation, useQuery, gql } from "@apollo/client";
 
-const GET_LISTINGS = gql`
-  query listingsForUsers(
+const GET_PROPERTIES = gql`
+  query get_properties(
     $first: Int
     $offset: Int
-    $orderBy: [_ListingOrdering]
+    $orderBy: [_PropertyOrdering]
   ) {
-    listing(first: $first, offset: $offset, orderBy: $orderBy) {
+    property(first: $first, offset: $offset, orderBy: $orderBy) {
       id
       name
     }
   }
 `;
 
-const LISTING_ADD = gql`
-  mutation listingToCompanyAdd($from: String!, $to: String!) {
-    listingToCompanyAdd(from: $from, to: $to)
+const PROPERTY_ADD = gql`
+  mutation listingToPropertyAdd($from: String!, $to: String!) {
+    listingToPropertyAdd(from: $from, to: $to)
   }
 `;
 
-export default function AddListingDialog({
+export default function AddListingPropertyDialog({
   isOpen,
   handleClose,
-  companyId,
+  listingId,
   refetch,
 }) {
-  const [formData, updateFormData] = React.useState({ from: companyId });
+  const [formData, updateFormData] = React.useState({ from: listingId });
   const [errors, setErrors] = React.useState({});
 
   const {
-    loading: listingsQueryLoading,
-    data: listings,
-    error: listingsQueryError,
-  } = useQuery(GET_LISTINGS, {
+    loading: propertiesQueryLoading,
+    data: properties,
+    error: propertiesQueryError,
+  } = useQuery(GET_PROPERTIES, {
     variables: {
       orderBy: "name_asc",
     },
@@ -56,13 +59,13 @@ export default function AddListingDialog({
   };
 
   const validate = (values) => {
-    let listingError = "";
+    let propertyError = "";
     if (!values.to) {
-      listingError = "Required";
+      propertyError = "Required";
     }
-    if (listingError) {
+    if (propertyError) {
       setErrors({
-        listingError,
+        propertyError,
       });
       return false;
     }
@@ -74,15 +77,15 @@ export default function AddListingDialog({
     const isValid = validate(formData);
 
     if (isValid) {
-      associationAdd({
+      listingToPropertyAdd({
         variables: formData,
       });
-      updateFormData({ from: companyId });
+      updateFormData({ from: listingId });
       handleClose();
     }
   };
 
-  const [associationAdd, { loading, error }] = useMutation(LISTING_ADD, {
+  const [listingToPropertyAdd, { loading, error }] = useMutation(PROPERTY_ADD, {
     update: () => refetch(),
   });
 
@@ -91,24 +94,24 @@ export default function AddListingDialog({
       <Dialog
         open={isOpen}
         onClose={handleClose}
-        aria-labelledby="edit-apartment"
+        aria-labelledby="edit-listing-property"
       >
-        <DialogTitle id="edit-apartment">Listings</DialogTitle>
+        <DialogTitle id="edit-listing-property">Properties</DialogTitle>
         <DialogContent>
-          <DialogContentText>Choose the Company's Listing</DialogContentText>
-          {listings && !listingsQueryLoading && !listingsQueryError && (
+          <DialogContentText>Choose the Listing's Property</DialogContentText>
+          {properties && !propertiesQueryLoading && !propertiesQueryError && (
             <FormControl>
               <Autocomplete
-                id="company"
-                name="company"
-                options={listings.listings}
+                id="listing-property"
+                name="listing-property"
+                options={properties.property}
                 getOptionLabel={(option) => option.name}
                 style={{ width: 300 }}
                 onChange={handleChange}
                 renderInput={(params) => (
                   <TextField
                     {...params}
-                    label="Listing"
+                    label="Property"
                     variant="outlined"
                     data-validators="isRequired"
                     required={true}
@@ -116,7 +119,7 @@ export default function AddListingDialog({
                 )}
               />
               <div style={{ fontSize: 12, color: "red" }}>
-                {errors.clientError}
+                {errors.propertyError}
               </div>
             </FormControl>
           )}

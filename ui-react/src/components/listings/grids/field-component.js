@@ -29,7 +29,7 @@ export default function FieldComponent({
             label={title}
             onClick={handleChange}
             onChange={handleChange}
-            id={field ? field : title.toLowerCase()}
+            id={id ? id : title.toLowerCase()}
             defaultValue={value}
             size="small"
             style={{

@@ -291,17 +291,17 @@ type Listing {
     listing_expiration: String
     name: String
     noi: String
-    numPeopleMax: Int
-    numPeopleMin: Int
+    numPeopleMax: String
+    numPeopleMin: String
     parking_spaces: String
     price: String
     priceTerms: String
-    privateOffices: Int
+    privateOffices: String
     pro_forma_noi: String
     properties: [Property] @relation(name: "IS_LISTING_OF", direction: "IN")
     sale_conditions: [String]
-    sfAvailMax: Int
-    sfAvailMin: Int
+    sfAvailMax: String
+    sfAvailMin: String
     spaceHighlights: [String]
     spaceNotes: String
     square_footage: String
@@ -309,7 +309,7 @@ type Listing {
     units: String
     use: [String]
     users: [User] @relation(name: "IS_PRIMARY_AGENT_FOR", direction: "IN")
-    workStations: Int
+    workStations: String
     #  space:  [Space] @relation(name: "IS LISTING OF", direction: "OUT")
 }
 

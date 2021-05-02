@@ -546,6 +546,29 @@ const resolvers = {
                 }
             )
         },
+
+        listingToPropertyAdd: async (_, {from, to}, ctx) => {
+            let session = ctx.driver.session();
+            const cypherQuery = `MATCH (property:Property {id: "${to}"}) MATCH (listing:Listing{id: "${from}"}) MERGE (property)-[rel:IS_LISTING_OF]-(listing) RETURN id(rel) as rel_id LIMIT 1`;
+            return await session.run(cypherQuery).then(
+                result => {
+                    const resData = result.records[0] ? result.records[0].get('rel_id').properties : null;
+                    return resData;
+                }
+            )
+        },
+
+        listingToUserAdd: async (_, {from, to}, ctx) => {
+            let session = ctx.driver.session();
+            const cypherQuery = `MATCH (user:User {id: "${from}"}) MATCH (listing:Listing{id: "${to}"}) MERGE (user)-[rel:IS_PRIMARY_AGENT_FOR]-(listing) RETURN id(rel) as rel_id LIMIT 1`;
+            return await session.run(cypherQuery).then(
+                result => {
+                    const resData = result.records[0] ? result.records[0].get('rel_id').properties : null;
+                    return resData;
+                }
+            )
+        },
+
         updateContact: async (_, {field, value, contactId}, ctx) => {
             let session = ctx.driver.session();
             const cypherQuery = `MATCH (contact:Contact {id: "${contactId}"}) SET ` + field + `= "${value}" RETURN contact LIMIT 1`;

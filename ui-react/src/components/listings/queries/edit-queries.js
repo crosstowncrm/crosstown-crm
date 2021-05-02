@@ -252,12 +252,14 @@ export const UPDATE_DATA = gql`
     )
   }
 `;
-export const GET_USERS = gql`
-  query getUsers {
-    user {
-      id
-      first_name
-      last_name
-    }
+export const PROPERTY_ADD = gql`
+  mutation listingToPropertyAdd($from: String!, $to: String!) {
+    listingToPropertyAdd(from: $from, to: $to)
+  }
+`;
+
+export const USER_ADD = gql`
+  mutation listingToUserAdd($from: String!, $to: String!) {
+    listingToUserAdd(from: $from, to: $to)
   }
 `;

@@ -11,61 +11,46 @@ import {
 } from "@material-ui/core/";
 
 import Autocomplete from "@material-ui/lab/Autocomplete";
-import { useMutation, useQuery, gql } from "@apollo/client";
+import { USER_ADD } from "../queries/edit-queries";
+import { GET_USERS } from "../queries/common-queries";
+import { useMutation, useQuery } from "@apollo/client";
 
-const GET_PROPERTIES = gql`
-  query get_properties(
-    $first: Int
-    $offset: Int
-    $orderBy: [_PropertyOrdering]
-  ) {
-    property(first: $first, offset: $offset, orderBy: $orderBy) {
-      id
-      name
-    }
-  }
-`;
-
-const PROPERTY_ADD = gql`
-  mutation listingToPropertyAdd($from: String!, $to: String!) {
-    listingToPropertyAdd(from: $from, to: $to)
-  }
-`;
-
-export default function AddListingPropertyDialog({
+export default function AddListingUserDialog({
   isOpen,
   handleClose,
   listingId,
   refetch,
 }) {
-  const [formData, updateFormData] = React.useState({ from: listingId });
+  const [formData, updateFormData] = React.useState({ to: listingId });
   const [errors, setErrors] = React.useState({});
 
   const {
-    loading: propertiesQueryLoading,
-    data: properties,
-    error: propertiesQueryError,
-  } = useQuery(GET_PROPERTIES, {
+    loading: usersQueryLoading,
+    data: users,
+    error: usersQueryError,
+  } = useQuery(GET_USERS, {
     variables: {
-      orderBy: "name_asc",
+      orderBy: "first_name_asc",
     },
   });
 
   const handleChange = (e, value) => {
-    updateFormData({
-      ...formData,
-      ["to"]: value.id,
+    updateFormData((prevFormData) => {
+      return {
+        ...prevFormData,
+        ["from"]: value.id,
+      };
     });
   };
 
   const validate = (values) => {
-    let propertyError = "";
+    let userError = "";
     if (!values.to) {
-      propertyError = "Required";
+      userError = "Required";
     }
-    if (propertyError) {
+    if (userError) {
       setErrors({
-        propertyError,
+        userError,
       });
       return false;
     }
@@ -77,7 +62,7 @@ export default function AddListingPropertyDialog({
     const isValid = validate(formData);
 
     if (isValid) {
-      listingToPropertyAdd({
+      listingToUserAdd({
         variables: formData,
       });
       updateFormData({ from: listingId });
@@ -85,7 +70,7 @@ export default function AddListingPropertyDialog({
     }
   };
 
-  const [listingToPropertyAdd, { loading, error }] = useMutation(PROPERTY_ADD, {
+  const [listingToUserAdd, { loading, error }] = useMutation(USER_ADD, {
     update: () => refetch(),
   });
 
@@ -94,24 +79,26 @@ export default function AddListingPropertyDialog({
       <Dialog
         open={isOpen}
         onClose={handleClose}
-        aria-labelledby="edit-listing-property"
+        aria-labelledby="edit-listing-user"
       >
-        <DialogTitle id="edit-listing-property">Properties</DialogTitle>
+        <DialogTitle id="edit-listing-user">Users</DialogTitle>
         <DialogContent>
-          <DialogContentText>Choose the Listing's Property</DialogContentText>
-          {properties && !propertiesQueryLoading && !propertiesQueryError && (
+          <DialogContentText>Choose the Listing's User</DialogContentText>
+          {users && !usersQueryLoading && !usersQueryError && (
             <FormControl>
               <Autocomplete
-                id="listing-property"
-                name="listing-property"
-                options={properties.property}
-                getOptionLabel={(option) => option.name}
+                id="listing-user"
+                name="listing-user"
+                options={users.user}
+                getOptionLabel={(option) =>
+                  option.first_name + " " + option.last_name
+                }
                 style={{ width: 300 }}
                 onChange={handleChange}
                 renderInput={(params) => (
                   <TextField
                     {...params}
-                    label="Property"
+                    label="User"
                     variant="outlined"
                     data-validators="isRequired"
                     required={true}
@@ -119,7 +106,7 @@ export default function AddListingPropertyDialog({
                 )}
               />
               <div style={{ fontSize: 12, color: "red" }}>
-                {errors.propertyError}
+                {errors.userError}
               </div>
             </FormControl>
           )}

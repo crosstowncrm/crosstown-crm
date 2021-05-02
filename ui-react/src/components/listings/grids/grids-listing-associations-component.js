@@ -11,7 +11,8 @@ import {
   Typography,
 } from "@material-ui/core";
 
-import AddListingPropertyDialog from "../../dialogs/add-listing-property-dialog";
+import AddListingPropertyDialog from "../dialogs/add-listing-property-dialog";
+import AddListingUserDialog from "../dialogs/add-listing-user-dialog";
 
 export default function GridListingComponent({ listings, refetch, listingId }) {
   const [
@@ -25,6 +26,18 @@ export default function GridListingComponent({ listings, refetch, listingId }) {
 
   const handleClosePropertyDialogComponent = () => {
     setOpenPropertyDialogComponent(false);
+  };
+
+  const [openDialogUserComponent, setOpenUserDialogComponent] = React.useState(
+    false
+  );
+
+  const callUserDialog = () => {
+    setOpenUserDialogComponent(true);
+  };
+
+  const handleCloseUserDialogComponent = () => {
+    setOpenUserDialogComponent(false);
   };
 
   return (
@@ -68,19 +81,15 @@ export default function GridListingComponent({ listings, refetch, listingId }) {
           <Card key={"users-card"}>
             <CardActions>
               <CardHeader title="Primary Agent" />
-              <Button onClick={callPropertyDialog} size="small" color="primary">
+              <Button onClick={callUserDialog} size="small" color="primary">
                 Add
               </Button>
             </CardActions>
             <Divider />
             {users.map((user) => (
               <CardContent key={"ls_" + user.id}>
-                <Typography key={"tp_" + user.id}>
-                  <Link
-                    key={"link_" + user.id}
-                    className="edit-link"
-                    to={"/users/" + user.id}
-                  >
+                <Typography>
+                  <Link className="edit-link" to={"/users/" + user.id}>
                     {user.first_name} {user.last_name}
                   </Link>
                 </Typography>
@@ -97,6 +106,14 @@ export default function GridListingComponent({ listings, refetch, listingId }) {
         title="Property"
         refetch={refetch}
       ></AddListingPropertyDialog>
+      <AddListingUserDialog
+        key={"AddUser"}
+        isOpen={openDialogUserComponent}
+        handleClose={handleCloseUserDialogComponent}
+        listingId={listingId}
+        title="User"
+        refetch={refetch}
+      ></AddListingUserDialog>
     </>
   );
 }
